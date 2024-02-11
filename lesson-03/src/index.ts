@@ -1,9 +1,9 @@
 import express from 'express';
 
-const app = express()
+export const app = express()
 const port = 3000
 
-const HTTP_STATUSES = {
+export const HTTP_STATUSES = {
     OK_200: 200,
     CREATED_201: 201,
     NO_CONTENT_204: 204,
@@ -32,10 +32,6 @@ app.get('/courses', (req, res) => {
         foundedCourse = foundedCourse.filter(c => c.title.indexOf(req.query.title as string) > -1)
     }
      
-    if(!foundedCourse.length){
-        res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
-        return;
-    }
 
     res.json(foundedCourse)
 })
@@ -80,6 +76,11 @@ app.put('/courses/:id', (req, res) => {
     res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
 })
 
+
+app.delete('/__test__/data', (req, res) => {
+    db.courses = [];
+    res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+})
 
 
 app.listen(port, () => {
