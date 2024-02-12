@@ -7,7 +7,7 @@
   "scripts": {
     "watch": "tsc -w",
     "dev": "nodemon .\\dist\\index.js",
-    "test": "jest"
+    "test": "jest --detectOpenHandles --no-cache"
   },
   "dependencies": {
     "@types/jest": "^29.5.12",

@@ -1,11 +1,16 @@
 import request from 'supertest';
-import { app, HTTP_STATUSES, server } from '../../src';
+import {app} from '../../src/app';
 import { CreateCourseModel } from '../../src/models/CreateCourseModel';
 import { UpdateCourseModel } from '../../src/models/UpdateCourseModel';
+import { HTTP_STATUSES } from '../../src/utils';
+
+const getRequest = () => {
+    return request(app)
+}
 
 describe('/course', () => {
     beforeAll( async () => {
-        await request(app).delete('/__test__/data')
+        await getRequest().delete('/__test__/data')
     })
 
     it('should return 200 and empty array', async () => {
@@ -140,8 +145,6 @@ describe('/course', () => {
     })
 
     afterAll(done => {
-        server.close()
         done()
     })
-
 })
