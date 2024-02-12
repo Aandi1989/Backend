@@ -1,6 +1,7 @@
 import request from 'supertest';
-import { app } from '../../src';
-import { HTTP_STATUSES } from '../../src';
+import { app, HTTP_STATUSES, server } from '../../src';
+import { CreateCourseModel } from '../../src/models/CreateCourseModel';
+import { UpdateCourseModel } from '../../src/models/UpdateCourseModel';
 
 describe('/course', () => {
     beforeAll( async () => {
@@ -20,9 +21,11 @@ describe('/course', () => {
       })
       
     it(`shouldn't create course with incorrect input data`,async () => {
+        const data: CreateCourseModel ={ title: '' }
+        
         await request(app)
             .post('/courses')
-            .send({ title: ''})
+            .send(data)
             .expect(HTTP_STATUSES.BAD_REQUEST_400)
 
         await request(app)
@@ -32,9 +35,11 @@ describe('/course', () => {
 
     let createdCourse: any = null;
     it(`should create course with correct input data`,async () => {
+        const data: CreateCourseModel ={ title: 'new course' }
+        
         const createResponse = await request(app)
             .post('/courses')
-            .send({ title: 'new course'})
+            .send(data)
             .expect(HTTP_STATUSES.CREATED_201)
 
          createdCourse = createResponse.body;
@@ -52,16 +57,18 @@ describe('/course', () => {
 
     let createdCourse2: any = null;
     it(`create one more course`,async () => {
+        const data: CreateCourseModel ={ title: 'new super course 2' }
+        
         const createResponse = await request(app)
             .post('/courses')
-            .send({ title: 'new super course 2'})
+            .send(data)
             .expect(HTTP_STATUSES.CREATED_201)
 
          createdCourse2 = createResponse.body;
 
         expect(createdCourse2).toEqual({
             id: expect.any(Number),
-            title: 'new super course 2'
+            title: data.title
         })
 
         await request(app)
@@ -70,9 +77,11 @@ describe('/course', () => {
     })
 
     it(`shouldn't update course with incorrect input data`,async () => {
+        const data: CreateCourseModel ={ title: '' }
+       
         await request(app)
             .put(`/courses/` + createdCourse.id)
-            .send({ title: ''})
+            .send(data)
             .expect(HTTP_STATUSES.BAD_REQUEST_400)
 
         await request(app)
@@ -88,16 +97,18 @@ describe('/course', () => {
     })
 
     it(`should update course with correct input data`,async () => {
+        const data: UpdateCourseModel ={ title: 'valid new title' }
+        
         await request(app)
             .put(`/courses/` + createdCourse.id)
-            .send({ title: 'valid new title'})
+            .send(data)
             .expect(HTTP_STATUSES.NO_CONTENT_204)
 
         await request(app)
             .get(`/courses/` + createdCourse.id)
             .expect(HTTP_STATUSES.OK_200, {
                 ...createdCourse,
-                title: 'valid new title'
+                title: data.title
             })
             
         await request(app)
@@ -126,6 +137,11 @@ describe('/course', () => {
         await request(app)
         .get(`/courses`)
         .expect(HTTP_STATUSES.OK_200, [])
+    })
+
+    afterAll(done => {
+        server.close()
+        done()
     })
 
 })
