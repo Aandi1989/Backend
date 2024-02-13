@@ -5,7 +5,6 @@ import { URIParamsCourseIdModel } from "../models/URIParamsCourseIdModel";
 import { RequestWithParams, RequestWithQuery } from "../types";
 
 
-// this route doesn't work
 export const getInterestingRouter = (db: DBType) => {
     const router = express.Router();
 

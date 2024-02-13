@@ -1,4 +1,4 @@
-import express,{ Express, Response } from "express";
+import express,{ Express, Response, Router } from "express";
 import { CourseViewModel } from "../models/CourseViewModel";
 import { CreateCourseModel } from "../models/CreateCourseModel";
 import { QueryCoursesModel } from "../models/QueryCoursesModel";
@@ -85,6 +85,7 @@ export const getCoursesRouter = (db: DBType) => {
 
     return router;
 }
+
 
 
 

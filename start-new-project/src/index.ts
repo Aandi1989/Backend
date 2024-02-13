@@ -11,7 +11,8 @@ const port = process.env.PORT || 5000
 
 
 
-const parserMiddleware = bodyParser({})
+// const parserMiddleware = bodyParser({})
+const parserMiddleware = express.json()
 app.use(parserMiddleware)
 
 

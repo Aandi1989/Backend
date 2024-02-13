@@ -5,8 +5,8 @@
   "author": "author",
   "license": "MIT",
   "scripts": {
+    "dev": "nodemon --inspect dist/src/index.js",
     "watch": "tsc -w",
-    "dev": "nodemon .\\dist\\index.js",
     "test": "jest --detectOpenHandles --no-cache"
   },
   "dependencies": {
