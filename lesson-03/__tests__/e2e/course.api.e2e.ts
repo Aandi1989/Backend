@@ -3,6 +3,7 @@ import {app} from '../../src/app';
 import { CreateCourseModel } from '../../src/features/courses/models/CreateCourseModel';
 import { UpdateCourseModel } from '../../src/features/courses/models/UpdateCourseModel';
 import { HTTP_STATUSES } from '../../src/utils';
+import { coursesTestManager } from '../utils/coursesTestManager';
 
 const getRequest = () => {
     return request(app)
@@ -28,10 +29,7 @@ describe('/course', () => {
     it(`shouldn't create course with incorrect input data`,async () => {
         const data: CreateCourseModel ={ title: '' }
         
-        await request(app)
-            .post('/courses')
-            .send(data)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+        await coursesTestManager.createCourse(data, HTTP_STATUSES.BAD_REQUEST_400)
 
         await request(app)
             .get('/courses')
@@ -41,18 +39,10 @@ describe('/course', () => {
     let createdCourse: any = null;
     it(`should create course with correct input data`,async () => {
         const data: CreateCourseModel ={ title: 'new course' }
+
+        const result = await coursesTestManager.createCourse(data)
         
-        const createResponse = await request(app)
-            .post('/courses')
-            .send(data)
-            .expect(HTTP_STATUSES.CREATED_201)
-
-         createdCourse = createResponse.body;
-
-        expect(createdCourse).toEqual({
-            id: expect.any(Number),
-            title: 'new course'
-        })
+        createdCourse = result.createdEntity;
 
         await request(app)
             .get('/courses')
@@ -63,18 +53,10 @@ describe('/course', () => {
     let createdCourse2: any = null;
     it(`create one more course`,async () => {
         const data: CreateCourseModel ={ title: 'new super course 2' }
-        
-        const createResponse = await request(app)
-            .post('/courses')
-            .send(data)
-            .expect(HTTP_STATUSES.CREATED_201)
 
-         createdCourse2 = createResponse.body;
+        const result = await coursesTestManager.createCourse(data)
 
-        expect(createdCourse2).toEqual({
-            id: expect.any(Number),
-            title: data.title
-        })
+         createdCourse2 = result.createdEntity;
 
         await request(app)
             .get('/courses')

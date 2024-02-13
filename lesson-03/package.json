@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "nodemon --inspect dist/src/index.js",
     "watch": "tsc -w",
-    "test": "jest --detectOpenHandles --no-cache"
+    "test-e2e": "jest --detectOpenHandles --no-cache --config ./__tests__/jest-e2e.config.js"
   },
   "dependencies": {
     "@types/jest": "^29.5.12",
