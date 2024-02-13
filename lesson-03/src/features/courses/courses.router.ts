@@ -1,12 +1,12 @@
 import express,{ Express, Response, Router } from "express";
-import { CourseViewModel } from "../models/CourseViewModel";
-import { CreateCourseModel } from "../models/CreateCourseModel";
-import { QueryCoursesModel } from "../models/QueryCoursesModel";
-import { URIParamsCourseIdModel } from "../models/URIParamsCourseIdModel";
-import { UpdateCourseModel } from "../models/UpdateCourseModel";
-import { RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery } from "../types";
-import { CourseType, DBType } from "../db/db";
-import { HTTP_STATUSES } from "../utils";
+import { CourseViewModel } from "./models/CourseViewModel";
+import { CreateCourseModel } from "./models/CreateCourseModel";
+import { QueryCoursesModel } from "./models/QueryCoursesModel";
+import { URIParamsCourseIdModel } from "./models/URIParamsCourseIdModel";
+import { UpdateCourseModel } from "./models/UpdateCourseModel";
+import { RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery } from "../../types";
+import { CourseType, DBType } from "../../db/db";
+import { HTTP_STATUSES } from "../../utils";
 
 
 export const getCourseViewModel = (dbCourse: CourseType): CourseViewModel => {

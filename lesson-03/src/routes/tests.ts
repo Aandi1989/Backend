@@ -8,6 +8,8 @@ export const getTestsRouter = (db: DBType) => {
 
     router.delete('/data', (req, res) => {
         db.courses = [];
+        db.users = [];
+        db.studentCourseBindings = [];
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     })
 
