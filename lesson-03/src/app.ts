@@ -13,6 +13,6 @@ const jsonBodyMiddleware = express.json()
 app.use(jsonBodyMiddleware)
 
 
-app.use("/example", getCoursesRouter(db))
+app.use("/courses", getCoursesRouter(db))
 app.use("/__test__", getTestsRouter(db))
 app.use("/interesting", getInterestingRouter(db))
