@@ -1,10 +1,34 @@
-import express, { Request, Response } from 'express'
+import express, { NextFunction, Request, Response } from 'express'
 import bodyParser from 'body-parser'
 import { productsRouter } from './routes/products-router'
 import { addressesRouter } from './routes/addresses-router'
 
-// create express app
 const app = express()
+
+let blablaMiddleware = (req: Request, res: Response, next: NextFunction) => {
+    // @ts-ignore
+    req.blabla = "hello";
+    next();
+}
+
+const authGuardMiddleware = (req: Request, res: Response, next: NextFunction) => {
+    if(req.query.token === '123'){
+        next();
+    }else{
+        res.send(401);
+    }
+}
+
+let requestCounter = 0;
+const requestCountMiddleware = (req: Request, res: Response, next: NextFunction) => {
+    requestCounter++;
+    next()
+}
+
+
+app.use(requestCountMiddleware)
+app.use(blablaMiddleware)
+app.use(authGuardMiddleware)
 
 const port = process.env.PORT || 3000
 

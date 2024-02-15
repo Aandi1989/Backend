@@ -5,9 +5,11 @@ const express_1 = require("express");
 const products_repository_1 = require("../repositories/products-repository");
 exports.productsRouter = (0, express_1.Router)({});
 exports.productsRouter.get('/', (req, res) => {
-    var _a;
-    const foundProducts = products_repository_1.productsRepository.findProducts((_a = req.query.title) === null || _a === void 0 ? void 0 : _a.toString());
-    res.send(foundProducts);
+    // const foundProducts = productsRepository.findProducts(req.query.title?.toString());
+    // res.send(foundProducts)
+    // @ts-ignore
+    const blabla = req.blabla;
+    res.send({ value: blabla + "!!!" });
 });
 exports.productsRouter.post('/', (req, res) => {
     const newProduct = products_repository_1.productsRepository.createProduct(req.body.title);

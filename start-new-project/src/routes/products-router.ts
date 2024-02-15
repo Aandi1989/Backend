@@ -1,4 +1,4 @@
-import { Request, Response, Router } from "express";
+import { Request, Response, Router, NextFunction } from "express";
 import { productsRepository } from "../repositories/products-repository";
 
 
@@ -6,9 +6,13 @@ import { productsRepository } from "../repositories/products-repository";
 export const productsRouter = Router({});
 
 
+
 productsRouter.get('/', (req: Request, res: Response) => {
-    const foundProducts = productsRepository.findProducts(req.query.title?.toString());
-    res.send(foundProducts)
+    // const foundProducts = productsRepository.findProducts(req.query.title?.toString());
+    // res.send(foundProducts)
+    // @ts-ignore
+    const blabla = req.blabla;
+    res.send({value: blabla + "!!!"})
 })
 productsRouter.post('/', (req: Request, res: Response) => {
     const newProduct = productsRepository.createProduct(req.body.title)
