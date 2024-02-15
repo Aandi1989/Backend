@@ -24,8 +24,12 @@ app.post('/videos', (req: RequestWithBody<CreateVideoModel>,
 
     if (typeof title !== 'string' || title.trim() === '') {
         errors.push({ message: 'Title required and must be strings', field: 'title' });
+    }else if (!/^[a-zA-Z\s.,!?'"-]+$/g.test(title)) {
+        errors.push({ message: 'Title required and must be strings', field: 'title' });
     }
     if (typeof author !== 'string' || author.trim() === '') {
+        errors.push({ message: 'Author required and must be strings', field: 'author' });
+    }else if (!/^[a-zA-Z\s.,!?'"-]+$/g.test(author)) {
         errors.push({ message: 'Author required and must be strings', field: 'author' });
     }
     const resolutionsArray = Array.isArray(availableResolutions) ? availableResolutions : [availableResolutions];
@@ -49,7 +53,7 @@ app.post('/videos', (req: RequestWithBody<CreateVideoModel>,
         id: +(new Date()),
         title: title,
         author: author,
-        canBeDownloaded: true,
+        canBeDownloaded: false,
         minAgeRestriction: null,
         createdAt: createdAt.toISOString(),
         publicationDate: publicationDate.toISOString(),
@@ -75,9 +79,22 @@ app.put('/videos/:id', (req: RequestWithParamsAndBody<URIParamsVideoIdModel, Upd
 
     if (typeof title !== 'string' || title.trim() === '') {
         errors.push({ message: 'Title required and must be strings', field: 'title' });
+    }else if (!/^[a-zA-Z\s.,!?'"-]+$/g.test(title)) {
+        errors.push({ message: 'Title required and must be strings', field: 'title' });
     }
     if (typeof author !== 'string' || author.trim() === '') {
         errors.push({ message: 'Author required and must be strings', field: 'author' });
+    }else if (!/^[a-zA-Z\s.,!?'"-]+$/g.test(author)) {
+        errors.push({ message: 'Author required and must be strings', field: 'author' });
+    }
+    if (typeof canBeDownloaded != 'boolean') {
+        errors.push({ message: 'CanBeDownloaded can be only true or false', field: 'canBeDownloaded' });
+    }
+    if (minAgeRestriction !== null && (typeof minAgeRestriction !== 'number' || minAgeRestriction > 18)) {
+        errors.push({ message: 'MinAgeRestriction must be either null or a number less than or equal to 18', field: 'minAgeRestriction' });
+    }
+    if (typeof publicationDate !== 'string' || !isValidISOString(publicationDate)) {
+        errors.push({ message: 'Publication date must be a valid date.', field: 'publicationDate' });
     }
     const resolutionsArray = Array.isArray(availableResolutions) ? availableResolutions : [availableResolutions];
     if (!resolutionsArray || resolutionsArray.length === 0) {
@@ -98,9 +115,13 @@ app.put('/videos/:id', (req: RequestWithParamsAndBody<URIParamsVideoIdModel, Upd
         return res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
     }
 
+   
+
     foundVideo = {
         ...foundVideo,
-        title, author, availableResolutions
+        title, author, availableResolutions, 
+        canBeDownloaded, 
+        minAgeRestriction, publicationDate
     }
 
     db.videos = db.videos.filter(v => v.id != foundVideo!.id);
@@ -124,3 +145,12 @@ app.delete('/testing/all-data', (req: Request, res: Response) => {
     db.videos = [];
     res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
 })
+
+
+const isValidISOString = (str: any) => {
+    const isValidDate = !isNaN(Date.parse(str));
+
+    const isISOString = new Date(str).toISOString() === str;
+
+    return isValidDate && isISOString;
+};
