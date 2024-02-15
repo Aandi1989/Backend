@@ -8,7 +8,7 @@ const products_router_1 = require("./routes/products-router");
 const addresses_router_1 = require("./routes/addresses-router");
 // create express app
 const app = (0, express_1.default)();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 // const parserMiddleware = bodyParser({})
 const parserMiddleware = express_1.default.json();
 app.use(parserMiddleware);
