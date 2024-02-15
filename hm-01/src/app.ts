@@ -1,9 +1,10 @@
 import express, { Request, Response } from 'express'
 import { VideoResolution, VideoType, db } from './db/db';
 import { HTTP_STATUSES } from './utils';
-import { RequestWithBody, RequestWithParams } from './types';
+import { RequestWithBody, RequestWithParams, RequestWithParamsAndBody } from './types';
 import { CreateVideoModel } from './models/CreateVideoModel';
 import { URIParamsVideoIdModel } from './models/URIParamsVideoModel';
+import { UpdateVideoModel } from './models/UpdateVideoModel';
 
 
 export const app = express();
@@ -18,7 +19,7 @@ app.get('/videos', (req: Request, res: Response) => {
 app.post('/videos', (req: RequestWithBody<CreateVideoModel>,
     res: Response) => {
     const { title, author, availableResolutions } = req.body;
-    
+
     const errors: { message: string; field: string }[] = [];
 
     if (typeof title !== 'string' || title.trim() === '') {
@@ -27,12 +28,13 @@ app.post('/videos', (req: RequestWithBody<CreateVideoModel>,
     if (typeof author !== 'string' || author.trim() === '') {
         errors.push({ message: 'Author required and must be strings', field: 'author' });
     }
-    if (!availableResolutions || availableResolutions.length === 0) {
+    const resolutionsArray = Array.isArray(availableResolutions) ? availableResolutions : [availableResolutions];
+    if (!resolutionsArray || resolutionsArray.length === 0) {
         errors.push({ message: 'At least one resolution must be provided', field: 'availableResolutions' });
     } else {
-        const invalidResolutions = [...availableResolutions].filter(resolution => !Object.values(VideoResolution).includes(resolution));
+        const invalidResolutions = resolutionsArray.filter(resolution => !Object.values(VideoResolution).includes(resolution));
         if (invalidResolutions.length > 0) {
-            errors.push({ message: 'Invalid resolution(s)', field: 'availableResolutions' });
+            errors.push({ message: 'At least one resolution must be provided', field: 'availableResolutions' });
         }
     }
     if (errors.length > 0) {
@@ -51,48 +53,72 @@ app.post('/videos', (req: RequestWithBody<CreateVideoModel>,
         minAgeRestriction: null,
         createdAt: createdAt.toISOString(),
         publicationDate: publicationDate.toISOString(),
-        availableResolutions: [...availableResolutions]
+        availableResolutions: resolutionsArray
     }
     db.videos.push(createdVideo)
     res.status(HTTP_STATUSES.CREATED_201).json(createdVideo)
 
 })
-app.get('/videos/:id', (req: RequestWithParams<URIParamsVideoIdModel>, 
-                        res: Response) => {
+app.get('/videos/:id', (req: RequestWithParams<URIParamsVideoIdModel>,
+    res: Response) => {
     const foundVideo = db.videos.find(v => v.id === +req.params.id)
-    if(!foundVideo) {
-       return res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+    if (!foundVideo) {
+        return res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
     }
-    
+
     res.json(foundVideo)
 })
-/*
-    const dateString = "2024-02-14T16:28:37.446Z";
-    const date = new Date(dateString);
-    // Проверяем, является ли объект даты недействительным (Invalid Date)
-    if (isNaN(date.getTime())) {
-        console.log("Строка не является допустимой датой формата toISOString()");
+app.put('/videos/:id', (req: RequestWithParamsAndBody<URIParamsVideoIdModel, UpdateVideoModel>,
+    res) => {
+    const { title, author, availableResolutions, canBeDownloaded, minAgeRestriction, publicationDate } = req.body;
+    const errors: { message: string; field: string }[] = [];
+
+    if (typeof title !== 'string' || title.trim() === '') {
+        errors.push({ message: 'Title required and must be strings', field: 'title' });
+    }
+    if (typeof author !== 'string' || author.trim() === '') {
+        errors.push({ message: 'Author required and must be strings', field: 'author' });
+    }
+    const resolutionsArray = Array.isArray(availableResolutions) ? availableResolutions : [availableResolutions];
+    if (!resolutionsArray || resolutionsArray.length === 0) {
+        errors.push({ message: 'At least one resolution must be provided', field: 'availableResolutions' });
     } else {
-        console.log("Строка является допустимой датой формата toISOString()");
+        const invalidResolutions = resolutionsArray.filter(resolution => !Object.values(VideoResolution).includes(resolution));
+        if (invalidResolutions.length > 0) {
+            errors.push({ message: 'Invalid resolution(s)', field: 'availableResolutions' });
+        }
+    }
+    if (errors.length > 0) {
+        return res.status(400).json({ errorsMessages: errors });
     }
 
-    
-    
-    
-    function isValidISOStringDate(dateString: string): boolean {
-    const parsedDate = Date.parse(dateString);
-    return !isNaN(parsedDate);
+    let foundVideo = db.videos.find(v => v.id === +req.params.id)
+
+    if(!foundVideo){
+        return res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
     }
 
-    const userInput = "2024-02-14T16:28:37.446Z";
-    if (isValidISOStringDate(userInput)) {
-        const date = new Date(userInput);
-        const isoString = date.toISOString();
-        console.log(`Введенное значение "${userInput}" может быть преобразовано в дату и имеет строковое представление: "${isoString}"`);
-    } else {
-        console.log(`Введенное значение "${userInput}" не может быть преобразовано в дату.`);
+    foundVideo = {
+        ...foundVideo,
+        title, author, availableResolutions
     }
-*/
+
+    db.videos = db.videos.filter(v => v.id != foundVideo!.id);
+    db.videos.push(foundVideo);
+
+    res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+})
+app.delete('/videos/:id', (req: RequestWithParams<URIParamsVideoIdModel>, 
+                            res:Response) =>{
+    const foundVideo = db.videos.find(v => v.id === +req.params.id)
+    if (!foundVideo) {
+        return res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+    }
+
+    db.videos = db.videos.filter(v => v.id != foundVideo!.id);
+
+    res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+})
 
 app.delete('/testing/all-data', (req: Request, res: Response) => {
     db.videos = [];
