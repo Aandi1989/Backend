@@ -3,15 +3,17 @@ import { DBType, PostType } from "../../db/db";
 import { HTTP_STATUSES } from "../../utils";
 import { URIParamsPostIdModel } from "./models/URIParamsPostIdModel";
 import { postsRepository } from "../../repositories/posts-repository";
-import { RequestWithParams } from "../../types";
+import { RequestWithBody, RequestWithParams } from "../../types";
 
 
-export const getPostsRouter = (db: DBType) => {
+export const getPostsRouter = () => {
     const router = express.Router();
 
     router.get('/', (req: Request, res: Response<PostType[]>) => {
-        res.status(HTTP_STATUSES.OK_200).json(db.posts)
+        const posts = postsRepository.getPosts();
+        res.status(HTTP_STATUSES.OK_200).json(posts)
     })
+    
     router.get('/:id', (req: RequestWithParams<URIParamsPostIdModel>,
         res: Response<PostType>) => {
         const foundBlog = postsRepository.findPostById(req.params.id);
