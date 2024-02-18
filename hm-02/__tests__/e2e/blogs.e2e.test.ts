@@ -63,10 +63,63 @@ describe('tests for /blogs', () => {
     })
 
     it('+ GET blog by ID with correct id', async () => {
-        await request(app)
+        await getRequest()
             .get(`${RouterPaths.blogs}/${createdBlog.id}`)
             .expect(200, createdBlog)
     })
+
+    it('- PUT blog by ID with incorrect data', async () => {
+        await getRequest()
+            .put(`${RouterPaths.blogs}/1234`)
+            .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
+            .send({ name: 'title', description: 'title',  websiteUrl: 'https://MpVTNPmOhlJYNh9KkZcAO_MKaCI1bm-e6n.com'})
+            .expect(HTTP_STATUSES.NOT_FOUND_404)
+        
+        const res = await getRequest().get(RouterPaths.blogs)
+        expect(res.body[0]).toEqual(createdBlog)
+    })
+
+    it('+ PUT video by ID with correct data', async () => {
+        await getRequest()
+            .put(`${RouterPaths.blogs}/${createdBlog.id}`)
+            .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
+            .send({
+                name: 'new name',
+                description: 'some description',
+                websiteUrl: 'https://MpVTNPmOhlJYNh9KkZcAO_MKaCI1bm-e6n.com',
+            })
+            .expect(HTTP_STATUSES.NO_CONTENT_204)
+
+        const res = await getRequest().get(RouterPaths.blogs)
+        expect(res.body[0]).toEqual({
+            ...createdBlog,
+            name: 'new name',
+            description: 'some description',
+            websiteUrl: 'https://MpVTNPmOhlJYNh9KkZcAO_MKaCI1bm-e6n.com',
+        })
+        createdBlog = res.body[0]
+    })
+
+    it('- DELETE blog by ID with incorrect ID', async () => {
+        await getRequest()
+            .delete(`${RouterPaths.blogs}/1234`)
+            .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
+            .expect(HTTP_STATUSES.NOT_FOUND_404)
+
+        const res = await getRequest().get(RouterPaths.blogs)
+        expect(res.body[0]).toEqual(createdBlog)
+    })
+
+    it('+ DELETE blog by correct ID', async () => {
+        await getRequest()
+            .delete(`${RouterPaths.blogs}/${createdBlog.id}`)
+            .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
+            .expect(HTTP_STATUSES.NO_CONTENT_204)
+
+        const res = await getRequest().get(RouterPaths.blogs)
+        expect(res.body.length).toBe(0)
+    })
+    
 
 })
 
