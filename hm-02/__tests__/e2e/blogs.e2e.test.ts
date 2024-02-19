@@ -19,7 +19,7 @@ describe('tests for /blogs', () => {
             .expect(HTTP_STATUSES.OK_200, [])
     })
 
-    it(' - POPST should return 401 for unauthorithed user', async () => {
+    it(' - POST should return 401 for unauthorithed user', async () => {
         await getRequest()
             .post(RouterPaths.blogs)
             .set('Authorization', 'Basic invalidUserName')
