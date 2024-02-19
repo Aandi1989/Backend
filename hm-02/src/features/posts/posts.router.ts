@@ -5,7 +5,7 @@ import { URIParamsPostIdModel } from "./models/URIParamsPostIdModel";
 import { postsRepository } from "../../repositories/posts-repository";
 import { RequestWithBody, RequestWithParams, RequestWithParamsAndBody } from "../../types";
 import { authenticateUser } from "../../middlewares/authenticateUser-middleware";
-import { inputValidationMiddleware, postCreateValidator, postUpdateValidator } from "../../middlewares/input-validation-middleware";
+import { inputValidationMiddleware, postCreateValidator, postUpdateValidator } from "../../middlewares/posts-validation-middleware";
 import { CreatePostModel } from "./models/CreatePostModel";
 
 

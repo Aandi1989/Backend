@@ -5,7 +5,7 @@ import { RequestWithBody, RequestWithParams, RequestWithParamsAndBody } from "..
 import { URIParamsBlogIdModel } from "./models/URIParamsBlogIdModel";
 import { blogsRepository } from "../../repositories/blogs-repository";
 import { CreateBlogModel } from "./models/CreateBlogModel";
-import { blogPostValidator, blogUpdateValidator, inputValidationMiddleware } from "../../middlewares/input-validation-middleware";
+import { blogPostValidator, blogUpdateValidator, inputValidationMiddleware } from "../../middlewares/blogs-validation-middleware";
 import { authenticateUser } from "../../middlewares/authenticateUser-middleware";
 
 
