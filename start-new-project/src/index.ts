@@ -1,7 +1,6 @@
 import express, { Request, Response } from 'express'
 import bodyParser from 'body-parser'
 import { productsRouter } from './routes/products-router'
-import { addressesRouter } from './routes/addresses-router'
 
 
 const app = express()
@@ -15,7 +14,6 @@ app.use(parserMiddleware)
 
 
 
-app.use('/addresses', addressesRouter)
 app.use('/products', productsRouter)
 
 // start app 

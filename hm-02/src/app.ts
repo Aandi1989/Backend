@@ -4,8 +4,6 @@ import { db } from "./db/db"
 import { getPostsRouter } from "./features/posts/posts.router"
 import { getBlogsRouter } from "./features/blogs/blogs.router"
 import { getTestRouter } from "./routes/tests"
-// import { validationResult } from "express-validator"
-// import { customFormatter } from "./middlewares/input-validation-middleware"
 
 
 export const app = express()
@@ -14,7 +12,6 @@ const jsonBodyMiddleware = express.json()
 
 app.use(jsonBodyMiddleware)
 
-// app.use(validationResult.formatWith(customFormatter));
 
 
 app.use(RouterPaths.posts, getPostsRouter())
