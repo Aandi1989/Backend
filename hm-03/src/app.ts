@@ -1,6 +1,6 @@
 import express from "express"
 import { RouterPaths } from "./utils"
-import { db } from "./db/db"
+import { db } from "./db/fakeDb"
 import { getPostsRouter } from "./features/posts/posts.router"
 import { getBlogsRouter } from "./features/blogs/blogs.router"
 import { getTestRouter } from "./routes/tests"

@@ -1,4 +1,5 @@
-import { BlogType, db } from "../db/db"
+import { BlogType } from "../db/db"
+import { db } from "../db/fakeDb"
 import { CreateBlogModel } from "../features/blogs/models/CreateBlogModel";
 
 export const blogsRepository = {
@@ -15,7 +16,9 @@ export const blogsRepository = {
             id: (+new Date()).toString(),
             name: data.name,
             description: data.description,
-            websiteUrl: data.websiteUrl
+            websiteUrl: data.websiteUrl,
+            createdAt: new Date().toISOString(),
+            isMembership: false
         };
         db.blogs.push(newBlog);
         return newBlog;

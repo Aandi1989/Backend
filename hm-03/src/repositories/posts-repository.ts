@@ -1,4 +1,5 @@
-import { PostType, db } from "../db/db"
+import { PostType } from "../db/db"
+import { db } from "../db/fakeDb"
 import { CreatePostModel } from "../features/posts/models/CreatePostModel";
 
 
@@ -18,7 +19,8 @@ export const postsRepository = {
             shortDescription: data.shortDescription,
             content: data.content,
             blogId: data.blogId,
-            blogName: data.blogName ? data.blogName : ''
+            blogName: data.blogName ? data.blogName : '',
+            createdAt: new Date().toISOString()
         };
         db.posts.push(newPost);
         return newPost;
