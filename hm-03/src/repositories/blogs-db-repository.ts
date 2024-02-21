@@ -1,5 +1,4 @@
 import { BlogType, blogsCollection } from "../db/db"
-import { db } from "../db/fakeDb"
 import { CreateBlogModel } from "../features/blogs/models/CreateBlogModel";
 
 export const blogsRepository = {
