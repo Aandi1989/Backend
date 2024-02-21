@@ -36,7 +36,7 @@ describe('tests for /posts', () => {
                 {"field": "title","message": "Title must be between 2 and 30 characters"},
                 {"field": "shortDescription","message": "Short description must be between 5 and 100 characters"},
                 {"field": "content","message": "Content must be between 5 and 1000 characters"},
-                {"field": "blogId","message": "Blog Id must be between 5 and 30 characters"},
+                {"field": "blogId","message": "Blog Id must be between 6 and 30 characters"},
                 {"field": "blogName","message": "Blog Name  must be between 5 and 30 characters"}
             ]
         })
@@ -50,7 +50,7 @@ describe('tests for /posts', () => {
         const createdResponse = await getRequest()
         .post(RouterPaths.posts)
         .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
-        .send({ title: 'super blog', shortDescription: 'some description' , content: 'httpsxsS', blogId:'12', blogName: 'newName'})
+        .send({ title: 'super blog', shortDescription: 'some description' , content: 'httpsxsS', blogId:'123456', blogName: 'newName'})
         .expect(HTTP_STATUSES.CREATED_201)
 
         createdPost = createdResponse.body;
@@ -74,7 +74,7 @@ describe('tests for /posts', () => {
         await getRequest()
             .put(`${RouterPaths.posts}/1234`)
             .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
-            .send({ title: 'super blog', shortDescription: 'some description' , content: 'httpsxsS', blogId:'12', blogName: 'newName'})
+            .send({ title: 'super blog', shortDescription: 'some description' , content: 'httpsxsS', blogId:'123456', blogName: 'newName'})
             .expect(HTTP_STATUSES.NOT_FOUND_404)
         
         const res = await getRequest().get(RouterPaths.posts)
@@ -89,7 +89,7 @@ describe('tests for /posts', () => {
                 title: 'super blog', 
                 shortDescription: 'some description' , 
                 content: 'httpsxsS', 
-                blogId:'12', 
+                blogId:'123456', 
                 blogName: 'newName'
             })
             .expect(HTTP_STATUSES.NO_CONTENT_204)
@@ -100,7 +100,7 @@ describe('tests for /posts', () => {
                 title: 'super blog', 
                 shortDescription: 'some description' , 
                 content: 'httpsxsS', 
-                blogId:'12', 
+                blogId:'123456', 
                 blogName: 'newName'
         })
         createdPost = res.body[0]
