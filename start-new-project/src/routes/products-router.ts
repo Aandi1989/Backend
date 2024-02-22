@@ -1,5 +1,5 @@
 import { Request, Response, Router, NextFunction } from "express";
-import { productsRepository } from "../repositories/products-db-repository";
+import { productsService } from "../domain/products-service";
 import { body, validationResult } from "express-validator";
 import { inputValidationMiddleware } from "../midlewares/input-validation-middleware";
 import { ProductType } from "../repositories/db";
@@ -17,7 +17,7 @@ productsRouter.post('/',
      inputValidationMiddleware,
     async (req: Request, res: Response) => {
 
-    const newProduct: ProductType = await productsRepository.createProduct(req.body.title)
+    const newProduct: ProductType = await productsService.createProduct(req.body.title)
     res.status(201).send(newProduct)
 })
 productsRouter.put('/:id', 
@@ -25,21 +25,21 @@ productsRouter.put('/:id',
     inputValidationMiddleware,
     async (req: Request, res: Response) => {
 
-    const isUpdated = await productsRepository.updateProduct(+req.params.id, req.body.title)
+    const isUpdated = await productsService.updateProduct(+req.params.id, req.body.title)
     if(isUpdated){
-        const product = await productsRepository.findProductById(+req.params.id);
+        const product = await productsService.findProductById(+req.params.id);
         res.send(product)
     }else{
         res.send(404)
     }
 })
 productsRouter.get('/', async (req: Request, res: Response) => {
-    const foundProducts: ProductType[] = await productsRepository.findProducts(req.query.title?.toString());
+    const foundProducts: ProductType[] = await productsService.findProducts(req.query.title?.toString());
 
     res.send(foundProducts)
 })
 productsRouter.get('/:id', async (req: Request, res: Response) => {
-    let product = await productsRepository.findProductById(+req.params.id)
+    let product = await productsService.findProductById(+req.params.id)
     if (product) {
         res.send(product)
     } else {
@@ -47,7 +47,7 @@ productsRouter.get('/:id', async (req: Request, res: Response) => {
     }
 })
 productsRouter.delete('/:id', async (req: Request, res: Response) => {
-    const isDeleted = await productsRepository.deleteProduct(+req.params.id)
+    const isDeleted = await productsService.deleteProduct(+req.params.id)
     if(isDeleted){
         res.send(204)
     }else{
