@@ -1,4 +1,6 @@
 import { MongoClient } from "mongodb";
+import dotenv from 'dotenv';
+
 
 export type BlogType = {
     id: string,
@@ -27,7 +29,10 @@ export type DBType = {
     posts: PostType[]
 }
 
-const mongoUri = "mongodb://0.0.0.0:27017" || process.env.MONGO_URL;
+dotenv.config();
+
+// const mongoUri = "mongodb://0.0.0.0:27017" || process.env.MONGO_URL;
+const mongoUri = process.env.MONGO_URL || "mongodb://0.0.0.0:27017";
 
 export const client = new MongoClient(mongoUri);
 const db = client.db("hm-03")

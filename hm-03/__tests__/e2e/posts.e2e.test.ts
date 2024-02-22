@@ -1,6 +1,7 @@
 import request from 'supertest';
 import { app } from '../../src/app';
 import { HTTP_STATUSES, RouterPaths } from '../../src/utils';
+import { postsCollection } from '../../src/db/db';
 
 
 
@@ -10,7 +11,7 @@ const getRequest = () => {
 
 describe('tests for /posts', () => {
     beforeAll( async () => {
-        await getRequest().delete(`${RouterPaths.__test__}/all-data`)
+        await postsCollection.drop()
     })
 
     it('+ GET should return 200 and empty array', async () => {
