@@ -1,5 +1,4 @@
 import { BlogType, blogsCollection } from "../db/db"
-import { CreateBlogModel } from "../features/blogs/models/CreateBlogModel";
 
 export const blogsRepository = {
     async getBlogs(): Promise<BlogType[]>{
@@ -7,21 +6,9 @@ export const blogsRepository = {
     },
     async findBlogById(id: string): Promise<BlogType | null>{
        let blog: BlogType | null = await blogsCollection.findOne({id:id}, {projection: { _id: 0}} )
-       if(blog){
-        return blog;
-       }else{
-        return null;
-       }
+       return blog
     },
-    async createBlog(data: CreateBlogModel): Promise<BlogType>{
-        const newBlog = {
-            id: (+new Date()).toString(),
-            name: data.name,
-            description: data.description,
-            websiteUrl: data.websiteUrl,
-            createdAt: new Date().toISOString(),
-            isMembership: false
-        };
+    async createBlog(newBlog: BlogType): Promise<BlogType>{
         const result = await blogsCollection.insertOne(newBlog)
         return newBlog;
     },
