@@ -1,18 +1,12 @@
-import { PostType, postsCollection } from "../db/db"
-import { CreatePostModel } from "../features/posts/models/CreatePostModel";
+import { postsCollection } from "../db/db"
+import { DBPostType, PostType } from "../types";
 
 
 export const postsRepository = {
-    async getPosts(): Promise<PostType[]>{
-        return postsCollection.find({}, {projection: { _id: 0} }).toArray();
-    },
-    async findPostById(id: string): Promise<PostType | null>{
-        let post: PostType | null = await postsCollection.findOne({id:id}, {projection: { _id: 0}} )
-        return post;
-    },
     async createPost(newPost: PostType): Promise<PostType>{
         const result = await postsCollection.insertOne(newPost);
-        return newPost;
+        // @ts-ignore
+        return this._mapDBPostToBlogOutputModel(newPost);
     },
     async updatePost(id: string ,data: Partial<PostType>): Promise<boolean>{
         const result = await postsCollection.updateOne({id: id},{ $set: {...data} })
@@ -21,6 +15,17 @@ export const postsRepository = {
     async deletePost(id: string):Promise<boolean> {
         const result = await postsCollection.deleteOne({id: id})
         return result.deletedCount === 1
+    },
+    _mapDBPostToBlogOutputModel(post: DBPostType): PostType {
+        return {
+            id: post.id,
+            title: post.title,
+            shortDescription: post.shortDescription,
+            content: post.content,
+            blogId: post.blogId,
+            blogName: post.blogName ? post.blogName : '',
+            createdAt: post.createdAt
+        }
     }
     
 

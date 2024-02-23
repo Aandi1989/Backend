@@ -1,35 +1,9 @@
 import { MongoClient } from "mongodb";
 import dotenv from 'dotenv';
+import { BlogType, PostType } from "../types";
+
+
 dotenv.config();
-
-export type BlogType = {
-    id: string,
-    name: string,
-    description: string,
-    websiteUrl: string,
-    createdAt: string,
-    isMembership: boolean
-    _id?: string
-}
-
-export type PostType = {
-    id: string,
-    title: string,
-    shortDescription: string,
-    content: string,
-    blogId: string,
-    blogName?: string,
-    createdAt: string
-    _id?: string
-}
-
-
-export type DBType = {
-    blogs: BlogType[],
-    posts: PostType[]
-}
-
-
 
 // const mongoUri = "mongodb://0.0.0.0:27017" || process.env.MONGO_URL;
 const mongoUri = process.env.MONGO_URL || "mongodb://0.0.0.0:27017";
@@ -51,3 +25,4 @@ export async function runDb(){
         await client.close()
     }
 }
+

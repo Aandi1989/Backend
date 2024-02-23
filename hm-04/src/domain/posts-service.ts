@@ -1,15 +1,9 @@
-import { PostType } from "../db/db"
 import { CreatePostModel } from "../features/posts/models/CreatePostModel";
 import {postsRepository} from "../repositories/posts-db-repository";
+import { PostType } from "../types";
 
 
 export const postsService = {
-    async getPosts(): Promise<PostType[]>{
-        return postsRepository.getPosts();
-    },
-    async findPostById(id: string): Promise<PostType | null>{
-        return postsRepository.findPostById(id);
-    },
     async createPost(data: CreatePostModel): Promise<PostType>{
         const newPost = {
             id: (+new Date()).toString(),

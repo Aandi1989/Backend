@@ -1,9 +1,9 @@
 import express, { Response, Request, NextFunction } from "express";
-import { DBType, PostType } from "../../db/db";
 import { HTTP_STATUSES } from "../../utils";
 import { URIParamsPostIdModel } from "./models/URIParamsPostIdModel";
 import { postsService } from "../../domain/posts-service";
-import { RequestWithBody, RequestWithParams, RequestWithParamsAndBody } from "../../types";
+import { postsQueryRepo } from "../../repositories/postsQueryRepository"
+import { PostType, RequestWithBody, RequestWithParams, RequestWithParamsAndBody } from "../../types";
 import { authenticateUser } from "../../middlewares/authenticateUser-middleware";
 import { inputValidationMiddleware, postCreateValidator, postUpdateValidator } from "../../middlewares/posts-validation-middleware";
 import { CreatePostModel } from "./models/CreatePostModel";
@@ -13,7 +13,7 @@ export const getPostsRouter = () => {
     const router = express.Router();
 
     router.get('/', async (req: Request, res: Response<PostType[]>) => {
-        const posts = await postsService.getPosts();
+        const posts = await postsQueryRepo.getPosts();
         res.status(HTTP_STATUSES.OK_200).json(posts)
     })
     router.post('/', 
@@ -22,12 +22,11 @@ export const getPostsRouter = () => {
         inputValidationMiddleware,
         async (req: RequestWithBody<CreatePostModel>, res: Response<PostType>) => {
         const createdBlog = await postsService.createPost(req.body);
-        delete createdBlog._id;
         res.status(HTTP_STATUSES.CREATED_201).json(createdBlog);
     })
     router.get('/:id', async (req: RequestWithParams<URIParamsPostIdModel>,
         res: Response<PostType>) => {
-        const foundBlog = await postsService.findPostById(req.params.id);
+        const foundBlog = await postsQueryRepo.getPostById(req.params.id);
         if (!foundBlog) {
             return res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
         }

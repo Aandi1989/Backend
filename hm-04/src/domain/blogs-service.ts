@@ -1,14 +1,9 @@
-import { BlogType } from "../db/db"
+
 import { CreateBlogModel } from "../features/blogs/models/CreateBlogModel";
 import { blogsRepository } from "../repositories/blogs-db-repository"; 
+import { BlogType } from "../types";
 
 export const blogsService = {
-    async getBlogs(): Promise<BlogType[]>{
-        return blogsRepository.getBlogs();
-    },
-    async findBlogById(id: string): Promise<BlogType | null>{
-       return blogsRepository.findBlogById(id)
-    },
     async createBlog(data: CreateBlogModel): Promise<BlogType>{
         const newBlog = {
             id: (+new Date()).toString(),
