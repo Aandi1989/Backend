@@ -1,12 +1,29 @@
+import { PostQueryOutputType } from "../assets/queryStringModifiers";
 import { postsCollection } from "../db/db";
-import { DBPostType, PostType } from "../types";
+import { DBPostType, PostType, PostsWithQueryType } from "../types";
 
 export const postsQueryRepo = {
-    async getPosts(): Promise<PostType[]> {
-        const dbPosts = await postsCollection.find().toArray();
-        return dbPosts.map(dbPost => {
-            return this._mapDBPostToBlogOutputModel(dbPost)
-        })
+    async getPosts(query: PostQueryOutputType): Promise<PostsWithQueryType> {
+        const {pageNumber, pageSize, sortBy, sortDirection } = query;
+        const sortDir = sortDirection == "asc" ? 1 : -1;  
+        const skip = (pageNumber -1) * pageSize;  
+        const totalCount = await postsCollection.countDocuments();
+        const dbPosts = await postsCollection
+        .find()
+        .sort({[sortBy]: sortDir})
+        .skip(skip)
+        .limit(pageSize)
+        .toArray();
+        const pagesCount = Math.ceil(totalCount / pageSize);
+        return {
+            pagesCount: pagesCount,
+            page: pageNumber,
+            pageSize: pageSize,
+            totalCount: totalCount,
+            items: dbPosts.map(dbPost => {
+                return this._mapDBPostToBlogOutputModel(dbPost)
+            })
+        }
     },
     async getPostById(id: string): Promise<PostType | null> {
         let dbPost: DBPostType | null = await postsCollection.findOne({ id: id })

@@ -3,18 +3,23 @@ import { HTTP_STATUSES } from "../../utils";
 import { URIParamsPostIdModel } from "./models/URIParamsPostIdModel";
 import { postsService } from "../../domain/posts-service";
 import { postsQueryRepo } from "../../repositories/postsQueryRepository"
-import { PostType, RequestWithBody, RequestWithParams, RequestWithParamsAndBody } from "../../types";
+import { PostType, PostsWithQueryType, RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery } from "../../types";
 import { authenticateUser } from "../../middlewares/authenticateUser-middleware";
 import { inputValidationMiddleware, postCreateValidator, postUpdateValidator } from "../../middlewares/posts-validation-middleware";
 import { CreatePostModel } from "./models/CreatePostModel";
+import { postQueryValidationMiddleware, postQueryValidator } from "../../middlewares/posts-queryValidation-middleware";
+import { PostQueryType, postQueryParams } from "../../assets/queryStringModifiers";
 
 
 export const getPostsRouter = () => {
     const router = express.Router();
 
-    router.get('/', async (req: Request, res: Response<PostType[]>) => {
-        const posts = await postsQueryRepo.getPosts();
-        res.status(HTTP_STATUSES.OK_200).json(posts)
+    router.get('/', 
+        ...postQueryValidator,
+        postQueryValidationMiddleware,
+        async (req: RequestWithQuery<Partial<PostQueryType>>, res: Response<PostsWithQueryType>) => {
+        const response = await postsQueryRepo.getPosts(postQueryParams(req.query));
+        res.status(HTTP_STATUSES.OK_200).json(response)
     })
     router.post('/', 
         authenticateUser,
