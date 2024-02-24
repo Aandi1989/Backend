@@ -46,3 +46,19 @@ export type DBPostType = {
     createdAt: string
 }
 
+export type BlogsWithQueryType = {
+    pagesCount: number
+    page: number
+    pageSize: number
+    totalCount: number
+    items: BlogType[]
+}
+
+export type PostsWithQueryType = {
+    pagesCount: number
+    page: number
+    pageSize: number
+    totalCount: number
+    items: PostType[]
+}
+

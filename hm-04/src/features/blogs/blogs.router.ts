@@ -1,20 +1,25 @@
-import express,{ Response, Request, NextFunction } from "express";
-import { HTTP_STATUSES } from "../../utils";
-import { BlogType, RequestWithBody, RequestWithParams, RequestWithParamsAndBody } from "../../types"
-import { URIParamsBlogIdModel } from "./models/URIParamsBlogIdModel";
+import express, { Response } from "express";
+import { BlogQueryType, blogQueryParams } from "../../assets/queryStringModifiers";
 import { blogsService } from "../../domain/blogs-service";
-import { blogsQueryRepo } from "../../repositories/blogsQueryRepository";
-import { CreateBlogModel } from "./models/CreateBlogModel";
-import { blogPostValidator, blogUpdateValidator, inputValidationMiddleware } from "../../middlewares/blogs-validation-middleware";
 import { authenticateUser } from "../../middlewares/authenticateUser-middleware";
+import { blogQueryValidationMiddleware, blogQueryValidator } from "../../middlewares/blogs-queryValidation-middleware";
+import { blogPostValidator, blogUpdateValidator, inputValidationMiddleware } from "../../middlewares/blogs-validation-middleware";
+import { blogsQueryRepo } from "../../repositories/blogsQueryRepository";
+import { BlogType, BlogsWithQueryType, RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery } from "../../types";
+import { HTTP_STATUSES } from "../../utils";
+import { CreateBlogModel } from "./models/CreateBlogModel";
+import { URIParamsBlogIdModel } from "./models/URIParamsBlogIdModel";
 
 
 export const getBlogsRouter = ()=> {
     const router = express.Router();
 
-    router.get('/', async (req: Request, res: Response<BlogType[]>) =>{
-        const blogs = await blogsQueryRepo.getBlogs();
-        res.status(HTTP_STATUSES.OK_200).json(blogs)
+    router.get('/', 
+        ...blogQueryValidator,
+        blogQueryValidationMiddleware,
+        async (req: RequestWithQuery<Partial<BlogQueryType>>, res: Response<BlogsWithQueryType>) =>{
+        const response = await blogsQueryRepo.getBlogs(blogQueryParams(req.query));
+        res.status(HTTP_STATUSES.OK_200).json(response)
     })
     router.post('/', 
         authenticateUser,
