@@ -1,4 +1,4 @@
-import { URIParamsBlogIdModel } from "../features/blogs/models/URIParamsIdModel";
+import { URIParamsBlogIdModel } from "../features/blogs/models/URIParamsBlogIdModel";
 import { CreatePostModel } from "../features/posts/models/CreatePostModel";
 import {postsRepository} from "../repositories/posts-db-repository";
 import { PostType } from "../types";
@@ -11,7 +11,7 @@ export const postsService = {
             title: data.title,
             shortDescription: data.shortDescription,
             content: data.content,
-            blogId: params?.id ? params.id : data.blogId,
+            blogId: params?.blogId ? params.blogId : data.blogId,
             blogName: data.blogName ? data.blogName : '',
             createdAt: new Date().toISOString()
         };
