@@ -4,10 +4,15 @@ import { blogsService } from "../../domain/blogs-service";
 import { authenticateUser } from "../../middlewares/authenticateUser-middleware";
 import { blogQueryValidationMiddleware, blogQueryValidator } from "../../middlewares/blogs-queryValidation-middleware";
 import { blogPostValidator, blogUpdateValidator, inputValidationMiddleware } from "../../middlewares/blogs-validation-middleware";
+import { inputValidationMiddleware as postInputValidationMiddleware } from "../../middlewares/posts-validation-middleware";
 import { blogsQueryRepo } from "../../repositories/blogsQueryRepository";
-import { BlogType, BlogsWithQueryType, RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery } from "../../types";
+import { BlogType, BlogsWithQueryType, PostType, RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery } from "../../types";
 import { HTTP_STATUSES } from "../../utils";
 import { CreateBlogModel } from "./models/CreateBlogModel";
+import { URIParamsIdModel } from "./models/URIParamsIdModel";
+import { CreatePostModel } from "../posts/models/CreatePostModel";
+import { postCreateValidator } from "../../middlewares/posts-validation-middleware";
+import { postsService } from "../../domain/posts-service";
 import { URIParamsBlogIdModel } from "./models/URIParamsBlogIdModel";
 
 
@@ -29,7 +34,7 @@ export const getBlogsRouter = ()=> {
         const createdBlog = await blogsService.createBlog(req.body);
         res.status(HTTP_STATUSES.CREATED_201).json(createdBlog);
     })
-    router.get('/:id', async (req: RequestWithParams<URIParamsBlogIdModel>, 
+    router.get('/:id', async (req: RequestWithParams<URIParamsIdModel>, 
                         res: Response<BlogType>) => {
             const foundBlog = await blogsQueryRepo.findBlogById(req.params.id);
             if(!foundBlog){
@@ -38,18 +43,30 @@ export const getBlogsRouter = ()=> {
 
             res.json(foundBlog)
     })
+    router.post('/:blogId/posts', 
+    authenticateUser,
+    ...postCreateValidator,
+    postInputValidationMiddleware,
+    async (req: RequestWithParamsAndBody<URIParamsBlogIdModel,CreatePostModel>, res:Response<PostType>) =>{
+        const foundBlog = await blogsQueryRepo.findBlogById(req.params.blogId);
+        if(!foundBlog){
+            return res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+        }
+        const createdPost = await postsService.createPost(req.body, req.params);
+        res.status(HTTP_STATUSES.CREATED_201).json(createdPost);
+    })
     router.put('/:id', 
         authenticateUser,
         ...blogUpdateValidator,
         inputValidationMiddleware,
-        async (req: RequestWithParamsAndBody<URIParamsBlogIdModel, Partial<BlogType>>, 
+        async (req: RequestWithParamsAndBody<URIParamsIdModel, Partial<BlogType>>, 
         res: Response) => {
             const isUpdated = await blogsService.updateBlog(req.params.id, req.body);
             isUpdated ? res.send(HTTP_STATUSES.NO_CONTENT_204) : res.send(HTTP_STATUSES.NOT_FOUND_404)
     }) 
     router.delete('/:id', 
         authenticateUser,
-        async (req: RequestWithParams<URIParamsBlogIdModel>,res: Response) => {
+        async (req: RequestWithParams<URIParamsIdModel>,res: Response) => {
             const isDeleted = await blogsService.deleteBlog(req.params.id)
             if(isDeleted){
                 res.send(HTTP_STATUSES.NO_CONTENT_204)
