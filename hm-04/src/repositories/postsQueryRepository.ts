@@ -33,7 +33,7 @@ export const postsQueryRepo = {
         const {pageNumber, pageSize, sortBy, sortDirection } = query;
         const sortDir = sortDirection == "asc" ? 1 : -1;  
         const skip = (pageNumber -1) * pageSize;  
-        const totalCount = await postsCollection.countDocuments();
+        const totalCount = await postsCollection.countDocuments({blogId: blogId});
         const dbPosts = await postsCollection
         .find({blogId: blogId})
         .sort({[sortBy]: sortDir})

@@ -11,7 +11,7 @@ const getRequest = () => {
 
 describe('tests for /posts', () => {
     beforeAll( async () => {
-        await postsCollection.drop()
+        await getRequest().delete(`${RouterPaths.__test__}/all-data`)
     })
 
     it('+ GET should return 200 and empty array', async () => {

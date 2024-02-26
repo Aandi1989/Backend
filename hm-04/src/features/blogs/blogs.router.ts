@@ -4,7 +4,7 @@ import { blogsService } from "../../domain/blogs-service";
 import { authenticateUser } from "../../middlewares/authenticateUser-middleware";
 import { blogQueryValidationMiddleware, blogQueryValidator } from "../../middlewares/blogs-queryValidation-middleware";
 import { blogPostValidator, blogUpdateValidator, inputValidationMiddleware } from "../../middlewares/blogs-validation-middleware";
-import { inputValidationMiddleware as postInputValidationMiddleware } from "../../middlewares/posts-validation-middleware";
+import { postCreateWithoutBlogIdValidator, inputValidationMiddleware as postInputValidationMiddleware } from "../../middlewares/posts-validation-middleware";
 import { blogsQueryRepo } from "../../repositories/blogsQueryRepository";
 import { BlogType, BlogsWithQueryType, PostType, PostsWithQueryType, RequestWithBody, 
     RequestWithParams, RequestWithParamsAndBody, RequestWithParamsAndQuery, RequestWithQuery } from "../../types";
@@ -49,7 +49,7 @@ export const getBlogsRouter = ()=> {
     })
     router.post('/:blogId/posts', 
     authenticateUser,
-    ...postCreateValidator,
+    ...postCreateWithoutBlogIdValidator,
     blogIdValidator,
     postInputValidationMiddleware,
     blogIdValidationMiddleware,

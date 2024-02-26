@@ -28,6 +28,19 @@ export const postUpdateValidator = [
         .withMessage('Blog Name  must be between 5 and 30 characters'),      
 ]
 
+export const postCreateWithoutBlogIdValidator = [
+    body('title').isString().trim().isLength({min: 2, max: 30})
+        .withMessage('Title must be between 2 and 30 characters'),
+    body('shortDescription').isString().trim().isLength({min: 5, max: 100})
+        .withMessage('Short description must be between 5 and 100 characters'), 
+    body('content').isString().trim().isLength({min: 5, max: 1000})
+        .withMessage('Content must be between 5 and 1000 characters'),  
+    body('blogId').optional().isString().trim().isLength({min: 6, max: 30})
+        .withMessage('Blog Id must be between 6 and 30 characters'), 
+    body('blogName').optional().isString().trim().isLength({min: 5, max: 30})
+        .withMessage('Blog Name  must be between 5 and 30 characters'),      
+]
+
 export const inputValidationMiddleware = (req:Request, res: Response, next: NextFunction) => {
     let errors = validationResult(req)
     .formatWith(customFormatter)
