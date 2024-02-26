@@ -10,7 +10,7 @@ export const postsQueryRepo = {
         const totalCount = await postsCollection.countDocuments();
         const dbPosts = await postsCollection
         .find()
-        .sort({[sortBy]: sortDir})
+        .sort({[sortBy]: sortDir, id: 1})
         .skip(skip)
         .limit(pageSize)
         .toArray();

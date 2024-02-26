@@ -6,13 +6,8 @@ export const getTestRouter = () => {
     const router = express.Router();
 
     router.delete('/all-data', async (req: Request, res: Response) => {
-        await blogsCollection.drop();
-        await postsCollection.drop();
-
-        // const blogsCount = await blogsCollection.countDocuments();
-        // const postsCount = await postsCollection.countDocuments();
-        // console.log("Remaining blogs count:", blogsCount);
-        // console.log("Remaining posts count:", postsCount);
+        await blogsCollection.deleteMany({});
+        await postsCollection.deleteMany({});
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     })
 
