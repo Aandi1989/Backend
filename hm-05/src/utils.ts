@@ -11,6 +11,8 @@ export enum HTTP_STATUSES {
 export const RouterPaths = {
     posts: '/posts',
     blogs: '/blogs',
+    users: '/users',
+    auth: '/auth',
     
 
     __test__: '/testing'

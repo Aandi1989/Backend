@@ -63,3 +63,37 @@ export type PostsWithQueryType = {
     items: PostType[]
 }
 
+export type UsersWithQueryType = {
+    pagesCount: number
+    page: number
+    pageSize: number
+    totalCount: number
+    items: UserOutputType[]
+}
+
+export type UserType = {
+    id:string
+    login:string
+    email:string
+    createdAt:string
+    passwordHash:string
+    passwordSalt:string
+}
+
+export type UserOutputType = {
+    id:string
+    login:string
+    email:string
+    createdAt:string
+}
+
+export type DBUserType = {
+    _id:ObjectId,
+    id:string,
+    login:string,
+    email:string,
+    passwordHash:string,
+    passwordSalt:string,
+    createdAt:string,
+}
+

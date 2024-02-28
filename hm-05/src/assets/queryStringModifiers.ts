@@ -17,6 +17,16 @@ export const postQueryParams = (query: Partial<PostQueryType>): PostQueryOutputT
     };
 }
 
+export const userQueryParams = (query: Partial<UserQueryType>): UserQueryOutputType => {
+    return {
+        pageNumber: query.pageNumber ? +query.pageNumber : 1,
+        pageSize: query.pageSize ? +query.pageSize : 10,
+        searchLoginTerm: query.searchLoginTerm ? query.searchLoginTerm : null,
+        sortBy: query.sortBy ? query.sortBy : "createdAt",
+        sortDirection: query.sortDirection ? query.sortDirection : "desc"
+    };
+}
+
 export type BlogQueryType = {
     searchNameTerm: string | null,
     sortBy: BlogSortBy,
@@ -47,8 +57,26 @@ export type PostQueryOutputType = {
     pageSize: number
 }
 
+export type UserQueryType = {
+    searchLoginTerm: string | null,
+    sortBy: UserSortBy,
+    sortDirection: sortDirectionType,
+    pageNumber: string,
+    pageSize: string
+}
+
+export type UserQueryOutputType = {
+    searchLoginTerm: string | null,
+    sortBy: UserSortBy,
+    sortDirection: sortDirectionType,
+    pageNumber: number,
+    pageSize: number
+}
+
 type BlogSortBy = "id" | "name" | "description" | "websiteUrl" | "createdAt" | "isMembership";
 
 type PostSortBy = "id" | "title" | "shortDescription" | "content" | "blogId" | "blogName" | "createdAt";
+
+type UserSortBy = "id" | "login" | "email" | "createdAt";
 
 type sortDirectionType = "asc" | "desc";
