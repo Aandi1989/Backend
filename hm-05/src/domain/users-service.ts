@@ -2,11 +2,11 @@ import { AuthBodyModel } from "../features/auth/Models/AuthBodyModel";
 import { CreateUserModel } from "../features/users/models/CreateUserModel"; 
 import { usersRepository } from "../repositories/users-db-repository";
 import { usersQueryRepo } from "../repositories/usersQueryRepository";
-import { UserType } from "../types";
+import { UserOutputType, UserType } from "../types";
 import bcrypt from 'bcrypt';
 
 export const usersService = {
-    async createUser(data: CreateUserModel): Promise<UserType>{
+    async createUser(data: CreateUserModel): Promise<UserOutputType>{
         const {login, email, password} = data;
 
         const passwordSalt = await bcrypt.genSalt(10);
@@ -21,7 +21,7 @@ export const usersService = {
             createdAt: new Date().toISOString(),
         };
         const createdUser = await usersRepository.createUser(newUser)
-        return newUser;
+        return createdUser;
     },
     async checkCredentials(data: AuthBodyModel){
         const user = await usersQueryRepo.findByLoginOrEmail(data.loginOrEmail)

@@ -1,7 +1,7 @@
 import express, { Response, Request } from "express";
 import { userCreateValidator } from "../../middlewares/users-bodyValidation-middleware";
 import { inputValidationMiddleware } from "../../middlewares/posts-bodyValidation-middleware";
-import { RequestWithBody, RequestWithParams, RequestWithQuery, UserType, UsersWithQueryType } from "../../types";
+import { RequestWithBody, RequestWithParams, RequestWithQuery, UserOutputType, UserType, UsersWithQueryType } from "../../types";
 import { CreateUserModel } from "./models/CreateUserModel";
 import { HTTP_STATUSES } from "../../utils";
 import { usersService } from "../../domain/users-service";
@@ -26,7 +26,7 @@ export const getUsersRouter = () => {
         authenticateUser,
         ...userCreateValidator,
         inputValidationMiddleware,
-        async (req: RequestWithBody<CreateUserModel>, res: Response<UserType>) => {
+        async (req: RequestWithBody<CreateUserModel>, res: Response<UserOutputType>) => {
             const newUser =  await usersService.createUser(req.body)
             res.status(HTTP_STATUSES.CREATED_201).send(newUser)
     }),

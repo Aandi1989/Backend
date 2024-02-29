@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { HTTP_STATUSES } from '../utils';
-import { blogsCollection, postsCollection } from '../db/db';
+import { blogsCollection, postsCollection, usersCollection } from '../db/db';
 
 export const getTestRouter = () => {
     const router = express.Router();
@@ -8,6 +8,7 @@ export const getTestRouter = () => {
     router.delete('/all-data', async (req: Request, res: Response) => {
         await blogsCollection.deleteMany({});
         await postsCollection.deleteMany({});
+        await usersCollection.deleteMany({});
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     })
 

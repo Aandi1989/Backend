@@ -22,6 +22,7 @@ export const userQueryParams = (query: Partial<UserQueryType>): UserQueryOutputT
         pageNumber: query.pageNumber ? +query.pageNumber : 1,
         pageSize: query.pageSize ? +query.pageSize : 10,
         searchLoginTerm: query.searchLoginTerm ? query.searchLoginTerm : null,
+        searchEmailTerm: query.searchEmailTerm ? query.searchEmailTerm : null,
         sortBy: query.sortBy ? query.sortBy : "createdAt",
         sortDirection: query.sortDirection ? query.sortDirection : "desc"
     };
@@ -59,6 +60,7 @@ export type PostQueryOutputType = {
 
 export type UserQueryType = {
     searchLoginTerm: string | null,
+    searchEmailTerm: string | null,
     sortBy: UserSortBy,
     sortDirection: sortDirectionType,
     pageNumber: string,
@@ -67,6 +69,7 @@ export type UserQueryType = {
 
 export type UserQueryOutputType = {
     searchLoginTerm: string | null,
+    searchEmailTerm: string | null,
     sortBy: UserSortBy,
     sortDirection: sortDirectionType,
     pageNumber: number,

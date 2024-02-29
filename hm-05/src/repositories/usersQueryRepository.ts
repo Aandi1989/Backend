@@ -4,16 +4,42 @@ import { DBUserType, UserOutputType, UsersWithQueryType } from "../types";
 
 export const usersQueryRepo = {
     async getUsers(query: UserQueryOutputType): Promise<UsersWithQueryType>{
-        const {pageNumber, pageSize, searchLoginTerm, sortBy, sortDirection } = query;
+        const {pageNumber, pageSize, searchLoginTerm, searchEmailTerm, sortBy, sortDirection } = query;
         const sortDir = sortDirection == "asc" ? 1 : -1;  
-        const skip = (pageNumber -1) * pageSize;  
-        const searchFilter = searchLoginTerm ? {
-            $or: [
-                { login: { $regex: new RegExp(searchLoginTerm, 'i') } },
-                { email: { $regex: new RegExp(searchLoginTerm, 'i') } }
-            ]
-        } : {};
-        const totalCount = await usersCollection.countDocuments();
+        const skip = (pageNumber -1) * pageSize; 
+        // let searchFilter = (searchLoginTerm && searchEmailTerm) ?  {
+        //     $or: [
+        //         { login: { $regex: new RegExp(searchLoginTerm, 'i') } },
+        //         { email: { $regex: new RegExp(searchEmailTerm, 'i') } }
+        //     ]
+        // } : {};
+        // searchFilter = searchLoginTerm ? {
+        //     $or: [
+        //         { login: { $regex: new RegExp(searchLoginTerm, 'i') } },
+        //         { email: { $regex: new RegExp(searchLoginTerm, 'i') } }
+        //     ]
+        // } : {};
+        let searchFilter = {};
+
+        // Проверяем, переданы ли значения searchLoginTerm и searchEmailTerm
+        if (searchLoginTerm || searchEmailTerm) {
+            // Создаем массив для условий поиска
+            const orConditions = [];
+            
+            // Добавляем условие для поиска по логину, если searchLoginTerm передан
+            if (searchLoginTerm) {
+                orConditions.push({ login: { $regex: new RegExp(searchLoginTerm, 'i') } });
+            }
+            
+            // Добавляем условие для поиска по email, если searchEmailTerm передан
+            if (searchEmailTerm) {
+                orConditions.push({ email: { $regex: new RegExp(searchEmailTerm, 'i') } });
+            }
+            
+            // Формируем поисковый фильтр с оператором $or для выполнения одного из условий
+            searchFilter = { $or: orConditions };
+        }
+        const totalCount = await usersCollection.countDocuments(searchFilter);
         const dbUsers = await usersCollection
         .find(searchFilter)
         .sort({[sortBy]: sortDir})
