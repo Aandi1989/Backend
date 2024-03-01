@@ -103,3 +103,43 @@ export type DBUserType = {
     createdAt:string,
 }
 
+export enum ResultCode {
+    Success = 'Success',
+    NotFound = 'NotFound',
+    Forbidden = 'Forbidden'
+}
+
+export type Result<T = null> = {
+    code: ResultCode;
+    errorMessage?: string;
+    data: T
+}
+
+export type CommentType = {
+    id: string
+    content: string
+    commentatorInfo: {
+        userId: string
+        userLogin: string
+    },
+    createdAt: string
+}
+
+export type DBCommentType = {
+    id: string
+    content: string
+    commentatorInfo: {
+        userId: string
+        userLogin: string
+    },
+    createdAt: string
+    _id: ObjectId
+}
+
+export type CommentsWithQueryType = {
+    pagesCount: number
+    page: number
+    pageSize: number
+    totalCount: number
+    items: CommentType[]
+}

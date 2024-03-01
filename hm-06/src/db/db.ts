@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-import { BlogType, PostType, UserType } from "../types/types";
+import { BlogType, CommentType, PostType, UserType } from "../types/types";
 import { appConfig } from "../../config";
 
 
@@ -12,6 +12,7 @@ const db = client.db("hm-03")
 export const blogsCollection = db.collection<BlogType>("blogs");
 export const postsCollection = db.collection<PostType>("posts");
 export const usersCollection = db.collection<UserType>("users");
+export const commentsCollection = db.collection<CommentType>("comments");
 
 export async function runDb(){
     try {

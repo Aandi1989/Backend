@@ -1,7 +1,7 @@
 import { URIParamsBlogIdModel } from "../features/blogs/models/URIParamsBlogIdModel";
 import { CreatePostModel } from "../features/posts/models/CreatePostModel";
 import {postsRepository} from "../repositories/posts-db-repository";
-import { PostType } from "../types/types";
+import { PostType, UserOutputType } from "../types/types";
 
 
 export const postsService = {
@@ -18,11 +18,24 @@ export const postsService = {
         const createPost = await postsRepository.createPost(newPost)
         return createPost;
     },
-    async updatePost(id: string ,data: Partial<PostType>): Promise<boolean>{
+    async updatePost(id: string, data: Partial<PostType>): Promise<boolean>{
         return await postsRepository.updatePost(id, data);
     },
     async deletePost(id: string):Promise<boolean> {
         return await postsRepository.deletePost(id)
+    },
+    async createComment(content: string, user: UserOutputType){
+        const newComment = {
+            id: (+new Date()).toString(),
+            content: content,
+            commentatorInfo: {
+                userId: user.id,
+                userLogin: user.login
+            },
+            createdAt: new Date().toISOString()
+        }
+        const createdComment = await postsRepository.createComment(newComment)
+        return createdComment;
     }
     
 

@@ -28,6 +28,15 @@ export const userQueryParams = (query: Partial<UserQueryType>): UserQueryOutputT
     };
 }
 
+export const commentQueryParams = (query: Partial<CommentQueryType>): CommentQueryOutputType => {
+    return {
+        pageNumber: query.pageNumber ? +query.pageNumber : 1,
+        pageSize: query.pageSize ? +query.pageSize : 10,
+        sortBy: query.sortBy ? query.sortBy : "createdAt",
+        sortDirection: query.sortDirection ? query.sortDirection : "desc"
+    };
+}
+
 export type BlogQueryType = {
     searchNameTerm: string | null,
     sortBy: BlogSortBy,
@@ -75,6 +84,22 @@ export type UserQueryOutputType = {
     pageNumber: number,
     pageSize: number
 }
+
+export type CommentQueryType = {
+    sortBy: CommentSortBy,
+    sortDirection: sortDirectionType,
+    pageNumber: string,
+    pageSize: string
+}
+
+export type CommentQueryOutputType = {
+    sortBy: CommentSortBy,
+    sortDirection: sortDirectionType,
+    pageNumber: number,
+    pageSize: number
+}
+
+type CommentSortBy = "id" | "content" | "createdAt";
 
 type BlogSortBy = "id" | "name" | "description" | "websiteUrl" | "createdAt" | "isMembership";
 

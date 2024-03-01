@@ -1,5 +1,5 @@
-import { postsCollection } from "../db/db"
-import { DBPostType, PostType } from "../types/types";
+import { commentsCollection, postsCollection } from "../db/db"
+import { CommentType, DBCommentType, DBPostType, PostType } from "../types/types";
 
 
 export const postsRepository = {
@@ -16,6 +16,10 @@ export const postsRepository = {
         const result = await postsCollection.deleteOne({id: id})
         return result.deletedCount === 1
     },
+    async createComment(newComment: CommentType):Promise<CommentType>{
+        const result = await commentsCollection.insertOne(newComment)
+        return this._mapDBCommentTypeToCommentType(newComment)
+    },
     _mapDBPostToBlogOutputModel(post: DBPostType): PostType {
         return {
             id: post.id,
@@ -25,6 +29,17 @@ export const postsRepository = {
             blogId: post.blogId,
             blogName: post.blogName ? post.blogName : '',
             createdAt: post.createdAt
+        }
+    },
+    _mapDBCommentTypeToCommentType(comment: CommentType): CommentType{
+        return{
+            id: comment.id,
+            content: comment.content,
+            commentatorInfo: {
+                userId: comment.commentatorInfo.userId,
+                userLogin: comment.commentatorInfo.userLogin
+            },
+            createdAt: comment.createdAt 
         }
     }
     
