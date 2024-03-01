@@ -1,5 +1,5 @@
 import { blogsCollection } from "../db/db"
-import { BlogType, DBBlogType } from "../types";
+import { BlogType, DBBlogType } from "../types/types";
 
 export const blogsRepository = {
     async createBlog(newBlog: BlogType): Promise<BlogType>{

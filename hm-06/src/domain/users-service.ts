@@ -2,7 +2,7 @@ import { AuthBodyModel } from "../features/auth/Models/AuthBodyModel";
 import { CreateUserModel } from "../features/users/models/CreateUserModel"; 
 import { usersRepository } from "../repositories/users-db-repository";
 import { usersQueryRepo } from "../repositories/usersQueryRepository";
-import { UserOutputType, UserType } from "../types";
+import { UserOutputType, UserType } from "../types/types";
 import bcrypt from 'bcrypt';
 
 export const usersService = {
@@ -24,7 +24,7 @@ export const usersService = {
         return createdUser;
     },
     async checkCredentials(data: AuthBodyModel){
-        const user = await usersQueryRepo.findByLoginOrEmail(data.loginOrEmail)
+        const user = await usersQueryRepo.getByLoginOrEmail(data.loginOrEmail)
         if(!user){
             return false ;
         }
@@ -32,7 +32,7 @@ export const usersService = {
         if(user.passwordHash !== passwordHash){
             return false
         }
-        return true
+        return user
     },
     async deleteUser(id: string): Promise<boolean> {
         return await usersRepository.deleteUser(id)

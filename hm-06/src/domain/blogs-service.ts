@@ -1,7 +1,7 @@
 
 import { CreateBlogModel } from "../features/blogs/models/CreateBlogModel";
 import { blogsRepository } from "../repositories/blogs-db-repository"; 
-import { BlogType } from "../types";
+import { BlogType } from "../types/types";
 
 export const blogsService = {
     async createBlog(data: CreateBlogModel): Promise<BlogType>{

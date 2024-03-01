@@ -1,7 +1,7 @@
 import { URIParamsBlogIdModel } from "../features/blogs/models/URIParamsBlogIdModel";
 import { CreatePostModel } from "../features/posts/models/CreatePostModel";
 import {postsRepository} from "../repositories/posts-db-repository";
-import { PostType } from "../types";
+import { PostType } from "../types/types";
 
 
 export const postsService = {

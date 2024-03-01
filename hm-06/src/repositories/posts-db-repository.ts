@@ -1,5 +1,5 @@
 import { postsCollection } from "../db/db"
-import { DBPostType, PostType } from "../types";
+import { DBPostType, PostType } from "../types/types";
 
 
 export const postsRepository = {

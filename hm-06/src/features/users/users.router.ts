@@ -1,7 +1,7 @@
 import express, { Response, Request } from "express";
 import { userCreateValidator } from "../../middlewares/users-bodyValidation-middleware";
 import { inputValidationMiddleware } from "../../middlewares/posts-bodyValidation-middleware";
-import { RequestWithBody, RequestWithParams, RequestWithQuery, UserOutputType, UserType, UsersWithQueryType } from "../../types";
+import { RequestWithBody, RequestWithParams, RequestWithQuery, UserOutputType, UserType, UsersWithQueryType } from "../../types/types";
 import { CreateUserModel } from "./models/CreateUserModel";
 import { HTTP_STATUSES } from "../../utils";
 import { usersService } from "../../domain/users-service";

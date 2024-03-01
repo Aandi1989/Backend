@@ -1,6 +1,6 @@
 import { PostQueryOutputType } from "../assets/queryStringModifiers";
 import { postsCollection } from "../db/db";
-import { DBPostType, PostType, PostsWithQueryType } from "../types";
+import { DBPostType, PostType, PostsWithQueryType } from "../types/types";
 
 export const postsQueryRepo = {
     async getPosts(query: PostQueryOutputType): Promise<PostsWithQueryType> {

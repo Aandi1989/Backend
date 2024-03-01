@@ -1,6 +1,6 @@
 import { UserQueryOutputType } from "../assets/queryStringModifiers";
 import { usersCollection } from "../db/db";
-import { DBUserType, UserOutputType, UsersWithQueryType } from "../types";
+import { DBUserType, UserAuthType, UserOutputType, UsersWithQueryType } from "../types/types";
 
 export const usersQueryRepo = {
     async getUsers(query: UserQueryOutputType): Promise<UsersWithQueryType>{
@@ -36,7 +36,15 @@ export const usersQueryRepo = {
             })
         }
     },
-    async findByLoginOrEmail(loginOrEmail:string): Promise<DBUserType | null>{
+    async getUserById(id: string): Promise<UserOutputType | null>{
+        let dbUser: DBUserType | null = await usersCollection.findOne({id: id})
+        return dbUser ? this._mapDBUserToUserOutputType(dbUser) : null;
+    },
+    async getAuthById(id: string): Promise<UserAuthType | null>{
+        let dbUser: DBUserType | null = await usersCollection.findOne({id: id})
+        return dbUser ? this._mapDBUserToUserAuthType(dbUser) : null;
+    },
+    async getByLoginOrEmail(loginOrEmail:string): Promise<DBUserType | null>{
         let user = await usersCollection.findOne({ $or: [ { email: loginOrEmail}, {login: loginOrEmail}]})
         return user;
     },
@@ -47,5 +55,12 @@ export const usersQueryRepo = {
             email: user.email,
             createdAt: user.createdAt
         }
-    }
+    },
+    _mapDBUserToUserAuthType(user: DBUserType): UserAuthType{
+        return {
+            userId:user.id,
+            login: user.login,
+            email: user.email,
+        }
+    },
 }

@@ -1,5 +1,5 @@
 import { usersCollection } from "../db/db";
-import { DBUserType, UserOutputType, UserType } from "../types";
+import { DBUserType, UserOutputType, UserType } from "../types/types";
 
 
 export const usersRepository = {

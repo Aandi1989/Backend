@@ -80,6 +80,12 @@ export type UserType = {
     passwordSalt:string
 }
 
+export type UserAuthType ={
+    userId: string
+    login: string
+    email: string
+}
+
 export type UserOutputType = {
     id:string
     login:string

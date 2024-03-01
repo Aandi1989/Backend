@@ -3,7 +3,7 @@ import { HTTP_STATUSES } from "../../utils";
 import { URIParamsPostIdModel } from "./models/URIParamsPostIdModel";
 import { postsService } from "../../domain/posts-service";
 import { postsQueryRepo } from "../../repositories/postsQueryRepository"
-import { PostType, PostsWithQueryType, RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery } from "../../types";
+import { PostType, PostsWithQueryType, RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery } from "../../types/types";
 import { authenticateUser } from "../../middlewares/authenticateUser-middleware";
 import { inputValidationMiddleware, postCreateValidator, postUpdateValidator } from "../../middlewares/posts-bodyValidation-middleware";
 import { CreatePostModel } from "./models/CreatePostModel";

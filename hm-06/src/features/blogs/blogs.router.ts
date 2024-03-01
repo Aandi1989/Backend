@@ -7,7 +7,7 @@ import { blogPostValidator, blogUpdateValidator, inputValidationMiddleware } fro
 import { postCreateWithoutBlogIdValidator, inputValidationMiddleware as postInputValidationMiddleware } from "../../middlewares/posts-bodyValidation-middleware";
 import { blogsQueryRepo } from "../../repositories/blogsQueryRepository";
 import { BlogType, BlogsWithQueryType, PostType, PostsWithQueryType, RequestWithBody, 
-    RequestWithParams, RequestWithParamsAndBody, RequestWithParamsAndQuery, RequestWithQuery } from "../../types";
+    RequestWithParams, RequestWithParamsAndBody, RequestWithParamsAndQuery, RequestWithQuery } from "../../types/types";
 import { HTTP_STATUSES } from "../../utils";
 import { CreateBlogModel } from "./models/CreateBlogModel";
 import { URIParamsIdModel } from "./models/URIParamsIdModel";

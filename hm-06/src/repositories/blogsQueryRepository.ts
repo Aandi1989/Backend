@@ -1,6 +1,6 @@
 import { BlogQueryOutputType, BlogQueryType } from "../assets/queryStringModifiers";
 import { blogsCollection } from "../db/db";
-import { BlogType, BlogsWithQueryType, DBBlogType } from "../types";
+import { BlogType, BlogsWithQueryType, DBBlogType } from "../types/types";
 
 export const blogsQueryRepo = {
     async getBlogs(query: BlogQueryOutputType): Promise<BlogsWithQueryType> {
