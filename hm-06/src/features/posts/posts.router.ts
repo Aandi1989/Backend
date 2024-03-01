@@ -3,7 +3,7 @@ import { HTTP_STATUSES } from "../../utils";
 import { URIParamsPostIdModel } from "./models/URIParamsPostIdModel";
 import { postsService } from "../../domain/posts-service";
 import { postsQueryRepo } from "../../repositories/postsQueryRepository"
-import { CommentType, CommentsWithQueryType, PostType, PostsWithQueryType, RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithParamsAndQuery, RequestWithQuery } from "../../types/types";
+import { PostType, PostsWithQueryType, RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithParamsAndBodyAndUserId, RequestWithParamsAndQuery, RequestWithQuery, UserOutputType } from "../../types/types";
 import { authenticateUser } from "../../middlewares/authenticateUser-middleware";
 import { inputValidationMiddleware, postCreateValidator, postUpdateValidator } from "../../middlewares/posts-bodyValidation-middleware";
 import { CreatePostModel } from "./models/CreatePostModel";
@@ -14,6 +14,8 @@ import { commentCreateValidator } from "../../middlewares/comments-bodyValidatio
 import { CreateCommentModel } from "./models/CreateCommentModel";
 import { commentsQueryValidator } from "../../middlewares/comments-queryValidation-middleware";
 import { userQueryValidationMiddleware } from "../../middlewares/users-queryValidation-middleware";
+import { commentsQueryRepo } from "../../repositories/commentsQueryRepository";
+import { commentsService } from "../../domain/comments-service";
 
 
 export const getPostsRouter = () => {
@@ -66,11 +68,11 @@ export const getPostsRouter = () => {
         accessTokenGuard,
         commentCreateValidator,
         inputValidationMiddleware,
-        async (req: RequestWithParamsAndBody<URIParamsPostIdModel,CreateCommentModel>, 
+        async (req: RequestWithParamsAndBodyAndUserId<URIParamsPostIdModel,CreateCommentModel,UserOutputType>, 
                 res:Response) => {
             const post = await postsQueryRepo.getPostById(req.params.id)
             if(!post) return res.send(HTTP_STATUSES.NOT_FOUND_404);
-            const createdComment = await postsService.createComment(req.body.content, req.user!);
+            const createdComment = await commentsService.createComment(req.params.id, req.body.content, req.user!);
             res.status(HTTP_STATUSES.CREATED_201).json(createdComment);
         })
     router.get('/:id/comments',
@@ -80,7 +82,7 @@ export const getPostsRouter = () => {
                 res: Response) => {
             const post = await postsQueryRepo.getPostById(req.params.id)
             if(!post) return res.send(HTTP_STATUSES.NOT_FOUND_404);
-            const comments = await postsQueryRepo.getCommentsByPostId(req.params.id, commentQueryParams(req.query))  
+            const comments = await commentsQueryRepo.getCommentsByPostId(req.params.id, commentQueryParams(req.query))  
             res.status(HTTP_STATUSES.OK_200).json(comments)
         })
 

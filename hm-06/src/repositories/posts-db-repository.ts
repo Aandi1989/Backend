@@ -16,10 +16,6 @@ export const postsRepository = {
         const result = await postsCollection.deleteOne({id: id})
         return result.deletedCount === 1
     },
-    async createComment(newComment: CommentType):Promise<CommentType>{
-        const result = await commentsCollection.insertOne(newComment)
-        return this._mapDBCommentTypeToCommentType(newComment)
-    },
     _mapDBPostToBlogOutputModel(post: DBPostType): PostType {
         return {
             id: post.id,
@@ -31,17 +27,5 @@ export const postsRepository = {
             createdAt: post.createdAt
         }
     },
-    _mapDBCommentTypeToCommentType(comment: CommentType): CommentType{
-        return{
-            id: comment.id,
-            content: comment.content,
-            commentatorInfo: {
-                userId: comment.commentatorInfo.userId,
-                userLogin: comment.commentatorInfo.userLogin
-            },
-            createdAt: comment.createdAt 
-        }
-    }
     
-
 } 
