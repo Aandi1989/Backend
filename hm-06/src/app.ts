@@ -5,6 +5,7 @@ import { getTestRouter } from "./routes/tests"
 import { RouterPaths } from "./utils"
 import { getUsersRouter } from "./features/users/users.router"
 import { getAuthRouter } from "./features/auth/auth.router"
+import { getCommentsRouter } from "./features/comments/comments.router"
 
 
 export const app = express()
@@ -19,5 +20,6 @@ app.use(RouterPaths.posts, getPostsRouter())
 app.use(RouterPaths.blogs, getBlogsRouter())
 app.use(RouterPaths.users, getUsersRouter())
 app.use(RouterPaths.auth, getAuthRouter())
+app.use(RouterPaths.comments, getCommentsRouter())
 app.use(RouterPaths.__test__, getTestRouter())
 

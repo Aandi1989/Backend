@@ -11,7 +11,7 @@ import { postQueryValidationMiddleware, postQueryValidator } from "../../middlew
 import { CommentQueryType, PostQueryType, commentQueryParams, postQueryParams } from "../../assets/queryStringModifiers";
 import { accessTokenGuard } from "../../middlewares/access-token-guard-middleware";
 import { commentCreateValidator } from "../../middlewares/comments-bodyValidation-middleware";
-import { CreateCommentModel } from "./models/CreateCommentModel";
+import { CreateCommentModel } from "../comments/models/CreateCommentModel";
 import { commentsQueryValidator } from "../../middlewares/comments-queryValidation-middleware";
 import { userQueryValidationMiddleware } from "../../middlewares/users-queryValidation-middleware";
 import { commentsQueryRepo } from "../../repositories/commentsQueryRepository";

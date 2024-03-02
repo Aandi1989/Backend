@@ -25,6 +25,10 @@ export const commentsQueryRepo = {
             })
         }
     },
+    async getCommentById(id: string):Promise<CommentType | null>{
+        let dbComment: DBCommentType | null = await commentsCollection.findOne({ id: id })
+        return dbComment ? this._mapDBCommentTypeToCommentType(dbComment) : null;
+    },
     _mapDBCommentTypeToCommentType(comment: DBCommentType): CommentType{
         return{
             id: comment.id,

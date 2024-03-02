@@ -5,6 +5,7 @@ export enum HTTP_STATUSES {
 
     BAD_REQUEST_400 = 400,
     UNAUTHORIZED_401 = 401,
+    ACCESS_FORBIDDEN_403 = 403,
     NOT_FOUND_404 = 404,
 }
 
@@ -12,6 +13,7 @@ export const RouterPaths = {
     posts: '/posts',
     blogs: '/blogs',
     users: '/users',
+    comments: '/comments',
     auth: '/auth',
     
 

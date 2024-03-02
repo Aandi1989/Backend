@@ -37,9 +37,7 @@ export const getUsersRouter = () => {
             isDeleted 
             ? res.send(HTTP_STATUSES.NO_CONTENT_204)
             : res.send(HTTP_STATUSES.NOT_FOUND_404)
-        }
-
-    )
+    })
 
 
     return router;

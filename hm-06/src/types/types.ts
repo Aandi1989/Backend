@@ -6,6 +6,7 @@ export type RequestWithQuery<T> = Request<{}, {}, {}, T>
 export type RequestWithParams<T> = Request<T>
 export type RequestWithParamsAndQuery<T,B>=Request<T,{},{},B>
 export type RequestWithParamsAndBodyAndUserId<P, B, U extends Record<string, any>>=Request<P, {}, B, {}, U>
+export type RequestWithParamsAndUserId<T, U extends Record<string, any>>=Request<T, {}, {}, {}, U>
 export type RequestWithParamsAndBody<T, B> = Request<T, {}, B>
 
 export type BlogType = {
@@ -113,7 +114,7 @@ export enum ResultCode {
 export type Result<T = null> = {
     code: ResultCode;
     errorMessage?: string;
-    data: T
+    data?: T
 }
 
 export type CommentType = {
