@@ -6,7 +6,7 @@ import { HTTP_STATUSES } from "../../utils";
 import { accessTokenGuard } from "../../middlewares/access-token-guard-middleware";
 import { commentsService } from "../../domain/comments-service";
 import { commentCreateValidator } from "../../middlewares/comments-bodyValidation-middleware";
-import { inputValidationMiddleware } from "../../middlewares/blogs-bodyValidation-middleware";
+import { inputValidationMiddleware } from "../../middlewares/posts-bodyValidation-middleware";
 import { CreateCommentModel } from "./models/CreateCommentModel";
 
 export const getCommentsRouter = () => {
