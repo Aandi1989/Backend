@@ -8,6 +8,8 @@ import { HTTP_STATUSES } from "../../utils";
 import { jwtService } from "../../application/jwt-service";
 import { accessTokenGuard } from "../../middlewares/access-token-guard-middleware";
 import { usersQueryRepo } from "../../repositories/usersQueryRepository";
+import nodemailer from "nodemailer";
+import { appConfig } from "../../../config";
 
 export const getAuthRouter = () => {
     const router = express.Router();
@@ -33,7 +35,48 @@ export const getAuthRouter = () => {
             }else{
                 res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401)
             }
-        }
-    )
+        }),
+    router.post('/registration',
+        async (req: Request, res: Response) => {
+
+           
+            const transport = nodemailer.createTransport({
+                host: "smtp.mail.ru",
+                port: 465,
+                secure: true, // Use `true` for port 465, `false` for all other ports
+                auth: {
+                  user: appConfig.EMAIL_SENDER,
+                  pass: appConfig.EMAIL_PASSWORD,
+                },
+              });
+
+            const mailOptions = {
+                from: {
+                    name: "My nodemailer",
+                    address: appConfig.EMAIL_SENDER
+                }, // sender address
+                to: req.body.email, // list of receivers
+                subject: req.body.subject, // Subject line
+                html: req.body.message, // html body
+              }
+
+            const sendMail = async (transport: any, mailOptions: any) => {
+                try {
+                    await transport.sendMail(mailOptions)
+                    console.log('Email has been sent!')
+                } catch (error) {
+                    console.error(error)
+                }
+            }
+
+            sendMail(transport, mailOptions)
+
+
+            res.send({
+                "email": req.body.email,
+                "message": req.body.message,
+                "subject": req.body.subject
+            })
+        })
     return router;
 }
