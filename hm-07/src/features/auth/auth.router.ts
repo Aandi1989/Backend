@@ -46,31 +46,16 @@ export const getAuthRouter = () => {
                 secure: true, // Use `true` for port 465, `false` for all other ports
                 auth: {
                   user: appConfig.EMAIL_SENDER,
-                  pass: appConfig.EMAIL_PASSWORD,
+                  pass: appConfig.EMAIL_PASSWORD, // password from mail.ru for side applications
                 },
               });
 
-            const mailOptions = {
-                from: {
-                    name: "My nodemailer",
-                    address: appConfig.EMAIL_SENDER
-                }, // sender address
+            let info = await transport.sendMail({
+                from: `My nodemailer <${appConfig.EMAIL_SENDER}>`,
                 to: req.body.email, // list of receivers
                 subject: req.body.subject, // Subject line
-                html: req.body.message, // html body
-              }
-
-            const sendMail = async (transport: any, mailOptions: any) => {
-                try {
-                    await transport.sendMail(mailOptions)
-                    console.log('Email has been sent!')
-                } catch (error) {
-                    console.error(error)
-                }
-            }
-
-            sendMail(transport, mailOptions)
-
+                html: req.body.message,  // html body
+            })
 
             res.send({
                 "email": req.body.email,
