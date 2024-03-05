@@ -10,9 +10,10 @@ import { accessTokenGuard } from "../../middlewares/access-token-guard-middlewar
 import { usersQueryRepo } from "../../repositories/usersQueryRepository";
 import { businessService } from "../../domain/business-service";
 import { authService } from "../../domain/auth-service";
-import { emailCofirmCodeValidator, userCreateValidator } from "../../middlewares/users-bodyValidation-middleware";
+import { emailCofirmCodeValidator, emailValidator, userCreateValidator } from "../../middlewares/users-bodyValidation-middleware";
 import { CreateUserModel } from "../users/models/CreateUserModel";
 import { ConfirmCodeModel } from "./Models/ConfirCodeModel";
+import { ResendEmailModel } from "./Models/ResendEmailModel";
 
 
 export const getAuthRouter = () => {
@@ -58,6 +59,15 @@ export const getAuthRouter = () => {
             const {code} = req.body;
             const isConfirmed = await authService.confirmEmail(code);
             if(!isConfirmed) return res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
+            return res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+        }),
+    router.post('/registration-email-resending',
+        emailValidator,
+        inputValidationMiddleware,
+        async (req: RequestWithBody<ResendEmailModel>, res: Response) => {
+            const {email} = req.body;
+            const emailResended = await authService.resendEmail(email);
+            if(!emailResended) return res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
             return res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
         })
     return router;

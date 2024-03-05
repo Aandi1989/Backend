@@ -12,3 +12,8 @@ export const userCreateValidator = [
 
 export const emailCofirmCodeValidator = body('code').isString().trim().isLength({min: 5})
     .withMessage('Confirmation code must be longer than 5 characters')
+
+
+export const emailValidator = body('email').isString().trim().isLength({min: 5, max: 1000}).matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
+.withMessage('Invalid email address')
+

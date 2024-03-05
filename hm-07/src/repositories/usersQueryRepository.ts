@@ -64,7 +64,12 @@ export const usersQueryRepo = {
         }
     },
     async findByConfirmationCode(code: string){
-        const foundAccount = await usersAcountsCollection.findOne({"emailConfirmation.confirmationCode": code});
-        return foundAccount;
+        const foundedAccount = await usersAcountsCollection.findOne({"emailConfirmation.confirmationCode": code});
+        return foundedAccount;
+    },
+    async findByLoginOrEmail(email: string){
+        const foundedAccount = await usersAcountsCollection.findOne({ $or: [{'accountData.login': email}, 
+                                                                            {'accountData.email': email}] });
+        return foundedAccount;
     }
 }

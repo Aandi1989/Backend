@@ -50,6 +50,20 @@ export const authService = {
         if(account.emailConfirmation.expirationDate < new Date()) return false;
         return usersRepository.confirmEmail(account._id)
     },
+    async resendEmail(email: string): Promise<boolean>{
+        const account = await usersQueryRepo.findByLoginOrEmail(email)
+        if(!account) return false;
+        if(account.emailConfirmation.isConfirmed) return false;
+        const newConfirmationCode = uuidv4();
+        const updatedAccountData = await usersRepository.updateConfirmationCode(account._id, newConfirmationCode);
+        try {
+            await emailManager.resendConfirmationalEmail(email, newConfirmationCode)
+        } catch (error) {
+            console.log(error)
+            return false;
+        }
+        return updatedAccountData;
+    },
     async _generateHash(password: string, salt: string){
         const hash = await bcrypt.hash(password, salt)
         return hash
