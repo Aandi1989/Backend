@@ -1,5 +1,5 @@
-import { usersCollection } from "../db/db";
-import { DBUserType, UserOutputType, UserType } from "../types/types";
+import { usersAcountsCollection, usersCollection } from "../db/db";
+import { DBUserType, UserAccountDBType, UserOutputType, UserType } from "../types/types";
 
 
 export const usersRepository = {
@@ -10,7 +10,7 @@ export const usersRepository = {
     async deleteUser(id: string): Promise<boolean>{
         const result = await usersCollection.deleteOne({id: id})
         return result.deletedCount === 1
-    } ,
+    },
     _mapDBUserToUserOutputType(user: UserType): UserOutputType{
         return{
             id:user.id,
@@ -18,5 +18,9 @@ export const usersRepository = {
             email: user.email,
             createdAt: user.createdAt
         }
-    }
+    },
+    async createUserAccount(newAccount: UserAccountDBType){
+        const result = await usersAcountsCollection.insertOne(newAccount);
+        return newAccount;
+    },
 }

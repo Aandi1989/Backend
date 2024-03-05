@@ -105,6 +105,16 @@ export type DBUserType = {
     createdAt:string,
 }
 
+export type UserAccountDBType = {
+    _id:ObjectId,
+    accountData: UserType,
+    emailConfirmation: {
+        confirmationCode: string,
+        expirationDate: Date
+        isConfirmed: boolean
+    }
+}
+
 export enum ResultCode {
     Success = 'Success',
     NotFound = 'NotFound',

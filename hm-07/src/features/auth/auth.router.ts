@@ -8,8 +8,11 @@ import { HTTP_STATUSES } from "../../utils";
 import { jwtService } from "../../application/jwt-service";
 import { accessTokenGuard } from "../../middlewares/access-token-guard-middleware";
 import { usersQueryRepo } from "../../repositories/usersQueryRepository";
-import nodemailer from "nodemailer";
-import { appConfig } from "../../../config";
+import { businessService } from "../../domain/business-service";
+import { authService } from "../../domain/auth-service";
+import { userCreateValidator } from "../../middlewares/users-bodyValidation-middleware";
+import { CreateUserModel } from "../users/models/CreateUserModel";
+
 
 export const getAuthRouter = () => {
     const router = express.Router();
@@ -37,31 +40,15 @@ export const getAuthRouter = () => {
             }
         }),
     router.post('/registration',
-        async (req: Request, res: Response) => {
-
-           
-            const transport = nodemailer.createTransport({
-                host: "smtp.mail.ru",
-                port: 465,
-                secure: true, // Use `true` for port 465, `false` for all other ports
-                auth: {
-                  user: appConfig.EMAIL_SENDER,
-                  pass: appConfig.EMAIL_PASSWORD, // password from mail.ru for side applications
-                },
-              });
-
-            let info = await transport.sendMail({
-                from: `My nodemailer <${appConfig.EMAIL_SENDER}>`,
-                to: req.body.email, // list of receivers
-                subject: req.body.subject, // Subject line
-                html: req.body.message,  // html body
-            })
-
-            res.send({
-                "email": req.body.email,
-                "message": req.body.message,
-                "subject": req.body.subject
-            })
+        ...userCreateValidator,
+        inputValidationMiddleware,
+        async (req: RequestWithBody<CreateUserModel>, res: Response) => {
+            const account = await authService.createUserAccount(req.body)
+            if(account){
+                res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+            }else{
+                res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
+            }
         })
     return router;
 }

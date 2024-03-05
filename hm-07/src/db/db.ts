@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-import { BlogType, CommentType, PostType, UserType } from "../types/types";
+import { BlogType, CommentType, PostType, UserAccountDBType, UserType } from "../types/types";
 import { appConfig } from "../../config";
 
 
@@ -13,6 +13,7 @@ export const blogsCollection = db.collection<BlogType>("blogs");
 export const postsCollection = db.collection<PostType>("posts");
 export const usersCollection = db.collection<UserType>("users");
 export const commentsCollection = db.collection<CommentType>("comments");
+export const usersAcountsCollection = db.collection<UserAccountDBType>("accounts");
 
 export async function runDb(){
     try {
