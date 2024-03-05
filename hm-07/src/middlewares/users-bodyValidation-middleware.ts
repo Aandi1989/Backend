@@ -10,3 +10,5 @@ export const userCreateValidator = [
         .withMessage('Invalid email address'),  
 ]
 
+export const emailCofirmCodeValidator = body('code').isString().trim().isLength({min: 5})
+    .withMessage('Confirmation code must be longer than 5 characters')

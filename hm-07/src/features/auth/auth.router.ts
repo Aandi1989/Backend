@@ -10,8 +10,9 @@ import { accessTokenGuard } from "../../middlewares/access-token-guard-middlewar
 import { usersQueryRepo } from "../../repositories/usersQueryRepository";
 import { businessService } from "../../domain/business-service";
 import { authService } from "../../domain/auth-service";
-import { userCreateValidator } from "../../middlewares/users-bodyValidation-middleware";
+import { emailCofirmCodeValidator, userCreateValidator } from "../../middlewares/users-bodyValidation-middleware";
 import { CreateUserModel } from "../users/models/CreateUserModel";
+import { ConfirmCodeModel } from "./Models/ConfirCodeModel";
 
 
 export const getAuthRouter = () => {
@@ -49,6 +50,15 @@ export const getAuthRouter = () => {
             }else{
                 res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
             }
+        }),
+    router.post('/registration-confirmation',
+        emailCofirmCodeValidator,
+        inputValidationMiddleware,
+        async (req: RequestWithBody<ConfirmCodeModel>, res: Response) => {
+            const {code} = req.body;
+            const isConfirmed = await authService.confirmEmail(code);
+            if(!isConfirmed) return res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
+            return res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
         })
     return router;
 }

@@ -1,5 +1,5 @@
 import { UserQueryOutputType } from "../assets/queryStringModifiers";
-import { usersCollection } from "../db/db";
+import { usersAcountsCollection, usersCollection } from "../db/db";
 import { DBUserType, UserAuthType, UserOutputType, UsersWithQueryType } from "../types/types";
 
 export const usersQueryRepo = {
@@ -63,4 +63,8 @@ export const usersQueryRepo = {
             email: user.email,
         }
     },
+    async findByConfirmationCode(code: string){
+        const foundAccount = await usersAcountsCollection.findOne({"emailConfirmation.confirmationCode": code});
+        return foundAccount;
+    }
 }
