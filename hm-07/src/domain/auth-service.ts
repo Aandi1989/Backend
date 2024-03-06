@@ -3,13 +3,14 @@ import { CreateUserModel } from "../features/users/models/CreateUserModel";
 import bcrypt from 'bcrypt';
 import {v4 as uuidv4} from 'uuid';
 import { add } from 'date-fns/add';
-import { UserAccountDBType } from "../types/types";
+import { Result, ResultCode, UserAccountDBType, UserOutputType } from "../types/types";
 import { usersRepository } from "../repositories/users-db-repository";
 import { emailManager } from "../managers/email-manager";
 import { usersQueryRepo } from "../repositories/usersQueryRepository";
+import { codeAlredyConfirmed, codeDoesntExist, codeExpired, emailAlredyConfirmed, emailDoesntExist, emailExistError } from "../assets/errorMessagesUtils";
 
 export const authService = {
-    async createUserAccount(data: CreateUserModel): Promise<UserAccountDBType | null>{
+    async createUserAccount(data: CreateUserModel): Promise<Result>{
         const {login, email, password} = data;
 
         const passwordSalt = await bcrypt.genSalt(10);
@@ -34,33 +35,35 @@ export const authService = {
                 isConfirmed: false
             }
         }
-        const createResult = await usersRepository.createUserAccount(newAccount);
+        const existedUser = await usersQueryRepo.findByLoginOrEmail(email);
+        if(existedUser) return {code: ResultCode.Forbidden, errorsMessages: emailExistError(email)};
+        const createdUser = await usersRepository.createUser(newAccount);
         try {
             await emailManager.sendConfirmationEmail(newAccount);
         } catch (error) {
             console.log(error)
-            return null;
+            return {code: ResultCode.Failed};
         }
-        return createResult;
+        return createdUser;
     },
-    async confirmEmail(code: string): Promise<boolean>{
+    async confirmEmail(code: string): Promise<Result>{
         const account = await usersQueryRepo.findByConfirmationCode(code);
-        if(!account) return false;
-        if(account.emailConfirmation.isConfirmed) return false;
-        if(account.emailConfirmation.expirationDate < new Date()) return false;
+        if(!account) return {code: ResultCode.Failed, errorsMessages: codeDoesntExist(code)};
+        if(account.emailConfirmation.isConfirmed) return {code: ResultCode.AlredyConfirmed, errorsMessages: codeAlredyConfirmed(code)};
+        if(account.emailConfirmation.expirationDate < new Date()) return {code: ResultCode.Failed, errorsMessages: codeExpired(code)};
         return usersRepository.confirmEmail(account._id)
     },
-    async resendEmail(email: string): Promise<boolean>{
+    async resendEmail(email: string): Promise<Result>{
         const account = await usersQueryRepo.findByLoginOrEmail(email)
-        if(!account) return false;
-        if(account.emailConfirmation.isConfirmed) return false;
+        if(!account) return {code: ResultCode.Failed, errorsMessages: emailDoesntExist(email)};
+        if(account.emailConfirmation.isConfirmed) return {code: ResultCode.Failed, errorsMessages: emailAlredyConfirmed(email)};
         const newConfirmationCode = uuidv4();
         const updatedAccountData = await usersRepository.updateConfirmationCode(account._id, newConfirmationCode);
         try {
             await emailManager.resendConfirmationalEmail(email, newConfirmationCode)
         } catch (error) {
             console.log(error)
-            return false;
+            return {code: ResultCode.Failed};
         }
         return updatedAccountData;
     },

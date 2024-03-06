@@ -1,36 +1,33 @@
 import { ObjectId } from "mongodb";
-import { usersAcountsCollection, usersCollection } from "../db/db";
-import { DBUserType, UserAccountDBType, UserOutputType, UserType } from "../types/types";
+import { usersAcountsCollection } from "../db/db";
+import { Result, ResultCode, UserAccountDBType, UserOutputType } from "../types/types";
 
 
 export const usersRepository = {
-    async createUser(newUser: UserType): Promise<UserOutputType>{
-        const result = await usersCollection.insertOne(newUser);
-        return this._mapDBUserToUserOutputType(newUser)
+    async createUser(newAccount: UserAccountDBType): Promise<Result>{
+            const result = await usersAcountsCollection.insertOne(newAccount);
+            const userOutput = this._mapDBAccountToUserOutputType(newAccount);
+            return {code: ResultCode.Success, data: userOutput}
+            
     },
     async deleteUser(id: string): Promise<boolean>{
-        const result = await usersCollection.deleteOne({id: id})
+        const result = await usersAcountsCollection.deleteOne({'accountData.id': id})
         return result.deletedCount === 1
     },
-    _mapDBUserToUserOutputType(user: UserType): UserOutputType{
+    async confirmEmail(_id: ObjectId): Promise<Result>{
+        const result = await usersAcountsCollection.updateOne({_id}, {$set: {'emailConfirmation.isConfirmed': true}})
+        return result.modifiedCount === 1 ? {code: ResultCode.Success} : {code: ResultCode.Failed};
+    },
+    async updateConfirmationCode(_id: ObjectId, newCode: string): Promise<Result>{
+        const result = await usersAcountsCollection.updateOne({_id}, {$set: {'emailConfirmation.confirmationCode': newCode}})
+        return result.modifiedCount === 1 ? {code: ResultCode.Success} : {code: ResultCode.Failed};
+    },
+    _mapDBAccountToUserOutputType(user: UserAccountDBType): UserOutputType{
         return{
-            id:user.id,
-            login: user.login,
-            email: user.email,
-            createdAt: user.createdAt
+            id:user.accountData.id,
+            login: user.accountData.login,
+            email: user.accountData.email,
+            createdAt: user.accountData.createdAt
         }
     },
-
-    async createUserAccount(newAccount: UserAccountDBType): Promise<UserAccountDBType>{
-        const result = await usersAcountsCollection.insertOne(newAccount);
-        return newAccount;
-    },
-    async confirmEmail(_id: ObjectId){
-        const result = await usersAcountsCollection.updateOne({_id}, {$set: {'emailConfirmation.isConfirmed': true}})
-        return result.modifiedCount === 1;
-    },
-    async updateConfirmationCode(_id: ObjectId, newCode: string){
-        const result = await usersAcountsCollection.updateOne({_id}, {$set: {'emailConfirmation.confirmationCode': newCode}})
-        return result.modifiedCount === 1;
-    }
 }

@@ -1,6 +1,6 @@
 import { UserQueryOutputType } from "../assets/queryStringModifiers";
-import { usersAcountsCollection, usersCollection } from "../db/db";
-import { DBUserType, UserAuthType, UserOutputType, UsersWithQueryType } from "../types/types";
+import { usersAcountsCollection } from "../db/db";
+import { UserAccountDBType, UserAuthType, UserOutputType, UsersWithQueryType } from "../types/types";
 
 export const usersQueryRepo = {
     async getUsers(query: UserQueryOutputType): Promise<UsersWithQueryType>{
@@ -11,17 +11,17 @@ export const usersQueryRepo = {
         if (searchLoginTerm || searchEmailTerm) {
             const orConditions = [];
             if (searchLoginTerm) {
-                orConditions.push({ login: { $regex: new RegExp(searchLoginTerm, 'i') } });
+                orConditions.push({ 'accountData.login': { $regex: new RegExp(searchLoginTerm, 'i') } });
             }
             if (searchEmailTerm) {
-                orConditions.push({ email: { $regex: new RegExp(searchEmailTerm, 'i') } });
+                orConditions.push({ 'accountData.email': { $regex: new RegExp(searchEmailTerm, 'i') } });
             }
             searchFilter = { $or: orConditions };
         }
-        const totalCount = await usersCollection.countDocuments(searchFilter);
-        const dbUsers = await usersCollection
+        const totalCount = await usersAcountsCollection.countDocuments(searchFilter);
+        const dbUsers = await usersAcountsCollection
         .find(searchFilter)
-        .sort({[sortBy]: sortDir})
+        .sort({[`accountData.${sortBy}`]: sortDir})
         .skip(skip)
         .limit(pageSize)
         .toArray();
@@ -32,36 +32,21 @@ export const usersQueryRepo = {
             pageSize: pageSize,
             totalCount: totalCount,
             items: dbUsers.map(dbUser => {
-                return this._mapDBUserToUserOutputType(dbUser)
+                return this._mapDBAccountToUserOutputType(dbUser)
             })
         }
     },
     async getUserById(id: string): Promise<UserOutputType | null>{
-        let dbUser: DBUserType | null = await usersCollection.findOne({id: id})
-        return dbUser ? this._mapDBUserToUserOutputType(dbUser) : null;
+        let dbUser: UserAccountDBType | null = await usersAcountsCollection.findOne({'accountData.id': id})
+        return dbUser ? this._mapDBAccountToUserOutputType(dbUser) : null;
     },
     async getAuthById(id: string): Promise<UserAuthType | null>{
-        let dbUser: DBUserType | null = await usersCollection.findOne({id: id})
-        return dbUser ? this._mapDBUserToUserAuthType(dbUser) : null;
+        let dbUser: UserAccountDBType | null = await usersAcountsCollection.findOne({'accountData.id': id})
+        return dbUser ? this._mapDBAccountToUserAuthType(dbUser) : null;
     },
-    async getByLoginOrEmail(loginOrEmail:string): Promise<DBUserType | null>{
-        let user = await usersCollection.findOne({ $or: [ { email: loginOrEmail}, {login: loginOrEmail}]})
+    async getByLoginOrEmail(loginOrEmail:string): Promise<UserAccountDBType | null>{
+        let user = await usersAcountsCollection.findOne({ $or: [ { 'accountData.email': loginOrEmail}, {'accountData.login': loginOrEmail}]})
         return user;
-    },
-    _mapDBUserToUserOutputType(user: DBUserType): UserOutputType{
-        return{
-            id:user.id,
-            login: user.login,
-            email: user.email,
-            createdAt: user.createdAt
-        }
-    },
-    _mapDBUserToUserAuthType(user: DBUserType): UserAuthType{
-        return {
-            userId:user.id,
-            login: user.login,
-            email: user.email,
-        }
     },
     async findByConfirmationCode(code: string){
         const foundedAccount = await usersAcountsCollection.findOne({"emailConfirmation.confirmationCode": code});
@@ -71,5 +56,20 @@ export const usersQueryRepo = {
         const foundedAccount = await usersAcountsCollection.findOne({ $or: [{'accountData.login': email}, 
                                                                             {'accountData.email': email}] });
         return foundedAccount;
+    },
+    _mapDBAccountToUserOutputType(user: UserAccountDBType): UserOutputType{
+        return{
+            id:user.accountData.id,
+            login: user.accountData.login,
+            email: user.accountData.email,
+            createdAt: user.accountData.createdAt
+        }
+    },
+    _mapDBAccountToUserAuthType(user: UserAccountDBType): UserAuthType{
+        return {
+            userId:user.accountData.id,
+            login: user.accountData.login,
+            email: user.accountData.email,
+        }
     }
 }

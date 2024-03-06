@@ -118,13 +118,16 @@ export type UserAccountDBType = {
 export enum ResultCode {
     Success = 'Success',
     NotFound = 'NotFound',
-    Forbidden = 'Forbidden'
+    Forbidden = 'Forbidden',
+    Failed = 'Failed',
+    AlredyConfirmed = 'AlredyConfirmed',
+    Expired = 'Expired'
 }
 
-export type Result<T = null> = {
+export type Result = {
     code: ResultCode;
-    errorMessage?: string;
-    data?: T
+    errorsMessages?: errorMessageType;
+    data?: any
 }
 
 export type CommentType = {
@@ -154,4 +157,11 @@ export type CommentsWithQueryType = {
     pageSize: number
     totalCount: number
     items: CommentType[]
+}
+
+export type errorMessageType = {
+    errorsMessages:{
+        message: string,
+        field: string
+    }[]
 }

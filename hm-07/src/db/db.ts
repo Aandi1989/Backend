@@ -11,7 +11,6 @@ const db = client.db("hm-03")
 // const db = client.db("hm-03-tests")
 export const blogsCollection = db.collection<BlogType>("blogs");
 export const postsCollection = db.collection<PostType>("posts");
-export const usersCollection = db.collection<UserType>("users");
 export const commentsCollection = db.collection<CommentType>("comments");
 export const usersAcountsCollection = db.collection<UserAccountDBType>("accounts");
 

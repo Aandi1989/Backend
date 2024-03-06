@@ -1,7 +1,7 @@
 import express, { Response, Request } from "express";
 import { inputValidationMiddleware } from "../../middlewares/posts-bodyValidation-middleware";
 import { authValidator } from "../../middlewares/auth-bodyValidation";
-import { RequestWithBody } from "../../types/types";
+import { RequestWithBody, Result, ResultCode, UserOutputType } from "../../types/types";
 import { AuthBodyModel } from "./Models/AuthBodyModel";
 import { usersService } from "../../domain/users-service";
 import { HTTP_STATUSES } from "../../utils";
@@ -18,7 +18,6 @@ import { ResendEmailModel } from "./Models/ResendEmailModel";
 
 export const getAuthRouter = () => {
     const router = express.Router();
-
     router.get('/me',
         accessTokenGuard,
         async (req: Request, res: Response) => {
@@ -35,7 +34,7 @@ export const getAuthRouter = () => {
         async(req:RequestWithBody<AuthBodyModel>, res:Response) => {
             const user = await usersService.checkCredentials(req.body)
             if(user){
-                const token = await jwtService.createJWT(user)
+                const token = await jwtService.createJWT(user.accountData)
                 res.status(HTTP_STATUSES.OK_200).send(token)
             }else{
                 res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401)
@@ -45,30 +44,26 @@ export const getAuthRouter = () => {
         ...userCreateValidator,
         inputValidationMiddleware,
         async (req: RequestWithBody<CreateUserModel>, res: Response) => {
-            const account = await authService.createUserAccount(req.body)
-            if(account){
-                res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
-            }else{
-                res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
-            }
+            const result = await authService.createUserAccount(req.body);
+            if(result.code === ResultCode.Success) return res.status(HTTP_STATUSES.NO_CONTENT_204)
+            if(result.code === ResultCode.Forbidden) return res.status(HTTP_STATUSES.BAD_REQUEST_400).send(result.errorsMessages)
+            if(result.code === ResultCode.Failed) return res.status(HTTP_STATUSES.BAD_REQUEST_400)
         }),
     router.post('/registration-confirmation',
         emailCofirmCodeValidator,
         inputValidationMiddleware,
         async (req: RequestWithBody<ConfirmCodeModel>, res: Response) => {
-            const {code} = req.body;
-            const isConfirmed = await authService.confirmEmail(code);
-            if(!isConfirmed) return res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
-            return res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+            const result = await authService.confirmEmail(req.body.code);
+            if(result.code === ResultCode.Success) return res.status(HTTP_STATUSES.NO_CONTENT_204)
+            return res.status(HTTP_STATUSES.BAD_REQUEST_400).send(result.errorsMessages)
         }),
     router.post('/registration-email-resending',
         emailValidator,
         inputValidationMiddleware,
         async (req: RequestWithBody<ResendEmailModel>, res: Response) => {
-            const {email} = req.body;
-            const emailResended = await authService.resendEmail(email);
-            if(!emailResended) return res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
-            return res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+            const result = await authService.resendEmail(req.body.email);
+            if(result.code === ResultCode.Success) return res.status(HTTP_STATUSES.NO_CONTENT_204)
+            return res.status(HTTP_STATUSES.BAD_REQUEST_400).send(result.errorsMessages)
         })
     return router;
 }

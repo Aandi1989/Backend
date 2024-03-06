@@ -13,7 +13,6 @@ import { usersQueryRepo } from "../../repositories/usersQueryRepository";
 
 export const getUsersRouter = () => {
     const router = express.Router();
-
     router.get('/',
         userQueryValidator,
         userQueryValidationMiddleware,
@@ -21,7 +20,7 @@ export const getUsersRouter = () => {
             const response = await usersQueryRepo.getUsers(userQueryParams(req.query));
             res.status(HTTP_STATUSES.OK_200).json(response)
         }
-    )
+    ),
     router.post('/',
         authenticateUser,
         ...userCreateValidator,
@@ -42,3 +41,4 @@ export const getUsersRouter = () => {
 
     return router;
 }
+
