@@ -1,6 +1,6 @@
  
-export const emailExistError = (email: string) => {
-    return { errorsMessages: [{ message: `Account with email ${email} alredy exist`, field: "email" }] }  
+export const accountExistError = (fieldName: string, value: string) => {
+    return { errorsMessages: [{ message: `Account with ${fieldName} ${value} alredy exist`, field: `${fieldName}` }] }  
 }
 
 export const codeAlredyConfirmed = (code: string) => {

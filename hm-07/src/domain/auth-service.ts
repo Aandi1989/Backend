@@ -7,7 +7,7 @@ import { Result, ResultCode, UserAccountDBType, UserOutputType } from "../types/
 import { usersRepository } from "../repositories/users-db-repository";
 import { emailManager } from "../managers/email-manager";
 import { usersQueryRepo } from "../repositories/usersQueryRepository";
-import { codeAlredyConfirmed, codeDoesntExist, codeExpired, emailAlredyConfirmed, emailDoesntExist, emailExistError } from "../assets/errorMessagesUtils";
+import { accountExistError, codeAlredyConfirmed, codeDoesntExist, codeExpired, emailAlredyConfirmed, emailDoesntExist} from "../assets/errorMessagesUtils";
 
 export const authService = {
     async createUserAccount(data: CreateUserModel): Promise<Result>{
@@ -35,8 +35,13 @@ export const authService = {
                 isConfirmed: false
             }
         }
-        const existedUser = await usersQueryRepo.findByLoginOrEmail(email);
-        if(existedUser) return {code: ResultCode.Forbidden, errorsMessages: emailExistError(email)};
+        const existedUser = await usersQueryRepo.findByLoginOrEmail(email, login);
+        if(existedUser) {
+            let result = existedUser.accountData.email === email
+            ?  {code: ResultCode.Forbidden, errorsMessages: accountExistError('email', email)}
+            :  {code: ResultCode.Forbidden, errorsMessages: accountExistError('login', login)};
+            return result;
+        }
         const createdUser = await usersRepository.createUser(newAccount);
         try {
             await emailManager.sendConfirmationEmail(newAccount);

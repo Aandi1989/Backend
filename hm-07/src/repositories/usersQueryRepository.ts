@@ -52,9 +52,9 @@ export const usersQueryRepo = {
         const foundedAccount = await usersAcountsCollection.findOne({"emailConfirmation.confirmationCode": code});
         return foundedAccount;
     },
-    async findByLoginOrEmail(email: string){
-        const foundedAccount = await usersAcountsCollection.findOne({ $or: [{'accountData.login': email}, 
-                                                                            {'accountData.email': email}] });
+    async findByLoginOrEmail(email: string, login?: string){
+        const foundedAccount = await usersAcountsCollection.findOne({ $or: [ { 'accountData.login': login }, 
+                                                                        { 'accountData.email': email } ] });
         return foundedAccount;
     },
     _mapDBAccountToUserOutputType(user: UserAccountDBType): UserOutputType{
