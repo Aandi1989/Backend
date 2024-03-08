@@ -58,23 +58,3 @@ export const accessTokenGuard = async (req: Request, res: Response, next: NextFu
 };
 */ 
 
-
-/*
-export const login = async (req: Request, res: Response) => {
-    // Ваша логика проверки учетных данных пользователя
-    const user = await authService.login(req.body.login, req.body.password);
-
-    if (!user) {
-        return res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
-    }
-
-    // Генерируем accessToken
-    const accessToken = jwtService.generateAccessToken(user);
-
-    // Устанавливаем accessToken в заголовке Authorization
-    res.setHeader('Authorization', `Bearer ${accessToken}`);
-
-    // Возвращаем пользователю успешный статус и информацию о пользователе
-    return res.status(HTTP_STATUSES.OK_200).json({ user });
-};
-*/

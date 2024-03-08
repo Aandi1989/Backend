@@ -1,17 +1,16 @@
-import express, { Response, Request } from "express";
-import { inputValidationMiddleware } from "../../middlewares/posts-bodyValidation-middleware";
-import { authValidator } from "../../middlewares/auth-bodyValidation";
-import { RequestWithBody, Result, ResultCode, UserOutputType } from "../../types/types";
-import { AuthBodyModel } from "./Models/AuthBodyModel";
-import { usersService } from "../../domain/users-service";
-import { HTTP_STATUSES } from "../../utils";
+import express, { Request, Response } from "express";
 import { jwtService } from "../../application/jwt-service";
-import { accessTokenGuard } from "../../middlewares/access-token-guard-middleware";
-import { usersQueryRepo } from "../../repositories/usersQueryRepository";
-import { businessService } from "../../domain/business-service";
 import { authService } from "../../domain/auth-service";
+import { usersService } from "../../domain/users-service";
+import { accessTokenGuard } from "../../middlewares/access-token-guard-middleware";
+import { authValidator } from "../../middlewares/auth-bodyValidation";
+import { inputValidationMiddleware } from "../../middlewares/posts-bodyValidation-middleware";
 import { emailCofirmCodeValidator, emailValidator, userCreateValidator } from "../../middlewares/users-bodyValidation-middleware";
+import { usersQueryRepo } from "../../repositories/usersQueryRepository";
+import { RequestWithBody, ResultCode } from "../../types/types";
+import { HTTP_STATUSES } from "../../utils";
 import { CreateUserModel } from "../users/models/CreateUserModel";
+import { AuthBodyModel } from "./Models/AuthBodyModel";
 import { ConfirmCodeModel } from "./Models/ConfirCodeModel";
 import { ResendEmailModel } from "./Models/ResendEmailModel";
 
@@ -35,12 +34,21 @@ export const getAuthRouter = () => {
             const user = await usersService.checkCredentials(req.body)
             if(user){
                 const accessToken = await jwtService.createAccessToken(user.accountData)
-                const { refreshToken } = await jwtService.createRefreshToken(user.accountData)
-                res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true }); 
+                const  refreshToken  = await jwtService.createRefreshToken(user.accountData)
+                const validRefreshToken = await authService.addToken(refreshToken)
+                res.cookie('refreshToken', refreshToken.refreshToken, { httpOnly: true, secure: true }); 
                 res.status(HTTP_STATUSES.OK_200).send(accessToken)
             }else{
                 res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401)
             }
+        }),
+    router.post('/logout',
+        async(req: Request, res: Response) => {
+            const refreshToken = req.cookies.refreshToken;
+            const response = await authService.checkRefreshToken(refreshToken);
+            if(response.code !== ResultCode.Success) return res.send(HTTP_STATUSES.UNAUTHORIZED_401);
+            const result = await authService.revokeToken(refreshToken);
+            return res.send(HTTP_STATUSES.NO_CONTENT_204);
         }),
     router.post('/registration',
         ...userCreateValidator,

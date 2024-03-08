@@ -13,7 +13,8 @@ export const blogsCollection = db.collection<BlogType>("blogs");
 export const postsCollection = db.collection<PostType>("posts");
 export const commentsCollection = db.collection<CommentType>("comments");
 export const usersAcountsCollection = db.collection<UserAccountDBType>("accounts");
-export const refreshTokenCollection = db.collection<refreshTokenType>("refreshTokens")
+export const validTokenCollection = db.collection<refreshTokenType>("validTokens")
+export const inValidTokenCollection = db.collection<refreshTokenType>("inValidTokens")
 
 export async function runDb(){
     try {

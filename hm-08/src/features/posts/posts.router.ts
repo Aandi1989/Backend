@@ -26,7 +26,6 @@ export const getPostsRouter = () => {
         postQueryValidationMiddleware,
         async (req: RequestWithQuery<Partial<PostQueryType>>, res: Response<PostsWithQueryType>) => {
         const response = await postsQueryRepo.getPosts(postQueryParams(req.query));
-        // const refreshToken = req.cookies.refreshToken;
         res.status(HTTP_STATUSES.OK_200).json(response)
     })
     router.post('/', 

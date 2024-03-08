@@ -1,13 +1,16 @@
-import { ObjectId } from "mongodb";
-import { CreateUserModel } from "../features/users/models/CreateUserModel";
 import bcrypt from 'bcrypt';
-import {v4 as uuidv4} from 'uuid';
 import { add } from 'date-fns/add';
-import { Result, ResultCode, UserAccountDBType, UserOutputType } from "../types/types";
-import { usersRepository } from "../repositories/users-db-repository";
+import { ObjectId } from "mongodb";
+import { v4 as uuidv4 } from 'uuid';
+import { accountExistError, codeAlredyConfirmed, codeDoesntExist, codeExpired, emailAlredyConfirmed, emailDoesntExist } from "../assets/errorMessagesUtils";
+import { validTokenCollection } from "../db/db";
+import { CreateUserModel } from "../features/users/models/CreateUserModel";
 import { emailManager } from "../managers/email-manager";
-import { usersQueryRepo } from "../repositories/usersQueryRepository";
-import { accountExistError, codeAlredyConfirmed, codeDoesntExist, codeExpired, emailAlredyConfirmed, emailDoesntExist} from "../assets/errorMessagesUtils";
+import { authRepository } from "../repositories/auth-db-repository";
+import { authQueryRepo } from "../repositories/authQueryRepository";
+import { usersRepository } from "../repositories/users-db-repository";
+import { Result, ResultCode, UserAccountDBType, refreshTokenType } from "../types/types";
+import { jwtService } from '../application/jwt-service';
 
 export const authService = {
     async createUserAccount(data: CreateUserModel): Promise<Result>{
@@ -35,7 +38,7 @@ export const authService = {
                 isConfirmed: false
             }
         }
-        const existedUser = await usersQueryRepo.findByLoginOrEmail(email, login);
+        const existedUser = await authQueryRepo.findByLoginOrEmail(email, login);
         if(existedUser) {
             let result = existedUser.accountData.email === email
             ?  {code: ResultCode.Forbidden, errorsMessages: accountExistError('email', email)}
@@ -52,18 +55,18 @@ export const authService = {
         return createdUser;
     },
     async confirmEmail(code: string): Promise<Result>{
-        const account = await usersQueryRepo.findByConfirmationCode(code);
+        const account = await authQueryRepo.findByConfirmationCode(code);
         if(!account) return {code: ResultCode.Failed, errorsMessages: codeDoesntExist(code)};
         if(account.emailConfirmation.isConfirmed) return {code: ResultCode.AlredyConfirmed, errorsMessages: codeAlredyConfirmed(code)};
         if(account.emailConfirmation.expirationDate < new Date()) return {code: ResultCode.Failed, errorsMessages: codeExpired(code)};
-        return usersRepository.confirmEmail(account._id)
+        return authRepository.confirmEmail(account._id)
     },
     async resendEmail(email: string): Promise<Result>{
-        const account = await usersQueryRepo.findByLoginOrEmail(email)
+        const account = await authQueryRepo.findByLoginOrEmail(email)
         if(!account) return {code: ResultCode.Failed, errorsMessages: emailDoesntExist(email)};
         if(account.emailConfirmation.isConfirmed) return {code: ResultCode.Failed, errorsMessages: emailAlredyConfirmed(email)};
         const newConfirmationCode = uuidv4();
-        const updatedAccountData = await usersRepository.updateConfirmationCode(account._id, newConfirmationCode);
+        const updatedAccountData = await authRepository.updateConfirmationCode(account._id, newConfirmationCode);
         try {
             await emailManager.resendConfirmationalEmail(email, newConfirmationCode)
         } catch (error) {
@@ -71,6 +74,23 @@ export const authService = {
             return {code: ResultCode.Failed};
         }
         return updatedAccountData;
+    },
+    async addToken(token: refreshTokenType){
+        const addedToken = await authRepository.addToken(token);
+        return addedToken 
+    },
+    async checkRefreshToken(token: string){
+        const blockedToken = await authQueryRepo.getInvalidToken(token)
+        if (blockedToken) return {code: ResultCode.Forbidden};
+        const actualToken = await authQueryRepo.getValidToken(token);
+        if (!actualToken) return {code: ResultCode.NotFound};
+        const tokenData = await jwtService.getRefreshTokenData(token);
+        if(Date.now() > tokenData.exp * 1000) return {code: ResultCode.Expired}
+        return {code: ResultCode.Success}
+    },
+    async revokeToken(token: refreshTokenType){
+        const revokedToken = await authRepository.revokeToken(token)
+        return revokedToken;
     },
     async _generateHash(password: string, salt: string){
         const hash = await bcrypt.hash(password, salt)
