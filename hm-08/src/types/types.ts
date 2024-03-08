@@ -165,3 +165,7 @@ export type errorMessageType = {
         field: string
     }[]
 }
+
+export type refreshTokenType = {
+    refreshToken: string
+}

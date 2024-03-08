@@ -34,8 +34,10 @@ export const getAuthRouter = () => {
         async(req:RequestWithBody<AuthBodyModel>, res:Response) => {
             const user = await usersService.checkCredentials(req.body)
             if(user){
-                const token = await jwtService.createJWT(user.accountData)
-                res.status(HTTP_STATUSES.OK_200).send(token)
+                const accessToken = await jwtService.createAccessToken(user.accountData)
+                const { refreshToken } = await jwtService.createRefreshToken(user.accountData)
+                res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true }); 
+                res.status(HTTP_STATUSES.OK_200).send(accessToken)
             }else{
                 res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401)
             }
