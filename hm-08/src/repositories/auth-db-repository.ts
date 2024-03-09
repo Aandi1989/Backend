@@ -16,8 +16,8 @@ export const authRepository = {
         const result = await validTokenCollection.insertOne(token)
         return result
     },
-    async revokeToken(token: refreshTokenType){
-        const result = await inValidTokenCollection.insertOne(token)
+    async revokeToken(token: string){
+        const result = await inValidTokenCollection.insertOne({refreshToken: token})
         return result
     }
 }

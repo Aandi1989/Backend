@@ -88,7 +88,7 @@ export const authService = {
         if(Date.now() > tokenData.exp * 1000) return {code: ResultCode.Expired}
         return {code: ResultCode.Success}
     },
-    async revokeToken(token: refreshTokenType){
+    async revokeToken(token: string){
         const revokedToken = await authRepository.revokeToken(token)
         return revokedToken;
     },
