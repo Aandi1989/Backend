@@ -5,14 +5,14 @@ import { appConfig } from "../../config";
 
 
 export const jwtService = {
-    async createAccessToken(user: UserType){
-        const accessToken = jwt.sign({userId: user.id}, appConfig.JWT_ACCESS_SECRET, {expiresIn: appConfig.EXPIRE_ACCESS_TOKER_TIME})
+    async createAccessToken(userId: string){
+        const accessToken = jwt.sign({userId: userId}, appConfig.JWT_ACCESS_SECRET, {expiresIn: appConfig.EXPIRE_ACCESS_TOKER_TIME})
         return {
             "accessToken": accessToken
         }
     },
-    async createRefreshToken(user: UserType){
-        const refreshToken = jwt.sign({userId: user.id}, appConfig.JWT_REFRESH_SECRET, {expiresIn: appConfig.EXPIRE_REFRESH_TOKEN_TIME})
+    async createRefreshToken(userId: string){
+        const refreshToken = jwt.sign({userId: userId}, appConfig.JWT_REFRESH_SECRET, {expiresIn: appConfig.EXPIRE_REFRESH_TOKEN_TIME})
         return {
             "refreshToken": refreshToken
         }

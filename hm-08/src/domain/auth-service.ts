@@ -79,18 +79,26 @@ export const authService = {
         const addedToken = await authRepository.addToken(token);
         return addedToken 
     },
-    async checkRefreshToken(token: string){
+    async checkRefreshToken(token: string): Promise<Result>{
         const blockedToken = await authQueryRepo.getInvalidToken(token)
         if (blockedToken) return {code: ResultCode.Forbidden};
         const actualToken = await authQueryRepo.getValidToken(token);
         if (!actualToken) return {code: ResultCode.NotFound};
         const tokenData = await jwtService.getRefreshTokenData(token);
         if(Date.now() > tokenData.exp * 1000) return {code: ResultCode.Expired}
-        return {code: ResultCode.Success}
+        return {code: ResultCode.Success, data: tokenData.userId }
     },
     async revokeToken(token: string){
         const revokedToken = await authRepository.revokeToken(token)
         return revokedToken;
+    },
+    async refreshToken(token: string){
+        const userData = await jwtService.getRefreshTokenData(token);
+        const newAccessToken = await jwtService.createAccessToken(userData.userId);
+        const newRefreshToken = await jwtService.createRefreshToken(userData.userId);
+        const addedNewToken = await authRepository.addToken(newRefreshToken);
+        const revokedToken = await authRepository.revokeToken(token);
+        return {newAccessToken, newRefreshToken}
     },
     async _generateHash(password: string, salt: string){
         const hash = await bcrypt.hash(password, salt)

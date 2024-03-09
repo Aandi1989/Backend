@@ -33,13 +33,13 @@ export const getAuthRouter = () => {
         async(req:RequestWithBody<AuthBodyModel>, res:Response) => {
             const user = await usersService.checkCredentials(req.body)
             if(user){
-                const accessToken = await jwtService.createAccessToken(user.accountData)
-                const  refreshToken  = await jwtService.createRefreshToken(user.accountData)
+                const accessToken = await jwtService.createAccessToken(user.accountData.id)
+                const  refreshToken  = await jwtService.createRefreshToken(user.accountData.id)
                 const validRefreshToken = await authService.addToken(refreshToken)
                 res.cookie('refreshToken', refreshToken.refreshToken, { httpOnly: true, secure: true }); 
-                res.status(HTTP_STATUSES.OK_200).send(accessToken)
+                return res.status(HTTP_STATUSES.OK_200).send(accessToken)
             }else{
-                res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401)
+                return res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401)
             }
         }),
     router.post('/logout',
@@ -49,6 +49,15 @@ export const getAuthRouter = () => {
             if(response.code !== ResultCode.Success) return res.send(HTTP_STATUSES.UNAUTHORIZED_401);
             const result = await authService.revokeToken(refreshToken);
             return res.send(HTTP_STATUSES.NO_CONTENT_204);
+        }),
+    router.post('/refresh-token',
+        async(req: Request, res: Response) => {
+            const refreshToken = req.cookies.refreshToken;
+            const response = await authService.checkRefreshToken(refreshToken);
+            if(response.code !== ResultCode.Success) return res.send(HTTP_STATUSES.UNAUTHORIZED_401);
+            const {newAccessToken, newRefreshToken} = await authService.refreshToken(refreshToken);
+            res.cookie('refreshToken', newRefreshToken.refreshToken, { httpOnly: true, secure: true }); 
+            return res.status(HTTP_STATUSES.OK_200).send(newAccessToken)
         }),
     router.post('/registration',
         ...userCreateValidator,
