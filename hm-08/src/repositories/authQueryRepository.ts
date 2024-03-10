@@ -1,4 +1,4 @@
-import { inValidTokenCollection, usersAcountsCollection, validTokenCollection } from "../db/db";
+import { inValidTokenCollection, usersAcountsCollection } from "../db/db";
 
 export const authQueryRepo = {
     async findByConfirmationCode(code: string){
@@ -14,8 +14,4 @@ export const authQueryRepo = {
         const result = await inValidTokenCollection.findOne({refreshToken: token})
         return result;
     },
-    async getValidToken(token: string){
-        const result = await validTokenCollection.findOne({refreshToken: token})
-        return result?.refreshToken;
-    }
 }

@@ -35,7 +35,6 @@ export const getAuthRouter = () => {
             if(user){
                 const accessToken = await jwtService.createAccessToken(user.accountData.id)
                 const  refreshToken  = await jwtService.createRefreshToken(user.accountData.id)
-                const validRefreshToken = await authService.addToken(refreshToken)
                 res.cookie('refreshToken', refreshToken.refreshToken, { httpOnly: true, secure: true }); 
                 return res.status(HTTP_STATUSES.OK_200).send(accessToken)
             }else{
@@ -43,7 +42,6 @@ export const getAuthRouter = () => {
             }
         }),
     router.post('/logout',
-        // accessTokenGuard, //! temporary just for testing if refreshToken expired
         async(req: Request, res: Response) => {
             const refreshToken = req.cookies.refreshToken;
             const response = await authService.checkRefreshToken(refreshToken);

@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
-import { inValidTokenCollection, usersAcountsCollection, validTokenCollection } from "../db/db";
-import { Result, ResultCode, refreshTokenType } from "../types/types";
+import { inValidTokenCollection, usersAcountsCollection } from "../db/db";
+import { Result, ResultCode } from "../types/types";
 
 
 export const authRepository = {
@@ -11,10 +11,6 @@ export const authRepository = {
     async updateConfirmationCode(_id: ObjectId, newCode: string): Promise<Result>{
         const result = await usersAcountsCollection.updateOne({_id}, {$set: {'emailConfirmation.confirmationCode': newCode}})
         return result.modifiedCount === 1 ? {code: ResultCode.Success} : {code: ResultCode.Failed};
-    },
-    async addToken(token: refreshTokenType){
-        const result = await validTokenCollection.insertOne(token)
-        return result
     },
     async revokeToken(token: string){
         const result = await inValidTokenCollection.insertOne({refreshToken: token})

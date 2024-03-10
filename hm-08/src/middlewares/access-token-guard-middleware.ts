@@ -29,7 +29,7 @@ export const accessTokenGuard = async (req: Request,
        
     //     const newRefreshToken = await jwtService.createRefreshToken(accessTokenData.userId);
     //     const revokedToken = await authService.revokeToken(refreshToken);
-    //     const addedToken = await authService.addToken(newRefreshToken);
+    //     const addedToken = await authService.addToken(newRefreshToken); /*we dont need this line if we dont save valid refreshTokens in db*/
         
     //     res.cookie('refreshToken', newRefreshToken.refreshToken, { httpOnly: true, secure: true }); 
 

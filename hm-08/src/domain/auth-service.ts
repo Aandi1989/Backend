@@ -3,7 +3,6 @@ import { add } from 'date-fns/add';
 import { ObjectId } from "mongodb";
 import { v4 as uuidv4 } from 'uuid';
 import { accountExistError, codeAlredyConfirmed, codeDoesntExist, codeExpired, emailAlredyConfirmed, emailDoesntExist } from "../assets/errorMessagesUtils";
-import { validTokenCollection } from "../db/db";
 import { CreateUserModel } from "../features/users/models/CreateUserModel";
 import { emailManager } from "../managers/email-manager";
 import { authRepository } from "../repositories/auth-db-repository";
@@ -75,16 +74,11 @@ export const authService = {
         }
         return updatedAccountData;
     },
-    async addToken(token: refreshTokenType){
-        const addedToken = await authRepository.addToken(token);
-        return addedToken 
-    },
     async checkRefreshToken(token: string): Promise<Result>{
         const blockedToken = await authQueryRepo.getInvalidToken(token)
         if (blockedToken) return {code: ResultCode.Forbidden};
-        const actualToken = await authQueryRepo.getValidToken(token);
-        if (!actualToken) return {code: ResultCode.NotFound};
         const tokenData = await jwtService.getRefreshTokenData(token);
+        if(!tokenData.userId) return {code:ResultCode.NotFound};
         if(tokenData.message === 'jwt expired') return {code: ResultCode.Expired}
         return {code: ResultCode.Success, data: tokenData.userId }
     },
@@ -96,7 +90,6 @@ export const authService = {
         const userData = await jwtService.getRefreshTokenData(token);
         const newAccessToken = await jwtService.createAccessToken(userData.userId);
         const newRefreshToken = await jwtService.createRefreshToken(userData.userId);
-        const addedNewToken = await authRepository.addToken(newRefreshToken);
         const revokedToken = await authRepository.revokeToken(token);
         return {newAccessToken, newRefreshToken}
     },
