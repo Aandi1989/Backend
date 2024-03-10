@@ -85,7 +85,7 @@ export const authService = {
         const actualToken = await authQueryRepo.getValidToken(token);
         if (!actualToken) return {code: ResultCode.NotFound};
         const tokenData = await jwtService.getRefreshTokenData(token);
-        if(Date.now() > tokenData.exp * 1000) return {code: ResultCode.Expired}
+        if(tokenData.message === 'jwt expired') return {code: ResultCode.Expired}
         return {code: ResultCode.Success, data: tokenData.userId }
     },
     async revokeToken(token: string){

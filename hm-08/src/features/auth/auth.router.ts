@@ -43,6 +43,7 @@ export const getAuthRouter = () => {
             }
         }),
     router.post('/logout',
+        // accessTokenGuard, //! temporary just for testing if refreshToken expired
         async(req: Request, res: Response) => {
             const refreshToken = req.cookies.refreshToken;
             const response = await authService.checkRefreshToken(refreshToken);

@@ -22,7 +22,7 @@ export const jwtService = {
             const result: any = jwt.verify(token, appConfig.JWT_ACCESS_SECRET)
             return result
         }catch(error){
-            return null
+            return error
         }
     },
     async getRefreshTokenData(token: string){
@@ -30,7 +30,7 @@ export const jwtService = {
             const result: any = jwt.verify(token, appConfig.JWT_REFRESH_SECRET)
             return result
         } catch (error) {
-            return null
+            return error
         }
     }
 }
