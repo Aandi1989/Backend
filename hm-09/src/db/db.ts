@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-import { BlogType, CommentType, PostType, UserAccountDBType, UserType, refreshTokenType } from "../types/types";
+import { BlogType, CommentType, PostType, UserAccountDBType, apiCallType, refreshTokenType, sessionType } from "../types/types";
 import { appConfig } from "../../config";
 
 
@@ -13,7 +13,9 @@ export const blogsCollection = db.collection<BlogType>("blogs");
 export const postsCollection = db.collection<PostType>("posts");
 export const commentsCollection = db.collection<CommentType>("comments");
 export const usersAcountsCollection = db.collection<UserAccountDBType>("accounts");
-export const inValidTokenCollection = db.collection<refreshTokenType>("inValidTokens")
+export const inValidTokenCollection = db.collection<refreshTokenType>("inValidTokens");
+export const sessionsCollection = db.collection<sessionType>("sessions");
+export const apiCallsCollection = db.collection<apiCallType>("apiCalls");
 
 export async function runDb(){
     try {

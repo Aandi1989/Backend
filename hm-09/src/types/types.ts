@@ -169,3 +169,20 @@ export type errorMessageType = {
 export type refreshTokenType = {
     refreshToken: string
 }
+
+export type sessionType = {
+    user_id: string
+    device_id: string
+    iat: string
+    device_name: string
+    ip: string
+    exp: string
+}
+
+export type apiCallType = {
+    ip: string
+    url: string
+    date: Date
+}
+
+

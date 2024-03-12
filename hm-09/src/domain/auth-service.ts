@@ -78,6 +78,7 @@ export const authService = {
         const blockedToken = await authQueryRepo.getInvalidToken(token)
         if (blockedToken) return {code: ResultCode.Forbidden};
         const tokenData = await jwtService.getRefreshTokenData(token);
+        // const time = new Date (tokenData.iat * 1000).toISOString();
         if(!tokenData.userId) return {code:ResultCode.NotFound};
         if(tokenData.message === 'jwt expired') return {code: ResultCode.Expired}
         return {code: ResultCode.Success, data: tokenData.userId }

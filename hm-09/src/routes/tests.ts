@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { HTTP_STATUSES } from '../utils';
-import { blogsCollection, commentsCollection, postsCollection, usersAcountsCollection } from '../db/db';
+import { apiCallsCollection, blogsCollection, commentsCollection, postsCollection, sessionsCollection, usersAcountsCollection } from '../db/db';
 
 export const getTestRouter = () => {
     const router = express.Router();
@@ -10,6 +10,8 @@ export const getTestRouter = () => {
         await postsCollection.deleteMany({});
         await commentsCollection.deleteMany({});
         await usersAcountsCollection.deleteMany({});
+        await sessionsCollection.deleteMany({});
+        await apiCallsCollection.deleteMany({});
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     })
 
