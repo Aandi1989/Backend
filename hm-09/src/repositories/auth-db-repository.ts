@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { apiCallsCollection, inValidTokenCollection, sessionsCollection, usersAcountsCollection } from "../db/db";
+import { apiCallsCollection, sessionsCollection, usersAcountsCollection } from "../db/db";
 import { Result, ResultCode, apiCallType, refreshTokenDataType, sessionType } from "../types/types";
 
 

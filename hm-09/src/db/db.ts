@@ -13,7 +13,6 @@ export const blogsCollection = db.collection<BlogType>("blogs");
 export const postsCollection = db.collection<PostType>("posts");
 export const commentsCollection = db.collection<CommentType>("comments");
 export const usersAcountsCollection = db.collection<UserAccountDBType>("accounts");
-export const inValidTokenCollection = db.collection<refreshTokenType>("inValidTokens");
 export const sessionsCollection = db.collection<sessionType>("sessions");
 export const apiCallsCollection = db.collection<apiCallType>("apiCalls");
 

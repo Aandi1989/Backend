@@ -7,6 +7,7 @@ import { getUsersRouter } from "./features/users/users.router"
 import { getAuthRouter } from "./features/auth/auth.router"
 import { getCommentsRouter } from "./features/comments/comments.router"
 import cookieParser from "cookie-parser"
+import { getSecurityRouter } from "./features/security/security.router"
 
 
 export const app = express()
@@ -28,5 +29,6 @@ app.use(RouterPaths.blogs, getBlogsRouter())
 app.use(RouterPaths.users, getUsersRouter())
 app.use(RouterPaths.auth, getAuthRouter())
 app.use(RouterPaths.comments, getCommentsRouter())
+app.use(RouterPaths.security, getSecurityRouter())
 app.use(RouterPaths.__test__, getTestRouter())
 

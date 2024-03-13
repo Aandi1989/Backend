@@ -179,6 +179,16 @@ export type sessionType = {
     exp: string
 }
 
+export type DBsessionType = {
+    _id: ObjectId
+    userId: string
+    deviceId: string
+    iat: string
+    deviceName: string
+    ip: string
+    exp: string
+}
+
 export type apiCallType = {
     ip: string
     url: string

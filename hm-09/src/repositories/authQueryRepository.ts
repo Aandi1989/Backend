@@ -1,4 +1,4 @@
-import { apiCallsCollection, inValidTokenCollection, sessionsCollection, usersAcountsCollection } from "../db/db";
+import { apiCallsCollection, sessionsCollection, usersAcountsCollection } from "../db/db";
 import { apiCallType } from "../types/types";
 
 export const authQueryRepo = {
