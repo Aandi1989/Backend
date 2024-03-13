@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
-import { apiCallsCollection, inValidTokenCollection, usersAcountsCollection } from "../db/db";
-import { Result, ResultCode, apiCallType } from "../types/types";
+import { apiCallsCollection, inValidTokenCollection, sessionsCollection, usersAcountsCollection } from "../db/db";
+import { Result, ResultCode, apiCallType, sessionType } from "../types/types";
 
 
 export const authRepository = {
@@ -18,6 +18,10 @@ export const authRepository = {
     },
     async addRequest(request: apiCallType){
         const result = await apiCallsCollection.insertOne(request);
+        return result;
+    },
+    async createSession(newSession: sessionType){
+        const result = await sessionsCollection.insertOne(newSession);
         return result;
     }
 }

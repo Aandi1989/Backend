@@ -8,7 +8,7 @@ import { emailManager } from "../managers/email-manager";
 import { authRepository } from "../repositories/auth-db-repository";
 import { authQueryRepo } from "../repositories/authQueryRepository";
 import { usersRepository } from "../repositories/users-db-repository";
-import { Result, ResultCode, UserAccountDBType, apiCallType, refreshTokenType } from "../types/types";
+import { Result, ResultCode, UserAccountDBType, apiCallType, refreshTokenType, sessionType } from "../types/types";
 import { jwtService } from '../application/jwt-service';
 
 export const authService = {
@@ -99,8 +99,37 @@ export const authService = {
         return addedRequest;
 
     },
+    async createSession(refreshToken: string, ip: string, deviceName: string = 'unknown'){
+        const {userId, deviceId, iat, exp } = await jwtService.getRefreshTokenData(refreshToken);
+        const newSession: sessionType = {
+            userId,
+            deviceId,
+            iat: new Date(iat * 1000).toISOString(),
+            deviceName,
+            ip,
+            exp: new Date(exp * 1000).toISOString()
+        }
+        const creeatedSession = await authRepository.createSession(newSession);
+        return creeatedSession;
+
+    },
     async _generateHash(password: string, salt: string){
         const hash = await bcrypt.hash(password, salt)
         return hash
     }
 }
+
+/*
+deviceId
+: 
+"979e4e61-06ed-45e8-9076-3eb2c9bcdca9"
+exp
+: 
+1710325076
+iat
+: 
+1710321476
+userId
+: 
+"1710248789542"
+*/

@@ -1,6 +1,6 @@
-import { DBUserType, UserType } from "../types/types";
 import jwt from 'jsonwebtoken';
 import { appConfig } from "../../config";
+import { v4 as uuidv4 } from 'uuid';
 
 
 
@@ -11,8 +11,8 @@ export const jwtService = {
             "accessToken": accessToken
         }
     },
-    async createRefreshToken(userId: string){
-        const refreshToken = jwt.sign({userId: userId}, appConfig.JWT_REFRESH_SECRET, {expiresIn: appConfig.EXPIRE_REFRESH_TOKEN_TIME})
+    async createRefreshToken(userId: string, deviceId: string = uuidv4()){
+        const refreshToken = jwt.sign({userId: userId, deviceId: deviceId}, appConfig.JWT_REFRESH_SECRET, {expiresIn: appConfig.EXPIRE_REFRESH_TOKEN_TIME})
         return {
             "refreshToken": refreshToken
         }

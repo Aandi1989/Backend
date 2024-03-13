@@ -171,10 +171,10 @@ export type refreshTokenType = {
 }
 
 export type sessionType = {
-    user_id: string
-    device_id: string
+    userId: string
+    deviceId: string
     iat: string
-    device_name: string
+    deviceName: string
     ip: string
     exp: string
 }
