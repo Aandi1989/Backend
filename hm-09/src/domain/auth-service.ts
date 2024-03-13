@@ -83,10 +83,10 @@ export const authService = {
         if(tokenData.message === 'jwt expired') return {code: ResultCode.Expired}
         return {code: ResultCode.Success}
     },
-    // this method must be deleted 
-    async revokeToken(token: string){
-        const revokedToken = await authRepository.revokeToken(token)
-        return revokedToken;
+    async revokeSession(token: string){
+        const tokenData = await jwtService.getRefreshTokenData(token);
+        const revokedSession = await authRepository.revokeSession(tokenData);
+        return revokedSession;
     },
     async refreshToken(token: string, ip: string){
         const tokenData = await jwtService.getRefreshTokenData(token);

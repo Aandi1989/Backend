@@ -12,9 +12,9 @@ export const authRepository = {
         const result = await usersAcountsCollection.updateOne({_id}, {$set: {'emailConfirmation.confirmationCode': newCode}})
         return result.modifiedCount === 1 ? {code: ResultCode.Success} : {code: ResultCode.Failed};
     },
-    async revokeToken(token: string){
-        const result = await inValidTokenCollection.insertOne({refreshToken: token})
-        return result
+    async revokeSession(tokenData: refreshTokenDataType){
+        const result = await sessionsCollection.deleteOne({userId: tokenData.userId, deviceId: tokenData.deviceId});
+        return result;
     },
     async addRequest(request: apiCallType){
         const result = await apiCallsCollection.insertOne(request);

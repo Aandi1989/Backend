@@ -11,10 +11,6 @@ export const authQueryRepo = {
                                                                         { 'accountData.email': email } ] });
         return foundedAccount;
     },
-    // async getInvalidToken(token: string){
-    //     const result = await inValidTokenCollection.findOne({refreshToken: token})
-    //     return result;
-    // },
     async countRequests(request: apiCallType, currentDate: Date){
         const result = await apiCallsCollection.countDocuments({
             ip: request.ip,

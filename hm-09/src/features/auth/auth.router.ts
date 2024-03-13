@@ -50,7 +50,7 @@ export const getAuthRouter = () => {
             const refreshToken = req.cookies.refreshToken;
             const response = await authService.checkRefreshToken(refreshToken);
             if(response.code !== ResultCode.Success) return res.send(HTTP_STATUSES.UNAUTHORIZED_401);
-            const result = await authService.revokeToken(refreshToken);
+            const result = await authService.revokeSession(refreshToken);
             return res.send(HTTP_STATUSES.NO_CONTENT_204);
         }),
     router.post('/refresh-token',
@@ -65,6 +65,7 @@ export const getAuthRouter = () => {
     router.post('/registration',
         ...userCreateValidator,
         inputValidationMiddleware,
+        apiCallsGuard,
         async (req: RequestWithBody<CreateUserModel>, res: Response) => {
             const result = await authService.createUserAccount(req.body);
             if(result.code === ResultCode.Success) return res.send(HTTP_STATUSES.NO_CONTENT_204)
@@ -74,6 +75,7 @@ export const getAuthRouter = () => {
     router.post('/registration-confirmation',
         emailCofirmCodeValidator,
         inputValidationMiddleware,
+        apiCallsGuard,
         async (req: RequestWithBody<ConfirmCodeModel>, res: Response) => {
             const result = await authService.confirmEmail(req.body.code);
             if(result.code === ResultCode.Success) return res.send(HTTP_STATUSES.NO_CONTENT_204)
@@ -82,6 +84,7 @@ export const getAuthRouter = () => {
     router.post('/registration-email-resending',
         emailValidator,
         inputValidationMiddleware,
+        apiCallsGuard,
         async (req: RequestWithBody<ResendEmailModel>, res: Response) => {
             const result = await authService.resendEmail(req.body.email);
             if(result.code === ResultCode.Success) return res.send(HTTP_STATUSES.NO_CONTENT_204)
