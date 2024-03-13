@@ -58,7 +58,7 @@ export const getAuthRouter = () => {
             const refreshToken = req.cookies.refreshToken;
             const response = await authService.checkRefreshToken(refreshToken);
             if(response.code !== ResultCode.Success) return res.send(HTTP_STATUSES.UNAUTHORIZED_401);
-            const {newAccessToken, newRefreshToken} = await authService.refreshToken(refreshToken);
+            const { newAccessToken, newRefreshToken } = await authService.refreshToken(refreshToken, req.ip!);
             res.cookie('refreshToken', newRefreshToken.refreshToken, { httpOnly: true, secure: true }); 
             return res.status(HTTP_STATUSES.OK_200).send(newAccessToken)
         }),

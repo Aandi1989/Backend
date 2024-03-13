@@ -75,23 +75,26 @@ export const authService = {
         return updatedAccountData;
     },
     async checkRefreshToken(token: string): Promise<Result>{
-        const blockedToken = await authQueryRepo.getInvalidToken(token)
-        if (blockedToken) return {code: ResultCode.Forbidden};
         const tokenData = await jwtService.getRefreshTokenData(token);
-        // const time = new Date (tokenData.iat * 1000).toISOString();
         if(!tokenData.userId) return {code:ResultCode.NotFound};
+        const tokenExist = await authQueryRepo
+            .getSession(tokenData.userId, tokenData.deviceId, new Date(tokenData.iat*1000).toISOString());
+        if(!tokenExist) return {code: ResultCode.Forbidden};
         if(tokenData.message === 'jwt expired') return {code: ResultCode.Expired}
-        return {code: ResultCode.Success, data: tokenData.userId }
+        return {code: ResultCode.Success}
     },
+    // this method must be deleted 
     async revokeToken(token: string){
         const revokedToken = await authRepository.revokeToken(token)
         return revokedToken;
     },
-    async refreshToken(token: string){
-        const userData = await jwtService.getRefreshTokenData(token);
-        const newAccessToken = await jwtService.createAccessToken(userData.userId);
-        const newRefreshToken = await jwtService.createRefreshToken(userData.userId);
-        const revokedToken = await authRepository.revokeToken(token);
+    async refreshToken(token: string, ip: string){
+        const tokenData = await jwtService.getRefreshTokenData(token);
+        const newAccessToken = await jwtService.createAccessToken(tokenData.userId);
+        const newRefreshToken = await jwtService.createRefreshToken(tokenData.userId, tokenData.deviceId);
+        const newTokenData = await jwtService.getRefreshTokenData(newRefreshToken.refreshToken)
+        const updatedSession = await authRepository
+            .updateSession(tokenData, newTokenData, ip);
         return {newAccessToken, newRefreshToken}
     },
     async addRequest(request: apiCallType){
@@ -118,18 +121,3 @@ export const authService = {
         return hash
     }
 }
-
-/*
-deviceId
-: 
-"979e4e61-06ed-45e8-9076-3eb2c9bcdca9"
-exp
-: 
-1710325076
-iat
-: 
-1710321476
-userId
-: 
-"1710248789542"
-*/

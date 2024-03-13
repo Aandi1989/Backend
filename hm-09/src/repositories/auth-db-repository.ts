@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import { apiCallsCollection, inValidTokenCollection, sessionsCollection, usersAcountsCollection } from "../db/db";
-import { Result, ResultCode, apiCallType, sessionType } from "../types/types";
+import { Result, ResultCode, apiCallType, refreshTokenDataType, sessionType } from "../types/types";
 
 
 export const authRepository = {
@@ -23,5 +23,13 @@ export const authRepository = {
     async createSession(newSession: sessionType){
         const result = await sessionsCollection.insertOne(newSession);
         return result;
-    }
+    },
+    async updateSession(oldData:refreshTokenDataType, newData:refreshTokenDataType, ip:string){
+        const oldIat = new Date (oldData.iat * 1000).toISOString();
+        const newIat = new Date (newData.iat * 1000).toISOString();
+        const newExp = new Date (newData.exp * 1000).toISOString();
+        const result = await sessionsCollection.updateOne({userId: oldData.userId, deviceId: oldData.deviceId, iat: oldIat},
+            { $set: {iat: newIat, exp: newExp, ip: ip }});
+        return result;
+    },
 }

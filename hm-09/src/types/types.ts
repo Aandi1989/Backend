@@ -185,4 +185,11 @@ export type apiCallType = {
     date: Date
 }
 
+export type refreshTokenDataType = {
+    userId: string
+    deviceId: string
+    iat: number
+    exp: number
+}
+
 

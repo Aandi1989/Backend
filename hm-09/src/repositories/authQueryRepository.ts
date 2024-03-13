@@ -1,4 +1,4 @@
-import { apiCallsCollection, inValidTokenCollection, usersAcountsCollection } from "../db/db";
+import { apiCallsCollection, inValidTokenCollection, sessionsCollection, usersAcountsCollection } from "../db/db";
 import { apiCallType } from "../types/types";
 
 export const authQueryRepo = {
@@ -11,10 +11,10 @@ export const authQueryRepo = {
                                                                         { 'accountData.email': email } ] });
         return foundedAccount;
     },
-    async getInvalidToken(token: string){
-        const result = await inValidTokenCollection.findOne({refreshToken: token})
-        return result;
-    },
+    // async getInvalidToken(token: string){
+    //     const result = await inValidTokenCollection.findOne({refreshToken: token})
+    //     return result;
+    // },
     async countRequests(request: apiCallType, currentDate: Date){
         const result = await apiCallsCollection.countDocuments({
             ip: request.ip,
@@ -22,6 +22,9 @@ export const authQueryRepo = {
             date: { $gt: currentDate}
         });
         return result;
-        
-    }
+    },
+    async getSession(userId: string, deviceId: string, iat: string){
+        const result = await sessionsCollection.findOne({userId, deviceId, iat})
+        return result;
+    },
 }
