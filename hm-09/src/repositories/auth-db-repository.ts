@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
-import { inValidTokenCollection, usersAcountsCollection } from "../db/db";
-import { Result, ResultCode } from "../types/types";
+import { apiCallsCollection, inValidTokenCollection, usersAcountsCollection } from "../db/db";
+import { Result, ResultCode, apiCallType } from "../types/types";
 
 
 export const authRepository = {
@@ -15,5 +15,9 @@ export const authRepository = {
     async revokeToken(token: string){
         const result = await inValidTokenCollection.insertOne({refreshToken: token})
         return result
+    },
+    async addRequest(request: apiCallType){
+        const result = await apiCallsCollection.insertOne(request);
+        return result;
     }
 }

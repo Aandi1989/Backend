@@ -13,7 +13,12 @@ export const app = express()
 
 const jsonBodyMiddleware = express.json()
 
+// for getting ip from req.ip
+app.set('trust proxy', true)
+
 app.use(jsonBodyMiddleware)
+
+// for getting cookies directly from req const coolie_name = req.cookies.cookie_name
 app.use(cookieParser())
 
 

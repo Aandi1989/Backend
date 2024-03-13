@@ -13,6 +13,7 @@ import { CreateUserModel } from "../users/models/CreateUserModel";
 import { AuthBodyModel } from "./Models/AuthBodyModel";
 import { ConfirmCodeModel } from "./Models/ConfirCodeModel";
 import { ResendEmailModel } from "./Models/ResendEmailModel";
+import { apiCallsGuard } from "../../middlewares/api-calls-limit-guard-middleware";
 
 
 export const getAuthRouter = () => {
@@ -30,6 +31,7 @@ export const getAuthRouter = () => {
     router.post('/login',
         ...authValidator,
         inputValidationMiddleware,
+        apiCallsGuard,
         async(req:RequestWithBody<AuthBodyModel>, res:Response) => {
             const user = await usersService.checkCredentials(req.body)
             if(user){

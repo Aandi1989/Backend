@@ -7,6 +7,7 @@ export enum HTTP_STATUSES {
     UNAUTHORIZED_401 = 401,
     ACCESS_FORBIDDEN_403 = 403,
     NOT_FOUND_404 = 404,
+    TO_MANY_REQUESTS_429 = 429,
 }
 
 export const RouterPaths = {

@@ -8,7 +8,7 @@ import { emailManager } from "../managers/email-manager";
 import { authRepository } from "../repositories/auth-db-repository";
 import { authQueryRepo } from "../repositories/authQueryRepository";
 import { usersRepository } from "../repositories/users-db-repository";
-import { Result, ResultCode, UserAccountDBType, refreshTokenType } from "../types/types";
+import { Result, ResultCode, UserAccountDBType, apiCallType, refreshTokenType } from "../types/types";
 import { jwtService } from '../application/jwt-service';
 
 export const authService = {
@@ -93,6 +93,11 @@ export const authService = {
         const newRefreshToken = await jwtService.createRefreshToken(userData.userId);
         const revokedToken = await authRepository.revokeToken(token);
         return {newAccessToken, newRefreshToken}
+    },
+    async addRequest(request: apiCallType){
+        const addedRequest = await authRepository.addRequest(request);
+        return addedRequest;
+
     },
     async _generateHash(password: string, salt: string){
         const hash = await bcrypt.hash(password, salt)
