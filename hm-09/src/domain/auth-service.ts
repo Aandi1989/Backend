@@ -46,7 +46,8 @@ export const authService = {
         }
         const createdUser = await usersRepository.createUser(newAccount);
         try {
-            await emailManager.sendConfirmationEmail(newAccount);
+            // comented to avoid annoying messages during testing
+            // await emailManager.sendConfirmationEmail(newAccount);
         } catch (error) {
             console.log(error)
             return {code: ResultCode.Failed};
@@ -67,7 +68,8 @@ export const authService = {
         const newConfirmationCode = uuidv4();
         const updatedAccountData = await authRepository.updateConfirmationCode(account._id, newConfirmationCode);
         try {
-            await emailManager.resendConfirmationalEmail(email, newConfirmationCode)
+            // comented to avoid annoying messages during testing
+            // await emailManager.resendConfirmationalEmail(email, newConfirmationCode)
         } catch (error) {
             console.log(error)
             return {code: ResultCode.Failed};

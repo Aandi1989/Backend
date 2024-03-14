@@ -8,10 +8,14 @@ export const securityService = {
         const tokenData = await jwtService.getRefreshTokenData(token);
         const deviceId = device_id ? device_id : tokenData.deviceId;
         if(!tokenData.userId) return {code:ResultCode.Failed};
-        const tokenExist = await securityQueryRepo.getSession(deviceId);
-        if(!tokenExist) return {code: ResultCode.NotFound};
+        const sessionExist = await securityQueryRepo.getSession(deviceId);
+        if(!sessionExist) return {code: ResultCode.NotFound};
         if(tokenData.message === 'jwt expired') return {code: ResultCode.Failed}
-        if(tokenData.deviceId !== deviceId) return {code:ResultCode.Forbidden};
+        if(tokenData.deviceId !== deviceId){
+            const sessionFromCookie = await securityQueryRepo.getSession(tokenData.deviceId);
+            if(sessionFromCookie?.userId == sessionExist.userId) return {code: ResultCode.Success};
+            return {code:ResultCode.Forbidden};
+        } 
         return {code: ResultCode.Success}
     },
     async revokeSession(deviceId: string){
