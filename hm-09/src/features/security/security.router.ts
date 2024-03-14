@@ -20,12 +20,15 @@ export const getSecurityRouter = () => {
         if(result.code === ResultCode.Forbidden) return res.send(HTTP_STATUSES.ACCESS_FORBIDDEN_403)
         if(result.code === ResultCode.Failed) return res.send(HTTP_STATUSES.UNAUTHORIZED_401)
         if(result.code === ResultCode.NotFound) return res.send(HTTP_STATUSES.NOT_FOUND_404)
-        if(result.code === ResultCode.Success){
-            const deletedDevice = await securityService.deleteDevice(req.params.id);
-            return res.send(HTTP_STATUSES.NO_CONTENT_204)
-        }
-        return res.send(HTTP_STATUSES.NOT_FOUND_404)
+        const deletedDevice = await securityService.revokeSession(req.params.id);
+        return res.send(HTTP_STATUSES.NO_CONTENT_204);
+    }),
+    router.delete('/devices', async (req: Request, res: Response) => {
+        const refreshToken = req.cookies.refreshToken;
+        const result = await securityService.checkRefreshToken(refreshToken);
+        if(result.code != ResultCode.Success) return res.send(HTTP_STATUSES.UNAUTHORIZED_401)
+        const deletedDevices = await securityService.revokeSessions(refreshToken);
+        return res.send(HTTP_STATUSES.NO_CONTENT_204);
     })
-
     return router;
 }
