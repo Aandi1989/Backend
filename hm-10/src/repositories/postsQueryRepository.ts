@@ -1,5 +1,6 @@
 import { CommentQueryOutputType, PostQueryOutputType } from "../assets/queryStringModifiers";
-import { commentsCollection, postsCollection } from "../db/db";
+import { postsModel } from "../db/models";
+// import { commentsCollection, postsCollection } from "../db/db";
 import { CommentType, DBCommentType, DBPostType, PostType, PostsWithQueryType } from "../types/types";
 
 export const postsQueryRepo = {
@@ -7,13 +8,13 @@ export const postsQueryRepo = {
         const {pageNumber, pageSize, sortBy, sortDirection } = query;
         const sortDir = sortDirection == "asc" ? 1 : -1;  
         const skip = (pageNumber -1) * pageSize;  
-        const totalCount = await postsCollection.countDocuments();
-        const dbPosts = await postsCollection
+        const totalCount = await postsModel.countDocuments();
+        const dbPosts = await postsModel
         .find()
         .sort({[sortBy]: sortDir, id: 1})
         .skip(skip)
         .limit(pageSize)
-        .toArray();
+        .lean();
         const pagesCount = Math.ceil(totalCount / pageSize);
         return {
             pagesCount: pagesCount,
@@ -26,20 +27,20 @@ export const postsQueryRepo = {
         }
     },
     async getPostById(id: string): Promise<PostType | null> {
-        let dbPost: DBPostType | null = await postsCollection.findOne({ id: id })
+        let dbPost: DBPostType | null = await postsModel.findOne({ id: id })
         return dbPost ? this._mapDBPostToBlogOutputModel(dbPost) : null;
     },
     async getPostsByBlogId(blogId: string, query:PostQueryOutputType): Promise<PostsWithQueryType>{
         const {pageNumber, pageSize, sortBy, sortDirection } = query;
         const sortDir = sortDirection == "asc" ? 1 : -1;  
         const skip = (pageNumber -1) * pageSize;  
-        const totalCount = await postsCollection.countDocuments({blogId: blogId});
-        const dbPosts = await postsCollection
+        const totalCount = await postsModel.countDocuments({blogId: blogId});
+        const dbPosts = await postsModel
         .find({blogId: blogId})
         .sort({[sortBy]: sortDir})
         .skip(skip)
         .limit(pageSize)
-        .toArray();
+        .lean();
         const pagesCount = Math.ceil(totalCount / pageSize);
         return {
             pagesCount: pagesCount,

@@ -1,19 +1,20 @@
-import { commentsCollection, postsCollection } from "../db/db"
+// import { commentsCollection, postsCollection } from "../db/db"
+import { postsModel } from "../db/models";
 import { CommentType, DBCommentType, DBPostType, PostType } from "../types/types";
 
 
 export const postsRepository = {
     async createPost(newPost: PostType): Promise<PostType>{
-        const result = await postsCollection.insertOne(newPost);
+        const result = await postsModel.insertMany([newPost]);
         // @ts-ignore
         return this._mapDBPostToBlogOutputModel(newPost);
     },
     async updatePost(id: string ,data: Partial<PostType>): Promise<boolean>{
-        const result = await postsCollection.updateOne({id: id},{ $set: {...data} })
+        const result = await postsModel.updateOne({id: id},{ $set: {...data} })
         return result.matchedCount === 1
     },
     async deletePost(id: string):Promise<boolean> {
-        const result = await postsCollection.deleteOne({id: id})
+        const result = await postsModel.deleteOne({id: id})
         return result.deletedCount === 1
     },
     _mapDBPostToBlogOutputModel(post: DBPostType): PostType {

@@ -1,5 +1,6 @@
 import { CommentQueryOutputType } from "../assets/queryStringModifiers";
-import { commentsCollection, postsCollection } from "../db/db";
+// import { commentsCollection, postsCollection } from "../db/db";
+import { commentsModel } from "../db/models";
 import { CommentType, DBCommentType } from "../types/types";
 
 export const commentsQueryRepo = {
@@ -7,13 +8,13 @@ export const commentsQueryRepo = {
         const {pageNumber, pageSize, sortBy, sortDirection } = query;
         const sortDir = sortDirection == "asc" ? 1 : -1;  
         const skip = (pageNumber -1) * pageSize;  
-        const totalCount = await commentsCollection.countDocuments({postId: postId});
-        const dbComments = await commentsCollection
+        const totalCount = await commentsModel.countDocuments({postId: postId});
+        const dbComments = await commentsModel
         .find({postId: postId})
         .sort({[sortBy]: sortDir})
         .skip(skip)
         .limit(pageSize)
-        .toArray();
+        .lean();
         const pagesCount = Math.ceil(totalCount / pageSize);
         return {
             pagesCount: pagesCount,
@@ -26,7 +27,7 @@ export const commentsQueryRepo = {
         }
     },
     async getCommentById(id: string):Promise<CommentType | null>{
-        let dbComment: DBCommentType | null = await commentsCollection.findOne({ id: id })
+        let dbComment: DBCommentType | null = await commentsModel.findOne({ id: id })
         return dbComment ? this._mapDBCommentTypeToCommentType(dbComment) : null;
     },
     _mapDBCommentTypeToCommentType(comment: DBCommentType): CommentType{

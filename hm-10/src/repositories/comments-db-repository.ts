@@ -1,13 +1,14 @@
-import { commentsCollection } from "../db/db"
+// import { commentsCollection } from "../db/db"
+import { commentsModel } from "../db/models"
 import { CommentType, Result, ResultCode, UserOutputType } from "../types/types"
 
 export const commentsRepository ={
     async createComment(newComment: CommentType):Promise<CommentType>{
-        const result = await commentsCollection.insertOne(newComment)
+        const result = await commentsModel.insertMany([newComment])
         return this._mapDBCommentTypeToCommentType(newComment)
     },
     async deleteComment(id: string): Promise<Result>{
-        const result = await commentsCollection.deleteOne({id: id})
+        const result = await commentsModel.deleteOne({id: id})
         if(result.deletedCount === 1) return {
             code: ResultCode.Success
         }
@@ -16,7 +17,7 @@ export const commentsRepository ={
         }
     },
     async updateComment(id: string, content: string): Promise<Result>{
-        const result = await commentsCollection.updateOne(
+        const result = await commentsModel.updateOne(
             {id: id},
             { $set: {content: content}}
         );
@@ -39,5 +40,3 @@ export const commentsRepository ={
         }
     }
 }
-
-// Ramon token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxNzA5MTMyNTIxMjUxIiwiaWF0IjoxNzA5Mzc2NjIzLCJleHAiOjE3MTE5Njg2MjN9.W45b09YB30P03SfYxmsTWQ1PgnJt7gnOxAvCUo9T1co

@@ -1,5 +1,6 @@
 import { UserQueryOutputType } from "../assets/queryStringModifiers";
-import { usersAcountsCollection } from "../db/db";
+import { usersModel } from "../db/models";
+// import { usersAcountsCollection } from "../db/db";
 import { UserAccountDBType, UserAuthType, UserOutputType, UsersWithQueryType } from "../types/types";
 
 export const usersQueryRepo = {
@@ -18,13 +19,13 @@ export const usersQueryRepo = {
             }
             searchFilter = { $or: orConditions };
         }
-        const totalCount = await usersAcountsCollection.countDocuments(searchFilter);
-        const dbUsers = await usersAcountsCollection
+        const totalCount = await usersModel.countDocuments(searchFilter);
+        const dbUsers = await usersModel
         .find(searchFilter)
         .sort({[`accountData.${sortBy}`]: sortDir})
         .skip(skip)
         .limit(pageSize)
-        .toArray();
+        .lean();
         const pagesCount = Math.ceil(totalCount / pageSize);
         return {
             pagesCount: pagesCount,
@@ -37,15 +38,15 @@ export const usersQueryRepo = {
         }
     },
     async getUserById(id: string): Promise<UserOutputType | null>{
-        let dbUser: UserAccountDBType | null = await usersAcountsCollection.findOne({'accountData.id': id})
+        let dbUser: UserAccountDBType | null = await usersModel.findOne({'accountData.id': id})
         return dbUser ? this._mapDBAccountToUserOutputType(dbUser) : null;
     },
     async getAuthById(id: string): Promise<UserAuthType | null>{
-        let dbUser: UserAccountDBType | null = await usersAcountsCollection.findOne({'accountData.id': id})
+        let dbUser: UserAccountDBType | null = await usersModel.findOne({'accountData.id': id})
         return dbUser ? this._mapDBAccountToUserAuthType(dbUser) : null;
     },
     async getByLoginOrEmail(loginOrEmail:string): Promise<UserAccountDBType | null>{
-        let user = await usersAcountsCollection.findOne({ $or: [ { 'accountData.email': loginOrEmail}, {'accountData.login': loginOrEmail}]})
+        let user = await usersModel.findOne({ $or: [ { 'accountData.email': loginOrEmail}, {'accountData.login': loginOrEmail}]})
         return user;
     },
     _mapDBAccountToUserOutputType(user: UserAccountDBType): UserOutputType{

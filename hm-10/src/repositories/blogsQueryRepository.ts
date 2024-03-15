@@ -1,5 +1,6 @@
 import { BlogQueryOutputType, BlogQueryType } from "../assets/queryStringModifiers";
-import { blogsCollection } from "../db/db";
+import { blogsModel } from "../db/models";
+// import { blogsCollection } from "../db/db";
 import { BlogType, BlogsWithQueryType, DBBlogType } from "../types/types";
 
 export const blogsQueryRepo = {
@@ -8,13 +9,13 @@ export const blogsQueryRepo = {
         const sortDir = sortDirection == "asc" ? 1 : -1;  
         const skip = (pageNumber -1) * pageSize; 
         const search = searchNameTerm ? { $regex: new RegExp(searchNameTerm, 'i') } : {$regex:''};
-        const totalCount = await blogsCollection.countDocuments({name: search}); 
-        const dbBlogs = await blogsCollection
+        const totalCount = await blogsModel.countDocuments({name: search}); 
+        const dbBlogs = await blogsModel
         .find({name: search})
         .sort({[sortBy]: sortDir})
         .skip(skip)
         .limit(pageSize)
-        .toArray();
+        .lean();
         const pagesCount = Math.ceil(totalCount / pageSize);
         return {
             pagesCount: pagesCount,
@@ -27,7 +28,7 @@ export const blogsQueryRepo = {
         }
     },
     async findBlogById(id: string): Promise<BlogType | null> {
-        let dbBlog: DBBlogType | null = await blogsCollection.findOne({ id: id })
+        let dbBlog: DBBlogType | null = await blogsModel.findOne({ id: id })
         return dbBlog ? this._mapDBBlogToBlogOutputModel(dbBlog) : null
     },
     _mapDBBlogToBlogOutputModel(blog: DBBlogType): BlogType {
