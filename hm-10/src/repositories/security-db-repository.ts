@@ -1,5 +1,3 @@
-// import { sessionsCollection } from "../db/db"
-
 import { sessionsModel } from "../db/models";
 
 export const securityRepository = {

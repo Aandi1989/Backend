@@ -1,6 +1,5 @@
 import { UserQueryOutputType } from "../assets/queryStringModifiers";
 import { usersModel } from "../db/models";
-// import { usersAcountsCollection } from "../db/db";
 import { UserAccountDBType, UserAuthType, UserOutputType, UsersWithQueryType } from "../types/types";
 
 export const usersQueryRepo = {

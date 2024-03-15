@@ -1,6 +1,5 @@
 import { jwtService } from "../application/jwt-service";
 import { sessionsModel } from "../db/models";
-// import { sessionsCollection } from "../db/db";
 import { DBsessionType } from "../types/types";
 import { HTTP_STATUSES } from "../utils";
 

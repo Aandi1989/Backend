@@ -1,4 +1,3 @@
-// import { commentsCollection, postsCollection } from "../db/db"
 import { postsModel } from "../db/models";
 import { CommentType, DBCommentType, DBPostType, PostType } from "../types/types";
 

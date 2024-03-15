@@ -1,4 +1,3 @@
-// import { blogsCollection } from "../db/db"
 import { blogsModel } from "../db/models";
 import { BlogType, DBBlogType } from "../types/types";
 

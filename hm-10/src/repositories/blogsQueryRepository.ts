@@ -1,6 +1,5 @@
 import { BlogQueryOutputType, BlogQueryType } from "../assets/queryStringModifiers";
 import { blogsModel } from "../db/models";
-// import { blogsCollection } from "../db/db";
 import { BlogType, BlogsWithQueryType, DBBlogType } from "../types/types";
 
 export const blogsQueryRepo = {

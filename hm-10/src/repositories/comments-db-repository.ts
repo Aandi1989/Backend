@@ -1,6 +1,5 @@
-// import { commentsCollection } from "../db/db"
 import { commentsModel } from "../db/models"
-import { CommentType, Result, ResultCode, UserOutputType } from "../types/types"
+import { CommentType, Result, ResultCode } from "../types/types"
 
 export const commentsRepository ={
     async createComment(newComment: CommentType):Promise<CommentType>{

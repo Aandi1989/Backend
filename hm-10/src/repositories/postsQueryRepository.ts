@@ -1,6 +1,5 @@
 import { CommentQueryOutputType, PostQueryOutputType } from "../assets/queryStringModifiers";
 import { postsModel } from "../db/models";
-// import { commentsCollection, postsCollection } from "../db/db";
 import { CommentType, DBCommentType, DBPostType, PostType, PostsWithQueryType } from "../types/types";
 
 export const postsQueryRepo = {

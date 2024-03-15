@@ -1,4 +1,3 @@
-// import { apiCallsCollection, sessionsCollection, usersAcountsCollection } from "../db/db";
 import { apiCallsModel, sessionsModel, usersModel } from "../db/models";
 import { apiCallType } from "../types/types";
 

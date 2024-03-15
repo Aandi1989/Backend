@@ -1,5 +1,4 @@
 import { CommentQueryOutputType } from "../assets/queryStringModifiers";
-// import { commentsCollection, postsCollection } from "../db/db";
 import { commentsModel } from "../db/models";
 import { CommentType, DBCommentType } from "../types/types";
 

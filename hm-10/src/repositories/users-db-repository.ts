@@ -1,4 +1,3 @@
-// import { usersAcountsCollection } from "../db/db";
 import { usersModel } from "../db/models";
 import { Result, ResultCode, UserAccountDBType, UserOutputType } from "../types/types";
 
