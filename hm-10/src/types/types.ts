@@ -113,6 +113,17 @@ export type UserAccountDBType = {
         expirationDate: Date
         isConfirmed: boolean
     }
+    codeRecoveryInfo: {
+        recoveryCode?: string,
+        expirationDate?: Date,
+        isConfirmed?: boolean
+    }
+}
+
+export type codeRecoveryType = {
+    recoveryCode: string,
+    expirationDate: Date,
+    isConfirmed: boolean
 }
 
 export enum ResultCode {

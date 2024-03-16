@@ -1,64 +1,79 @@
 import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
-import { BlogType, CommentType, PostType, UserAccountDBType, apiCallType, sessionType } from "../types/types";
+import { BlogType, CommentType, PostType, UserAccountDBType, UserType, apiCallType, sessionType } from "../types/types";
 
 export const blogsSchema = new mongoose.Schema<BlogType>({
-    id: String,
-    name: String,
-    description: String,
-    websiteUrl: String,
-    createdAt: String,
-    isMembership: Boolean
+    id: { type: String, required: true },
+    name: { type: String, required: true },
+    description: { type: String, required: true },
+    websiteUrl: { type: String, required: true },
+    createdAt: { type: String, required: true },
+    isMembership: { type: Boolean, required: true },
 }, { collection: 'blogs'});
 
 export const postsSchema = new mongoose.Schema<PostType>({
-    id: String,
-    title: String,
-    shortDescription: String,
-    content: String,
-    blogId: String,
+    id: { type: String, required: true },
+    title: { type: String, required: true },
+    shortDescription: { type: String, required: true },
+    content: { type: String, required: true },
+    blogId: { type: String, required: true },
     blogName: { type: String, required: false },
-    createdAt: String
+    createdAt: { type: String, required: true },
 }, { collection: 'posts'});
 
 export const commentsSchema = new mongoose.Schema<CommentType>({
-    id: String,
-    content: String,
+    id: { type: String, required: true },
+    content: { type: String, required: true },
     commentatorInfo: {
-        userId: String,
-        userLogin: String
+        userId: { type: String, required: true },
+        userLogin: { type: String, required: true },
     },
-    createdAt: String
+    createdAt: { type: String, required: true },
 }, { collection: 'comments'});
+
+const accountDataSchema = new mongoose.Schema<UserType>({
+    id: { type: String, required: true },
+    login: { type: String, required: true },
+    email: { type: String, required: true },
+    createdAt: { type: String, required: true },
+    passwordHash: { type: String, required: true },
+    passwordSalt: { type: String, required: true },
+})
 
 export const usersSchema = new mongoose.Schema<UserAccountDBType>({
     _id: ObjectId,
+    // accountData: accountDataSchema,  /* if use such approach _id will be created inside account data */
     accountData: {
-        id: String,
-        login: String,
-        email: String,
-        createdAt: String,
-        passwordHash: String,
-        passwordSalt: String,
+        id: { type: String, required: true },
+        login: { type: String, required: true },
+        email: { type: String, required: true },
+        createdAt: { type: String, required: true },
+        passwordHash: { type: String, required: true },
+        passwordSalt: { type: String, required: true },
     },
     emailConfirmation: {
-        confirmationCode: String,
-        expirationDate: Date,
-        isConfirmed: Boolean
+        confirmationCode: { type: String, required: true },
+        expirationDate: { type: Date, required: true },
+        isConfirmed: { type: Boolean, required: true },
     },
+    codeRecoveryInfo: {
+        recoveryCode: { type: String, required: false },
+        expirationDate: { type: Date, required: false },
+        isConfirmed: { type: Boolean, required: false },
+    }
 }, { collection: 'accounts'});
 
 export const sessionsSchema = new mongoose.Schema<sessionType>({
-    userId: String,
-    deviceId: String,
-    iat: String,
-    deviceName: String,
-    ip: String,
-    exp: String
+    userId: { type: String, required: true },
+    deviceId: { type: String, required: true },
+    iat: { type: String, required: true },
+    deviceName: { type: String, required: true },
+    ip: { type: String, required: true },
+    exp: { type: String, required: true },
 }, { collection: 'sessions'});
 
 export const apiCallsSchema = new mongoose.Schema<apiCallType>({
-    ip: String,
-    url: String,
-    date: Date
+    ip: { type: String, required: true },
+    url: { type: String, required: true },
+    date: { type: Date, required: true },
 }, { collection: 'apiCalls'});

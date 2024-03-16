@@ -89,6 +89,16 @@ export const getAuthRouter = () => {
             const result = await authService.resendEmail(req.body.email);
             if(result.code === ResultCode.Success) return res.send(HTTP_STATUSES.NO_CONTENT_204)
             return res.status(HTTP_STATUSES.BAD_REQUEST_400).send(result.errorsMessages)
+        }),
+    router.post('/password-recovery',
+        emailValidator,
+        inputValidationMiddleware,
+        apiCallsGuard,
+        async (req: RequestWithBody<ResendEmailModel>, res: Response) => {
+            const result = await authService.sendRecoveryCode(req.body.email)
+            if(result.code != ResultCode.Failed) return res.send(HTTP_STATUSES.NO_CONTENT_204)
+            return res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
         })
+        
     return router;
 }

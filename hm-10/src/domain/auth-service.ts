@@ -35,7 +35,8 @@ export const authService = {
                     minutes: 3
                 }),
                 isConfirmed: false
-            }
+            },
+            codeRecoveryInfo: {}
         }
         const existedUser = await authQueryRepo.findByLoginOrEmail(email, login);
         if(existedUser) {
@@ -75,6 +76,24 @@ export const authService = {
             return {code: ResultCode.Failed};
         }
         return updatedAccountData;
+    },
+    async sendRecoveryCode(email: string): Promise<Result>{
+        const account = await authQueryRepo.findByLoginOrEmail(email)
+        if(!account) return {code: ResultCode.NotFound};
+        const newCodeData = {
+            recoveryCode: uuidv4(),
+            expirationDate: add (new Date(), { minutes: 10 }),
+            isConfirmed: false
+        };
+        const updatedUser = await usersRepository.updateCodeRecovery(account._id, newCodeData);
+        try {
+            // comented to avoid annoying messages during testing
+            await emailManager.sendRecoveryCode(email, newCodeData.recoveryCode)
+        } catch (error) {
+            console.log(error)
+            return {code: ResultCode.Failed};
+        }
+        return {code: ResultCode.Success};
     },
     async checkRefreshToken(token: string): Promise<Result>{
         const tokenData = await jwtService.getRefreshTokenData(token);

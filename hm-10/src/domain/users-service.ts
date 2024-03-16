@@ -32,7 +32,8 @@ export const usersService = {
                     minutes: 3
                 }),
                 isConfirmed: false
-            }
+            },
+            codeRecoveryInfo: {}
         }
         const result = await usersRepository.createUser(newAccount)
         return result.data;
