@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import { add } from 'date-fns/add';
 import { ObjectId } from "mongodb";
 import { v4 as uuidv4 } from 'uuid';
-import { accountExistError, codeAlredyConfirmed, codeDoesntExist, codeExpired, emailAlredyConfirmed, emailDoesntExist } from "../assets/errorMessagesUtils";
+import { accountExistError, codeAlredyConfirmed, codeDoesntExist, codeExpired, emailAlredyConfirmed, emailDoesntExist, recoveryCodeDoesntExist } from "../assets/errorMessagesUtils";
 import { CreateUserModel } from "../features/users/models/CreateUserModel";
 import { emailManager } from "../managers/email-manager";
 import { authRepository } from "../repositories/auth-db-repository";
@@ -97,7 +97,7 @@ export const authService = {
     },
     async changePassword(newPassword: string, recoveryCode: string): Promise<Result>{
         const account = await authQueryRepo.findByRecoveryCode(recoveryCode);
-        if(!account) return {code: ResultCode.NotFound};
+        if(!account) return {code: ResultCode.NotFound, errorsMessages: recoveryCodeDoesntExist(recoveryCode)};
         if( new Date() > account!.codeRecoveryInfo!.expirationDate!) return {code: ResultCode.Expired};
         if(account.codeRecoveryInfo.isConfirmed) return {code: ResultCode.Forbidden};
 

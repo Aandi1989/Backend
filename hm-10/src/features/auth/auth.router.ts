@@ -107,11 +107,10 @@ export const getAuthRouter = () => {
         async (req: RequestWithBody<RecoverPasswordModel>, res: Response) => {
             const result = await authService.changePassword(req.body.newPassword, req.body.recoveryCode);
             if(result.code === ResultCode.Success) return res.send(HTTP_STATUSES.NO_CONTENT_204);
+            if(result.code === ResultCode.NotFound) {
+                return res.status(HTTP_STATUSES.BAD_REQUEST_400).send(result.errorsMessages)
+            }
             return res.send(HTTP_STATUSES.BAD_REQUEST_400)
         })
     return router;
 }
-
-// $2b$10$8Zh.OzrsQOfHeWyGpDoP4.dIg2U0qjlDBD9v3BLdbwVYP/CA8gIL6
-
-// $2b$10$8Zh.OzrsQOfHeWyGpDoP4.dIg2U0qjlDBD9v3BLdbwVYP/CA8gIL6

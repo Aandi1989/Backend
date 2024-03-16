@@ -22,3 +22,7 @@ export const emailDoesntExist = (email: string) => {
 export const emailAlredyConfirmed = (email: string) => {
     return { errorsMessages: [{ message: `Email ${email} had been alredy confirmed`, field: "email" }] }  
 }
+
+export const recoveryCodeDoesntExist = (code: string) => {
+    return { errorsMessages: [{ message: `Recovery code ${code} doesn't exist`, field: "recoveryCode" }] }  
+}
