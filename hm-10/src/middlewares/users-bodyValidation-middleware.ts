@@ -17,3 +17,6 @@ export const emailCofirmCodeValidator = body('code').isString().trim().isLength(
 export const emailValidator = body('email').isString().trim().isLength({min: 5, max: 1000}).matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
 .withMessage('Invalid email address')
 
+export const newPasswordValidator = body('newPassword').isString().trim().isLength({min: 6, max: 20})
+.withMessage('Password must be between 6 and 20 characters')
+

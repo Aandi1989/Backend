@@ -5,7 +5,7 @@ import { usersService } from "../../domain/users-service";
 import { accessTokenGuard } from "../../middlewares/access-token-guard-middleware";
 import { authValidator } from "../../middlewares/auth-bodyValidation";
 import { inputValidationMiddleware } from "../../middlewares/posts-bodyValidation-middleware";
-import { emailCofirmCodeValidator, emailValidator, userCreateValidator } from "../../middlewares/users-bodyValidation-middleware";
+import { emailCofirmCodeValidator, emailValidator, newPasswordValidator, userCreateValidator } from "../../middlewares/users-bodyValidation-middleware";
 import { usersQueryRepo } from "../../repositories/usersQueryRepository";
 import { RequestWithBody, ResultCode } from "../../types/types";
 import { HTTP_STATUSES } from "../../utils";
@@ -14,6 +14,7 @@ import { AuthBodyModel } from "./Models/AuthBodyModel";
 import { ConfirmCodeModel } from "./Models/ConfirCodeModel";
 import { ResendEmailModel } from "./Models/ResendEmailModel";
 import { apiCallsGuard } from "../../middlewares/api-calls-limit-guard-middleware";
+import { RecoverPasswordModel } from "./Models/RecoverPasswordModel";
 
 
 export const getAuthRouter = () => {
@@ -97,8 +98,20 @@ export const getAuthRouter = () => {
         async (req: RequestWithBody<ResendEmailModel>, res: Response) => {
             const result = await authService.sendRecoveryCode(req.body.email)
             if(result.code != ResultCode.Failed) return res.send(HTTP_STATUSES.NO_CONTENT_204)
-            return res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
+            return res.send(HTTP_STATUSES.BAD_REQUEST_400)
+        }),
+    router.post('/new-password',
+        newPasswordValidator,
+        inputValidationMiddleware,
+        apiCallsGuard,
+        async (req: RequestWithBody<RecoverPasswordModel>, res: Response) => {
+            const result = await authService.changePassword(req.body.newPassword, req.body.recoveryCode);
+            if(result.code === ResultCode.Success) return res.send(HTTP_STATUSES.NO_CONTENT_204);
+            return res.send(HTTP_STATUSES.BAD_REQUEST_400)
         })
-        
     return router;
 }
+
+// $2b$10$8Zh.OzrsQOfHeWyGpDoP4.dIg2U0qjlDBD9v3BLdbwVYP/CA8gIL6
+
+// $2b$10$8Zh.OzrsQOfHeWyGpDoP4.dIg2U0qjlDBD9v3BLdbwVYP/CA8gIL6

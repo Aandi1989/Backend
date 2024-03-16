@@ -19,8 +19,16 @@ export const usersRepository = {
             'codeRecoveryInfo.recoveryCode': codeDate.recoveryCode,
             'codeRecoveryInfo.expirationDate': codeDate.expirationDate,
             'codeRecoveryInfo.isConfirmed': codeDate.isConfirmed,
-
-        }})
+        }});
+        return result;
+    },
+    async changePassword(_id: ObjectId, passwordSalt: string, passwordHash: string){
+        const result = await usersModel.updateOne({_id},{$set: {
+            'accountData.passwordHash':passwordHash,
+            'accountData.passwordSalt':passwordSalt, 
+            'codeRecoveryInfo.isConfirmed': true
+        }});
+        return result;
     },
     _mapDBAccountToUserOutputType(user: UserAccountDBType): UserOutputType{
         return{

@@ -11,6 +11,10 @@ export const authQueryRepo = {
                                                                         { 'accountData.email': email } ] });
         return foundedAccount;
     },
+    async findByRecoveryCode(recoveryCode: string){
+        const foundedAccount = await usersModel.findOne({'codeRecoveryInfo.recoveryCode': recoveryCode})
+        return foundedAccount;
+    },
     async countRequests(request: apiCallType, currentDate: Date){
         const result = await apiCallsModel.countDocuments({
             ip: request.ip,

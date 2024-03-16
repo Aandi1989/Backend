@@ -88,11 +88,22 @@ export const authService = {
         const updatedUser = await usersRepository.updateCodeRecovery(account._id, newCodeData);
         try {
             // comented to avoid annoying messages during testing
-            await emailManager.sendRecoveryCode(email, newCodeData.recoveryCode)
+            // await emailManager.sendRecoveryCode(email, newCodeData.recoveryCode)
         } catch (error) {
             console.log(error)
             return {code: ResultCode.Failed};
         }
+        return {code: ResultCode.Success};
+    },
+    async changePassword(newPassword: string, recoveryCode: string): Promise<Result>{
+        const account = await authQueryRepo.findByRecoveryCode(recoveryCode);
+        if(!account) return {code: ResultCode.NotFound};
+        if( new Date() > account!.codeRecoveryInfo!.expirationDate!) return {code: ResultCode.Expired};
+        if(account.codeRecoveryInfo.isConfirmed) return {code: ResultCode.Forbidden};
+
+        const passwordSalt = await bcrypt.genSalt(10);
+        const passwordHash = await this._generateHash(newPassword, passwordSalt);
+        const updatedUser = await usersRepository.changePassword(account._id, passwordSalt, passwordHash);
         return {code: ResultCode.Success};
     },
     async checkRefreshToken(token: string): Promise<Result>{
