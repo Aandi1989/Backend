@@ -1,19 +1,20 @@
 import { apiCallsModel, sessionsModel, usersModel } from "../db/models";
+import { User } from "../features/users/entities/user";
 import { apiCallType } from "../types/types";
 
 export const authQueryRepo = {
-    async findByConfirmationCode(code: string){
+    async findByConfirmationCode(code: string): Promise<User | null>{
         const foundedAccount = await usersModel.findOne({"emailConfirmation.confirmationCode": code});
-        return foundedAccount;
+        return foundedAccount as User | null;
     },
-    async findByLoginOrEmail(email: string, login?: string){
+    async findByLoginOrEmail(email: string, login?: string): Promise<User | null>{
         const foundedAccount = await usersModel.findOne({ $or: [ { 'accountData.login': login }, 
                                                                         { 'accountData.email': email } ] });
-        return foundedAccount;
+        return foundedAccount as User | null;
     },
-    async findByRecoveryCode(recoveryCode: string){
+    async findByRecoveryCode(recoveryCode: string): Promise<User | null>{
         const foundedAccount = await usersModel.findOne({'codeRecoveryInfo.recoveryCode': recoveryCode})
-        return foundedAccount;
+        return foundedAccount as User | null;
     },
     async countRequests(request: apiCallType, currentDate: Date){
         const result = await apiCallsModel.countDocuments({

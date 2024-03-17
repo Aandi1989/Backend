@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
-import { BlogType, CommentType, PostType, UserAccountDBType, UserType, apiCallType, sessionType } from "../types/types";
+import { BlogType, CommentType, PostType, UserType, apiCallType, sessionType } from "../types/types";
+import { User } from "../features/users/entities/user";
 
 export const blogsSchema = new mongoose.Schema<BlogType>({
     id: { type: String, required: true },
@@ -40,7 +41,7 @@ const accountDataSchema = new mongoose.Schema<UserType>({
     passwordSalt: { type: String, required: true },
 })
 
-export const usersSchema = new mongoose.Schema<UserAccountDBType>({
+export const usersSchema = new mongoose.Schema<User>({
     _id: ObjectId,
     // accountData: accountDataSchema,  /* if use such approach _id will be created inside account data */
     accountData: {
@@ -52,9 +53,9 @@ export const usersSchema = new mongoose.Schema<UserAccountDBType>({
         passwordSalt: { type: String, required: true },
     },
     emailConfirmation: {
-        confirmationCode: { type: String, required: true },
-        expirationDate: { type: Date, required: true },
-        isConfirmed: { type: Boolean, required: true },
+        confirmationCode: { type: String, required: false },
+        expirationDate: { type: Date, required: false },
+        isConfirmed: { type: Boolean, required: false },
     },
     codeRecoveryInfo: {
         recoveryCode: { type: String, required: false },

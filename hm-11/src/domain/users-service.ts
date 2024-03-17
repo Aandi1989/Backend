@@ -3,10 +3,9 @@ import { AuthBodyModel } from "../features/auth/Models/AuthBodyModel";
 import { CreateUserModel } from "../features/users/models/CreateUserModel"; 
 import { usersRepository } from "../repositories/users-db-repository";
 import { usersQueryRepo } from "../repositories/usersQueryRepository";
-import { UserAccountDBType, UserOutputType } from "../types/types";
+import { UserOutputType } from "../types/types";
 import bcrypt from 'bcrypt';
-import {v4 as uuidv4} from 'uuid';
-import { add } from 'date-fns/add';
+import { User } from "../features/users/entities/user";
 
 export const usersService = {
     async createUser(data: CreateUserModel): Promise<UserOutputType>{
@@ -15,26 +14,28 @@ export const usersService = {
         const passwordSalt = await bcrypt.genSalt(10);
         const passwordHash = await this._generateHash(password, passwordSalt)
 
-        const newAccount: UserAccountDBType = {
-            _id: new ObjectId(),
-            accountData: {
-                id: (+new Date()).toString(),
-                login,
-                email,
-                passwordHash,
-                passwordSalt,
-                createdAt: new Date().toISOString(),
-            },
-            emailConfirmation: {
-                confirmationCode: uuidv4(),
-                expirationDate: add (new Date(), {
-                    hours:1,
-                    minutes: 3
-                }),
-                isConfirmed: false
-            },
-            codeRecoveryInfo: {}
-        }
+        // isnt needed after creating class User
+        // const newAccount: UserAccountDBType = {
+        //     _id: new ObjectId(),
+        //     accountData: {
+        //         id: (+new Date()).toString(),
+        //         login,
+        //         email,
+        //         passwordHash,
+        //         passwordSalt,
+        //         createdAt: new Date().toISOString(),
+        //     },
+        //     emailConfirmation: {
+        //         confirmationCode: uuidv4(),
+        //         expirationDate: add (new Date(), {
+        //             hours:1,
+        //             minutes: 3
+        //         }),
+        //         isConfirmed: false
+        //     },
+        //     codeRecoveryInfo: {}
+        // }
+        const newAccount: User = new User (login, email, passwordHash, passwordSalt)
         const result = await usersRepository.createUser(newAccount)
         return result.data;
     },

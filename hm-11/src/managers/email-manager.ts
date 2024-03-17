@@ -1,9 +1,9 @@
 import { emailAdapter } from "../adapters/email-adapter"
-import { UserAccountDBType } from "../types/types"
+import { User } from "../features/users/entities/user"
 
 
 export const emailManager = {
-    async sendConfirmationEmail(account: UserAccountDBType){
+    async sendConfirmationEmail(account: User){
         await emailAdapter.sendEmail(account.accountData.email, `Confirm registration`, 
         `<h1>Thank for your registration</h1>
         <p>To finish registration please follow the link below:

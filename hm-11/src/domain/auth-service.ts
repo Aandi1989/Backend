@@ -1,6 +1,5 @@
 import bcrypt from 'bcrypt';
 import { add } from 'date-fns/add';
-import { ObjectId } from "mongodb";
 import { v4 as uuidv4 } from 'uuid';
 import { accountExistError, codeAlredyConfirmed, codeDoesntExist, codeExpired, emailAlredyConfirmed, emailDoesntExist, recoveryCodeDoesntExist } from "../assets/errorMessagesUtils";
 import { CreateUserModel } from "../features/users/models/CreateUserModel";
@@ -8,8 +7,9 @@ import { emailManager } from "../managers/email-manager";
 import { authRepository } from "../repositories/auth-db-repository";
 import { authQueryRepo } from "../repositories/authQueryRepository";
 import { usersRepository } from "../repositories/users-db-repository";
-import { Result, ResultCode, UserAccountDBType, apiCallType, refreshTokenType, sessionType } from "../types/types";
+import { Result, ResultCode, apiCallType, refreshTokenType, sessionType } from "../types/types";
 import { jwtService } from '../application/jwt-service';
+import { User } from '../features/users/entities/user';
 
 export const authService = {
     async createUserAccount(data: CreateUserModel): Promise<Result>{
@@ -18,26 +18,30 @@ export const authService = {
         const passwordSalt = await bcrypt.genSalt(10);
         const passwordHash = await this._generateHash(password, passwordSalt)
 
-        const newAccount: UserAccountDBType = {
-            _id: new ObjectId(),
-            accountData: {
-                id: (+new Date()).toString(),
-                login,
-                email,
-                passwordHash,
-                passwordSalt,
-                createdAt: new Date().toISOString(),
-            },
-            emailConfirmation: {
-                confirmationCode: uuidv4(),
-                expirationDate: add (new Date(), {
-                    hours:1,
-                    minutes: 3
-                }),
-                isConfirmed: false
-            },
-            codeRecoveryInfo: {}
-        }
+        // isnt needed after creating class User
+        // const newAccount: UserAccountDBType = {
+        //     _id: new ObjectId(),
+        //     accountData: {
+        //         id: (+new Date()).toString(),
+        //         login,
+        //         email,
+        //         passwordHash,
+        //         passwordSalt,
+        //         createdAt: new Date().toISOString(),
+        //     },
+        //     emailConfirmation: {
+        //         confirmationCode: uuidv4(),
+        //         expirationDate: add (new Date(), {
+        //             hours:1,
+        //             minutes: 3
+        //         }),
+        //         isConfirmed: false
+        //     },
+        //     codeRecoveryInfo: {}
+        // }
+
+        const newAccount: User = new User (login, email, passwordHash, passwordSalt)
+        
         const existedUser = await authQueryRepo.findByLoginOrEmail(email, login);
         if(existedUser) {
             let result = existedUser.accountData.email === email

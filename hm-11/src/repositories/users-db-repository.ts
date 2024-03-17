@@ -1,10 +1,11 @@
 import { ObjectId } from "mongodb";
 import { usersModel } from "../db/models";
-import { Result, ResultCode, UserAccountDBType, UserOutputType, codeRecoveryType } from "../types/types";
+import { Result, ResultCode, UserOutputType, codeRecoveryType } from "../types/types";
+import { User } from "../features/users/entities/user";
 
 
 export const usersRepository = {
-    async createUser(newAccount: UserAccountDBType): Promise<Result>{
+    async createUser(newAccount: User): Promise<Result>{
         const result = await usersModel.insertMany([newAccount]);
         const userOutput = this._mapDBAccountToUserOutputType(newAccount);
         return {code: ResultCode.Success, data: userOutput}
@@ -30,7 +31,7 @@ export const usersRepository = {
         }});
         return result;
     },
-    _mapDBAccountToUserOutputType(user: UserAccountDBType): UserOutputType{
+    _mapDBAccountToUserOutputType(user: User): UserOutputType{
         return{
             id:user.accountData.id,
             login: user.accountData.login,

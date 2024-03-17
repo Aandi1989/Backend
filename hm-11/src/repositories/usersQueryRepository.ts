@@ -1,6 +1,7 @@
 import { UserQueryOutputType } from "../assets/queryStringModifiers";
 import { usersModel } from "../db/models";
-import { UserAccountDBType, UserAuthType, UserOutputType, UsersWithQueryType } from "../types/types";
+import { User } from "../features/users/entities/user";
+import { UserAuthType, UserOutputType, UsersWithQueryType } from "../types/types";
 
 export const usersQueryRepo = {
     async getUsers(query: UserQueryOutputType): Promise<UsersWithQueryType>{
@@ -37,18 +38,18 @@ export const usersQueryRepo = {
         }
     },
     async getUserById(id: string): Promise<UserOutputType | null>{
-        let dbUser: UserAccountDBType | null = await usersModel.findOne({'accountData.id': id})
+        let dbUser: User | null = await usersModel.findOne({'accountData.id': id})
         return dbUser ? this._mapDBAccountToUserOutputType(dbUser) : null;
     },
     async getAuthById(id: string): Promise<UserAuthType | null>{
-        let dbUser: UserAccountDBType | null = await usersModel.findOne({'accountData.id': id})
+        let dbUser: User | null = await usersModel.findOne({'accountData.id': id})
         return dbUser ? this._mapDBAccountToUserAuthType(dbUser) : null;
     },
-    async getByLoginOrEmail(loginOrEmail:string): Promise<UserAccountDBType | null>{
+    async getByLoginOrEmail(loginOrEmail:string): Promise<User | null>{
         let user = await usersModel.findOne({ $or: [ { 'accountData.email': loginOrEmail}, {'accountData.login': loginOrEmail}]})
         return user;
     },
-    _mapDBAccountToUserOutputType(user: UserAccountDBType): UserOutputType{
+    _mapDBAccountToUserOutputType(user: User): UserOutputType{
         return{
             id:user.accountData.id,
             login: user.accountData.login,
@@ -56,7 +57,7 @@ export const usersQueryRepo = {
             createdAt: user.accountData.createdAt
         }
     },
-    _mapDBAccountToUserAuthType(user: UserAccountDBType): UserAuthType{
+    _mapDBAccountToUserAuthType(user: User): UserAuthType{
         return {
             userId:user.accountData.id,
             login: user.accountData.login,
