@@ -5,7 +5,7 @@ import {postsRepository} from "../repositories/posts-db-repository";
 import { PostType, UserOutputType } from "../types/types";
 
 
-export const postsService = {
+class PostsService {
     async createPost(data: CreatePostModel, params?:URIParamsBlogIdModel): Promise<PostType>{
         const newPost = {
             id: (+new Date()).toString(),
@@ -18,12 +18,15 @@ export const postsService = {
         };
         const createPost = await postsRepository.createPost(newPost)
         return createPost;
-    },
+    }
+
     async updatePost(id: string, data: Partial<PostType>): Promise<boolean>{
         return await postsRepository.updatePost(id, data);
-    },
+    }
+
     async deletePost(id: string):Promise<boolean> {
         return await postsRepository.deletePost(id)
-    },
-    
+    }
 } 
+
+export const postsService = new PostsService();

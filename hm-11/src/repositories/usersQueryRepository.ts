@@ -3,7 +3,7 @@ import { usersModel } from "../db/models";
 import { User } from "../features/users/entities/user";
 import { UserAuthType, UserOutputType, UsersWithQueryType } from "../types/types";
 
-export const usersQueryRepo = {
+class UsersQueryRepo {
     async getUsers(query: UserQueryOutputType): Promise<UsersWithQueryType>{
         const {pageNumber, pageSize, searchLoginTerm, searchEmailTerm, sortBy, sortDirection } = query;
         const sortDir = sortDirection == "asc" ? 1 : -1;  
@@ -36,19 +36,23 @@ export const usersQueryRepo = {
                 return this._mapDBAccountToUserOutputType(dbUser)
             })
         }
-    },
+    }
+
     async getUserById(id: string): Promise<UserOutputType | null>{
         let dbUser: User | null = await usersModel.findOne({'accountData.id': id})
         return dbUser ? this._mapDBAccountToUserOutputType(dbUser) : null;
-    },
+    }
+
     async getAuthById(id: string): Promise<UserAuthType | null>{
         let dbUser: User | null = await usersModel.findOne({'accountData.id': id})
         return dbUser ? this._mapDBAccountToUserAuthType(dbUser) : null;
-    },
+    }
+
     async getByLoginOrEmail(loginOrEmail:string): Promise<User | null>{
         let user = await usersModel.findOne({ $or: [ { 'accountData.email': loginOrEmail}, {'accountData.login': loginOrEmail}]})
         return user;
-    },
+    }
+
     _mapDBAccountToUserOutputType(user: User): UserOutputType{
         return{
             id:user.accountData.id,
@@ -56,7 +60,8 @@ export const usersQueryRepo = {
             email: user.accountData.email,
             createdAt: user.accountData.createdAt
         }
-    },
+    }
+
     _mapDBAccountToUserAuthType(user: User): UserAuthType{
         return {
             userId:user.accountData.id,
@@ -65,3 +70,5 @@ export const usersQueryRepo = {
         }
     }
 }
+
+export const usersQueryRepo = new UsersQueryRepo();

@@ -2,7 +2,7 @@ import { CommentQueryOutputType, PostQueryOutputType } from "../assets/queryStri
 import { postsModel } from "../db/models";
 import { CommentType, DBCommentType, DBPostType, PostType, PostsWithQueryType } from "../types/types";
 
-export const postsQueryRepo = {
+class PostsQueryRepo {
     async getPosts(query: PostQueryOutputType): Promise<PostsWithQueryType> {
         const {pageNumber, pageSize, sortBy, sortDirection } = query;
         const sortDir = sortDirection == "asc" ? 1 : -1;  
@@ -24,11 +24,13 @@ export const postsQueryRepo = {
                 return this._mapDBPostToBlogOutputModel(dbPost)
             })
         }
-    },
+    }
+
     async getPostById(id: string): Promise<PostType | null> {
         let dbPost: DBPostType | null = await postsModel.findOne({ id: id })
         return dbPost ? this._mapDBPostToBlogOutputModel(dbPost) : null;
-    },
+    }
+
     async getPostsByBlogId(blogId: string, query:PostQueryOutputType): Promise<PostsWithQueryType>{
         const {pageNumber, pageSize, sortBy, sortDirection } = query;
         const sortDir = sortDirection == "asc" ? 1 : -1;  
@@ -50,7 +52,8 @@ export const postsQueryRepo = {
                 return this._mapDBPostToBlogOutputModel(dbPost)
             })
         }
-    },
+    }
+
     _mapDBPostToBlogOutputModel(post: DBPostType): PostType {
         return {
             id: post.id,
@@ -61,5 +64,7 @@ export const postsQueryRepo = {
             blogName: post.blogName ? post.blogName : '',
             createdAt: post.createdAt
         }
-    },
+    }
 }
+
+export const postsQueryRepo = new PostsQueryRepo();

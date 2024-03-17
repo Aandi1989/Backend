@@ -2,7 +2,7 @@ import { BlogQueryOutputType, BlogQueryType } from "../assets/queryStringModifie
 import { blogsModel } from "../db/models";
 import { BlogType, BlogsWithQueryType, DBBlogType } from "../types/types";
 
-export const blogsQueryRepo = {
+class BlogsQueryRepo {
     async getBlogs(query: BlogQueryOutputType): Promise<BlogsWithQueryType> {
         const {pageNumber, pageSize, searchNameTerm, sortBy, sortDirection } = query;  
         const sortDir = sortDirection == "asc" ? 1 : -1;  
@@ -25,11 +25,13 @@ export const blogsQueryRepo = {
                 return this._mapDBBlogToBlogOutputModel(dbBlog)
             })
         }
-    },
+    }
+
     async findBlogById(id: string): Promise<BlogType | null> {
         let dbBlog: DBBlogType | null = await blogsModel.findOne({ id: id })
         return dbBlog ? this._mapDBBlogToBlogOutputModel(dbBlog) : null
-    },
+    }
+
     _mapDBBlogToBlogOutputModel(blog: DBBlogType): BlogType {
         return {
             id: blog.id,
@@ -41,3 +43,5 @@ export const blogsQueryRepo = {
         }
     }
 }
+
+export const blogsQueryRepo = new BlogsQueryRepo();

@@ -1,11 +1,12 @@
 import { commentsModel } from "../db/models"
 import { CommentType, Result, ResultCode } from "../types/types"
 
-export const commentsRepository ={
+class CommentsRepository {
     async createComment(newComment: CommentType):Promise<CommentType>{
         const result = await commentsModel.insertMany([newComment])
         return this._mapDBCommentTypeToCommentType(newComment)
-    },
+    }
+
     async deleteComment(id: string): Promise<Result>{
         const result = await commentsModel.deleteOne({id: id})
         if(result.deletedCount === 1) return {
@@ -14,7 +15,8 @@ export const commentsRepository ={
         return {
             code: ResultCode.NotFound
         }
-    },
+    }
+
     async updateComment(id: string, content: string): Promise<Result>{
         const result = await commentsModel.updateOne(
             {id: id},
@@ -26,7 +28,8 @@ export const commentsRepository ={
         return {
             code: ResultCode.NotFound
         }
-    },
+    }
+
     _mapDBCommentTypeToCommentType(comment: CommentType): CommentType{
         return{
             id: comment.id,
@@ -39,3 +42,5 @@ export const commentsRepository ={
         }
     }
 }
+
+export const commentsRepository = new CommentsRepository();

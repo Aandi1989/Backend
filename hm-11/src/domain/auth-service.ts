@@ -11,36 +11,14 @@ import { Result, ResultCode, apiCallType, refreshTokenType, sessionType } from "
 import { jwtService } from '../application/jwt-service';
 import { User } from '../features/users/entities/user';
 
-export const authService = {
+class AuthService {
     async createUserAccount(data: CreateUserModel): Promise<Result>{
         const {login, email, password} = data;
 
         const passwordSalt = await bcrypt.genSalt(10);
         const passwordHash = await this._generateHash(password, passwordSalt)
 
-        // isnt needed after creating class User
-        // const newAccount: UserAccountDBType = {
-        //     _id: new ObjectId(),
-        //     accountData: {
-        //         id: (+new Date()).toString(),
-        //         login,
-        //         email,
-        //         passwordHash,
-        //         passwordSalt,
-        //         createdAt: new Date().toISOString(),
-        //     },
-        //     emailConfirmation: {
-        //         confirmationCode: uuidv4(),
-        //         expirationDate: add (new Date(), {
-        //             hours:1,
-        //             minutes: 3
-        //         }),
-        //         isConfirmed: false
-        //     },
-        //     codeRecoveryInfo: {}
-        // }
-
-        const newAccount: User = new User (login, email, passwordHash, passwordSalt)
+        const newAccount = new User (login, email, passwordHash, passwordSalt)
         
         const existedUser = await authQueryRepo.findByLoginOrEmail(email, login);
         if(existedUser) {
@@ -58,14 +36,16 @@ export const authService = {
             return {code: ResultCode.Failed};
         }
         return createdUser;
-    },
+    }
+
     async confirmEmail(code: string): Promise<Result>{
         const account = await authQueryRepo.findByConfirmationCode(code);
         if(!account) return {code: ResultCode.Failed, errorsMessages: codeDoesntExist(code)};
         if(account.emailConfirmation.isConfirmed) return {code: ResultCode.AlredyConfirmed, errorsMessages: codeAlredyConfirmed(code)};
         if(account.emailConfirmation.expirationDate < new Date()) return {code: ResultCode.Failed, errorsMessages: codeExpired(code)};
         return authRepository.confirmEmail(account._id)
-    },
+    }
+
     async resendEmail(email: string): Promise<Result>{
         const account = await authQueryRepo.findByLoginOrEmail(email)
         if(!account) return {code: ResultCode.Failed, errorsMessages: emailDoesntExist(email)};
@@ -80,7 +60,8 @@ export const authService = {
             return {code: ResultCode.Failed};
         }
         return updatedAccountData;
-    },
+    }
+
     async sendRecoveryCode(email: string): Promise<Result>{
         const account = await authQueryRepo.findByLoginOrEmail(email)
         if(!account) return {code: ResultCode.NotFound};
@@ -98,7 +79,8 @@ export const authService = {
             return {code: ResultCode.Failed};
         }
         return {code: ResultCode.Success};
-    },
+    }
+
     async changePassword(newPassword: string, recoveryCode: string): Promise<Result>{
         const account = await authQueryRepo.findByRecoveryCode(recoveryCode);
         if(!account) return {code: ResultCode.NotFound, errorsMessages: recoveryCodeDoesntExist(recoveryCode)};
@@ -109,7 +91,8 @@ export const authService = {
         const passwordHash = await this._generateHash(newPassword, passwordSalt);
         const updatedUser = await usersRepository.changePassword(account._id, passwordSalt, passwordHash);
         return {code: ResultCode.Success};
-    },
+    }
+
     async checkRefreshToken(token: string): Promise<Result>{
         const tokenData = await jwtService.getRefreshTokenData(token);
         if(!tokenData.userId) return {code:ResultCode.NotFound};
@@ -118,12 +101,14 @@ export const authService = {
         if(!tokenExist) return {code: ResultCode.Forbidden};
         if(tokenData.message === 'jwt expired') return {code: ResultCode.Expired}
         return {code: ResultCode.Success}
-    },
+    }
+
     async revokeSession(token: string){
         const tokenData = await jwtService.getRefreshTokenData(token);
         const revokedSession = await authRepository.revokeSession(tokenData);
         return revokedSession;
-    },
+    }
+
     async refreshToken(token: string, ip: string){
         const tokenData = await jwtService.getRefreshTokenData(token);
         const newAccessToken = await jwtService.createAccessToken(tokenData.userId);
@@ -132,12 +117,13 @@ export const authService = {
         const updatedSession = await authRepository
             .updateSession(tokenData, newTokenData, ip);
         return {newAccessToken, newRefreshToken}
-    },
+    }
+
     async addRequest(request: apiCallType){
         const addedRequest = await authRepository.addRequest(request);
         return addedRequest;
+    }
 
-    },
     async createSession(refreshToken: string, ip: string, deviceName: string = 'unknown'){
         const {userId, deviceId, iat, exp } = await jwtService.getRefreshTokenData(refreshToken);
         const newSession: sessionType = {
@@ -150,10 +136,12 @@ export const authService = {
         }
         const creeatedSession = await authRepository.createSession(newSession);
         return creeatedSession;
+    }
 
-    },
     async _generateHash(password: string, salt: string){
         const hash = await bcrypt.hash(password, salt)
         return hash
     }
 }
+
+export const authService = new AuthService();

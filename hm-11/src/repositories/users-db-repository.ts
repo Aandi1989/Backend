@@ -4,17 +4,19 @@ import { Result, ResultCode, UserOutputType, codeRecoveryType } from "../types/t
 import { User } from "../features/users/entities/user";
 
 
-export const usersRepository = {
+class UsersRepository {
     async createUser(newAccount: User): Promise<Result>{
         const result = await usersModel.insertMany([newAccount]);
         const userOutput = this._mapDBAccountToUserOutputType(newAccount);
         return {code: ResultCode.Success, data: userOutput}
             
-    },
+    }
+
     async deleteUser(id: string): Promise<boolean>{
         const result = await usersModel.deleteOne({'accountData.id': id})
         return result.deletedCount === 1
-    },
+    }
+
     async updateCodeRecovery( _id: ObjectId, codeDate: codeRecoveryType){
         const result = await usersModel.updateOne({_id}, {$set: {
             'codeRecoveryInfo.recoveryCode': codeDate.recoveryCode,
@@ -22,7 +24,8 @@ export const usersRepository = {
             'codeRecoveryInfo.isConfirmed': codeDate.isConfirmed,
         }});
         return result;
-    },
+    }
+
     async changePassword(_id: ObjectId, passwordSalt: string, passwordHash: string){
         const result = await usersModel.updateOne({_id},{$set: {
             'accountData.passwordHash':passwordHash,
@@ -30,7 +33,8 @@ export const usersRepository = {
             'codeRecoveryInfo.isConfirmed': true
         }});
         return result;
-    },
+    }
+
     _mapDBAccountToUserOutputType(user: User): UserOutputType{
         return{
             id:user.accountData.id,
@@ -38,5 +42,7 @@ export const usersRepository = {
             email: user.accountData.email,
             createdAt: user.accountData.createdAt
         }
-    },
+    }
 }
+
+export const usersRepository = new UsersRepository();

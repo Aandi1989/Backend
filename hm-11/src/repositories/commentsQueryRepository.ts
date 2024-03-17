@@ -2,7 +2,7 @@ import { CommentQueryOutputType } from "../assets/queryStringModifiers";
 import { commentsModel } from "../db/models";
 import { CommentType, DBCommentType } from "../types/types";
 
-export const commentsQueryRepo = {
+class CommentsQueryRepo {
     async getCommentsByPostId(postId: string, query: CommentQueryOutputType){
         const {pageNumber, pageSize, sortBy, sortDirection } = query;
         const sortDir = sortDirection == "asc" ? 1 : -1;  
@@ -24,11 +24,13 @@ export const commentsQueryRepo = {
                 return this._mapDBCommentTypeToCommentType(dbPost)
             })
         }
-    },
+    }
+
     async getCommentById(id: string):Promise<CommentType | null>{
         let dbComment: DBCommentType | null = await commentsModel.findOne({ id: id })
         return dbComment ? this._mapDBCommentTypeToCommentType(dbComment) : null;
-    },
+    }
+
     _mapDBCommentTypeToCommentType(comment: DBCommentType): CommentType{
         return{
             id: comment.id,
@@ -41,3 +43,5 @@ export const commentsQueryRepo = {
         }
     }
 }
+
+export const commentsQueryRepo = new CommentsQueryRepo();

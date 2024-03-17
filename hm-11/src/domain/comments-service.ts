@@ -3,7 +3,7 @@ import { commentsQueryRepo } from "../repositories/commentsQueryRepository";
 import { Result, ResultCode, UserOutputType } from "../types/types";
 
 
-export const commentsService = {
+class CommentsService {
     async createComment(postId: string, content: string, user: UserOutputType){
         const newComment = {
             id: (+new Date()).toString(),
@@ -17,7 +17,8 @@ export const commentsService = {
         }
         const createdComment = await commentsRepository.createComment(newComment)
         return createdComment;
-    },
+    }
+
     async deleteComment(id: string, user: UserOutputType): Promise<Result> {
         const foundComment = await commentsQueryRepo.getCommentById(id);
         if(!foundComment) return {
@@ -27,7 +28,8 @@ export const commentsService = {
             code: ResultCode.Forbidden
         }
         return await commentsRepository.deleteComment(id)
-    },
+    }
+
     async updateComment(id: string, content: string, user: UserOutputType): Promise<Result>{
         const foundComment = await commentsQueryRepo.getCommentById(id);
         if(!foundComment) return {
@@ -39,3 +41,5 @@ export const commentsService = {
         return await commentsRepository.updateComment(id, content)
     }
 }
+
+export const commentsService = new CommentsService();
