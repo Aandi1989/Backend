@@ -1,13 +1,13 @@
 import express from "express"
-import { getBlogsRouter } from "./features/blogs/blogs.router"
-import { getPostsRouter } from "./features/posts/posts.router"
+import { blogsRouter } from "./features/blogs/blogs.router"
+import { postsRouter } from "./features/posts/posts.router"
 import { getTestRouter } from "./routes/tests"
 import { RouterPaths } from "./utils"
-import { getUsersRouter } from "./features/users/users.router"
-import { getAuthRouter } from "./features/auth/auth.router"
-import { getCommentsRouter } from "./features/comments/comments.router"
+import { usersRouter } from "./features/users/users.router"
+import { authRouter } from "./features/auth/auth.router"
+import { commentsRouter } from "./features/comments/comments.router"
 import cookieParser from "cookie-parser"
-import { getSecurityRouter } from "./features/security/security.router"
+import { securityRouter } from "./features/security/security.router"
 
 
 export const app = express()
@@ -24,11 +24,11 @@ app.use(cookieParser())
 
 
 
-app.use(RouterPaths.posts, getPostsRouter())
-app.use(RouterPaths.blogs, getBlogsRouter())
-app.use(RouterPaths.users, getUsersRouter())
-app.use(RouterPaths.auth, getAuthRouter())
-app.use(RouterPaths.comments, getCommentsRouter())
-app.use(RouterPaths.security, getSecurityRouter())
+app.use(RouterPaths.posts, postsRouter)
+app.use(RouterPaths.blogs, blogsRouter)
+app.use(RouterPaths.users, usersRouter)
+app.use(RouterPaths.auth, authRouter)
+app.use(RouterPaths.comments, commentsRouter)
+app.use(RouterPaths.security, securityRouter)
 app.use(RouterPaths.__test__, getTestRouter())
 

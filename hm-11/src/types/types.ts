@@ -95,33 +95,6 @@ export type UserOutputType = {
     createdAt:string
 }
 
-// isnt needed after creating class User
-// export type DBUserType = {
-//     _id:ObjectId,
-//     id:string,
-//     login:string,
-//     email:string,
-//     passwordHash:string,
-//     passwordSalt:string,
-//     createdAt:string,
-// }
-
-// isnt needed after creating class User
-// export type UserAccountDBType = {
-//     _id:ObjectId,
-//     accountData: UserType,
-//     emailConfirmation: {
-//         confirmationCode: string,
-//         expirationDate: Date
-//         isConfirmed: boolean
-//     }
-//     codeRecoveryInfo: {
-//         recoveryCode?: string,
-//         expirationDate?: Date,
-//         isConfirmed?: boolean
-//     }
-// }
-
 export type codeRecoveryType = {
     recoveryCode: string,
     expirationDate: Date,
