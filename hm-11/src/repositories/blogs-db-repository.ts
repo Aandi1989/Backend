@@ -1,7 +1,7 @@
 import { blogsModel } from "../db/models";
 import { BlogType, DBBlogType } from "../types/types";
 
-class BlogsRepository {
+export class BlogsRepository {
     async createBlog(newBlog: BlogType): Promise<BlogType>{
         const result = await blogsModel.insertMany([newBlog])
         //@ts-ignore
@@ -29,5 +29,3 @@ class BlogsRepository {
         }
     }
 } 
-
-export const blogsRepository = new BlogsRepository();

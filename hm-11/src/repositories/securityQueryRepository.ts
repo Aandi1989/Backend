@@ -1,16 +1,20 @@
-import { jwtService } from "../application/jwt-service";
+import { JwtService } from "../application/jwt-service";
 import { sessionsModel } from "../db/models";
 import { DBsessionType } from "../types/types";
 import { HTTP_STATUSES } from "../utils";
 
-class SecurityQueryRepo {
+export class SecurityQueryRepo {
+    jwtService: JwtService;
+    constructor(){
+        this.jwtService = new JwtService()
+    }
     async getSession(deviceId: string){
         const foundedSession = await sessionsModel.findOne({deviceId});
         return foundedSession;
     }
 
     async getSessions(token: string){
-        const tokenData = await jwtService.getRefreshTokenData(token)
+        const tokenData = await this.jwtService.getRefreshTokenData(token)
         const sessions = await sessionsModel.find({userId: tokenData.userId}).lean();
         return sessions.map(session => {
             return this._mapDBSessionTypeToOutputType(session)
@@ -27,4 +31,3 @@ class SecurityQueryRepo {
     }
 }
 
-export const securityQueryRepo = new SecurityQueryRepo();

@@ -1,6 +1,6 @@
 import { sessionsModel } from "../db/models";
 
-class SecurityRepository {
+export class SecurityRepository {
     async revokeSession(deviceId: string){
         const result = await sessionsModel.deleteOne({deviceId});
         return result;
@@ -18,5 +18,3 @@ class SecurityRepository {
         return result.deletedCount;
     }
 }
-
-export const securityRepository = new SecurityRepository();

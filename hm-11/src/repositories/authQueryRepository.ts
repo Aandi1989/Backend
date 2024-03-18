@@ -2,7 +2,7 @@ import { apiCallsModel, sessionsModel, usersModel } from "../db/models";
 import { User } from "../features/users/entities/user";
 import { apiCallType } from "../types/types";
 
-class AuthQueryRepo {
+export class AuthQueryRepo {
     async findByConfirmationCode(code: string): Promise<User | null>{
         const foundedAccount = await usersModel.findOne({"emailConfirmation.confirmationCode": code});
         return foundedAccount as User | null;
@@ -33,5 +33,3 @@ class AuthQueryRepo {
         return result;
     }
 }
-
-export const authQueryRepo = new AuthQueryRepo();

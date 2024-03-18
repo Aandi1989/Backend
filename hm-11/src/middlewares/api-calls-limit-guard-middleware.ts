@@ -1,7 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import { authService } from '../domain/auth-service';
-import { authQueryRepo } from '../repositories/authQueryRepository';
+import { AuthService } from '../domain/auth-service';
+import { AuthQueryRepo } from '../repositories/authQueryRepository';
 import { HTTP_STATUSES } from '../utils';
+
+const authService = new AuthService();
+const authQueryRepo = new AuthQueryRepo();
 
 export const apiCallsGuard = async (req: Request, res: Response, next: NextFunction) => {
     const currentDateMinus10Sec = new Date(Date.now() - 10000);

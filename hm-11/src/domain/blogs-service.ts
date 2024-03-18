@@ -1,9 +1,13 @@
 
 import { CreateBlogModel } from "../features/blogs/models/CreateBlogModel";
-import { blogsRepository } from "../repositories/blogs-db-repository"; 
+import { BlogsRepository } from "../repositories/blogs-db-repository"; 
 import { BlogType } from "../types/types";
 
-class BlogsService {
+export class BlogsService {
+    blogsRepository: BlogsRepository;
+    constructor(){
+        this.blogsRepository = new BlogsRepository();
+    }
     async createBlog(data: CreateBlogModel): Promise<BlogType>{
         const newBlog = {
             id: (+new Date()).toString(),
@@ -13,17 +17,15 @@ class BlogsService {
             createdAt: new Date().toISOString(),
             isMembership: false
         };
-        const createdBlog = await blogsRepository.createBlog(newBlog)
+        const createdBlog = await this.blogsRepository.createBlog(newBlog)
         return createdBlog;
     }
 
     async updateBlog(id: string ,data: Partial<BlogType>): Promise<boolean>{
-        return await blogsRepository.updateBlog(id, data)
+        return await this.blogsRepository.updateBlog(id, data)
     }
 
     async deleteBlog(id: string):Promise<boolean> {
-        return await blogsRepository.deleteBlog(id)
+        return await this.blogsRepository.deleteBlog(id)
     }
 };
-
-export const blogsService = new BlogsService();

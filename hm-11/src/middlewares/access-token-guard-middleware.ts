@@ -1,10 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import { HTTP_STATUSES } from "../utils";
-import { jwtService } from "../application/jwt-service";
-import { usersQueryRepo } from "../repositories/usersQueryRepository";
-import { authService } from "../domain/auth-service";
+import { JwtService } from "../application/jwt-service";
+import { UsersQueryRepo } from "../repositories/usersQueryRepository";
+import { AuthService } from "../domain/auth-service";
 import { ResultCode } from "../types/types";
 
+const jwtService = new JwtService();
+const usersQueryRepo = new UsersQueryRepo();
+const authService = new AuthService();
 
 export const accessTokenGuard = async (req: Request, 
                                         res: Response, 

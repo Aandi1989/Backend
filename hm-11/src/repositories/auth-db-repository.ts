@@ -3,7 +3,7 @@ import { Result, ResultCode, apiCallType, refreshTokenDataType, sessionType } fr
 import { apiCallsModel, sessionsModel, usersModel } from "../db/models";
 
 
-class AuthRepository {
+export class AuthRepository {
     async confirmEmail(_id: ObjectId): Promise<Result>{
         const result = await usersModel.updateOne({_id}, {$set: {'emailConfirmation.isConfirmed': true}})
         return result.modifiedCount === 1 ? {code: ResultCode.Success} : {code: ResultCode.Failed};
@@ -38,5 +38,3 @@ class AuthRepository {
         return result;
     }
 }
-
-export const authRepository = new AuthRepository();

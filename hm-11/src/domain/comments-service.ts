@@ -1,9 +1,15 @@
-import { commentsRepository } from "../repositories/comments-db-repository";
-import { commentsQueryRepo } from "../repositories/commentsQueryRepository";
+import { CommentsRepository } from "../repositories/comments-db-repository";
+import { CommentsQueryRepo } from "../repositories/commentsQueryRepository";
 import { Result, ResultCode, UserOutputType } from "../types/types";
 
 
-class CommentsService {
+export class CommentsService {
+    commentsRepository: CommentsRepository;
+    commentsQueryRepo: CommentsQueryRepo;
+    constructor(){
+        this.commentsRepository = new CommentsRepository(),
+        this.commentsQueryRepo = new CommentsQueryRepo()
+    }
     async createComment(postId: string, content: string, user: UserOutputType){
         const newComment = {
             id: (+new Date()).toString(),
@@ -15,31 +21,29 @@ class CommentsService {
             },
             createdAt: new Date().toISOString()
         }
-        const createdComment = await commentsRepository.createComment(newComment)
+        const createdComment = await this.commentsRepository.createComment(newComment)
         return createdComment;
     }
 
     async deleteComment(id: string, user: UserOutputType): Promise<Result> {
-        const foundComment = await commentsQueryRepo.getCommentById(id);
+        const foundComment = await this.commentsQueryRepo.getCommentById(id);
         if(!foundComment) return {
             code: ResultCode.NotFound
         };
         if(foundComment.commentatorInfo.userId !== user.id) return {
             code: ResultCode.Forbidden
         }
-        return await commentsRepository.deleteComment(id)
+        return await this.commentsRepository.deleteComment(id)
     }
 
     async updateComment(id: string, content: string, user: UserOutputType): Promise<Result>{
-        const foundComment = await commentsQueryRepo.getCommentById(id);
+        const foundComment = await this.commentsQueryRepo.getCommentById(id);
         if(!foundComment) return {
             code: ResultCode.NotFound
         };
         if(foundComment.commentatorInfo.userId !== user.id) return {
             code: ResultCode.Forbidden
         }
-        return await commentsRepository.updateComment(id, content)
+        return await this.commentsRepository.updateComment(id, content)
     }
 }
-
-export const commentsService = new CommentsService();

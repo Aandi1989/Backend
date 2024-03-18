@@ -2,7 +2,7 @@ import { postsModel } from "../db/models";
 import { CommentType, DBCommentType, DBPostType, PostType } from "../types/types";
 
 
-class PostsRepository {
+export class PostsRepository {
     async createPost(newPost: PostType): Promise<PostType>{
         const result = await postsModel.insertMany([newPost]);
         // @ts-ignore
@@ -31,5 +31,3 @@ class PostsRepository {
         }
     }
 } 
-
-export const postsRepository = new PostsRepository();

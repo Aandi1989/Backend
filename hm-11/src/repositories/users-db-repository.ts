@@ -4,7 +4,7 @@ import { Result, ResultCode, UserOutputType, codeRecoveryType } from "../types/t
 import { User } from "../features/users/entities/user";
 
 
-class UsersRepository {
+export class UsersRepository {
     async createUser(newAccount: User): Promise<Result>{
         const result = await usersModel.insertMany([newAccount]);
         const userOutput = this._mapDBAccountToUserOutputType(newAccount);
@@ -44,5 +44,3 @@ class UsersRepository {
         }
     }
 }
-
-export const usersRepository = new UsersRepository();

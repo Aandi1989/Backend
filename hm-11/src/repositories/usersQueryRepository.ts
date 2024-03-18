@@ -3,7 +3,7 @@ import { usersModel } from "../db/models";
 import { User } from "../features/users/entities/user";
 import { UserAuthType, UserOutputType, UsersWithQueryType } from "../types/types";
 
-class UsersQueryRepo {
+export class UsersQueryRepo {
     async getUsers(query: UserQueryOutputType): Promise<UsersWithQueryType>{
         const {pageNumber, pageSize, searchLoginTerm, searchEmailTerm, sortBy, sortDirection } = query;
         const sortDir = sortDirection == "asc" ? 1 : -1;  
@@ -70,5 +70,3 @@ class UsersQueryRepo {
         }
     }
 }
-
-export const usersQueryRepo = new UsersQueryRepo();

@@ -1,11 +1,17 @@
 import { URIParamsBlogIdModel } from "../features/blogs/models/URIParamsBlogIdModel";
 import { CreatePostModel } from "../features/posts/models/CreatePostModel";
-import { commentsRepository } from "../repositories/comments-db-repository";
-import {postsRepository} from "../repositories/posts-db-repository";
+import { CommentsRepository } from "../repositories/comments-db-repository";
+import { PostsRepository} from "../repositories/posts-db-repository";
 import { PostType, UserOutputType } from "../types/types";
 
 
-class PostsService {
+export class PostsService {
+    commentsRepository: CommentsRepository;
+    postsRepository: PostsRepository;
+    constructor(){
+        this.commentsRepository = new CommentsRepository(),
+        this.postsRepository = new PostsRepository()
+    }
     async createPost(data: CreatePostModel, params?:URIParamsBlogIdModel): Promise<PostType>{
         const newPost = {
             id: (+new Date()).toString(),
@@ -16,17 +22,15 @@ class PostsService {
             blogName: data.blogName ? data.blogName : '',
             createdAt: new Date().toISOString()
         };
-        const createPost = await postsRepository.createPost(newPost)
+        const createPost = await this.postsRepository.createPost(newPost)
         return createPost;
     }
 
     async updatePost(id: string, data: Partial<PostType>): Promise<boolean>{
-        return await postsRepository.updatePost(id, data);
+        return await this.postsRepository.updatePost(id, data);
     }
 
     async deletePost(id: string):Promise<boolean> {
-        return await postsRepository.deletePost(id)
+        return await this.postsRepository.deletePost(id)
     }
 } 
-
-export const postsService = new PostsService();

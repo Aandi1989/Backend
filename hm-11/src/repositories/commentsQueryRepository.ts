@@ -2,7 +2,7 @@ import { CommentQueryOutputType } from "../assets/queryStringModifiers";
 import { commentsModel } from "../db/models";
 import { CommentType, DBCommentType } from "../types/types";
 
-class CommentsQueryRepo {
+export class CommentsQueryRepo {
     async getCommentsByPostId(postId: string, query: CommentQueryOutputType){
         const {pageNumber, pageSize, sortBy, sortDirection } = query;
         const sortDir = sortDirection == "asc" ? 1 : -1;  
@@ -43,5 +43,3 @@ class CommentsQueryRepo {
         }
     }
 }
-
-export const commentsQueryRepo = new CommentsQueryRepo();

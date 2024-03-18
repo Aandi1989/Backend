@@ -1,7 +1,7 @@
 import { commentsModel } from "../db/models"
 import { CommentType, Result, ResultCode } from "../types/types"
 
-class CommentsRepository {
+export class CommentsRepository {
     async createComment(newComment: CommentType):Promise<CommentType>{
         const result = await commentsModel.insertMany([newComment])
         return this._mapDBCommentTypeToCommentType(newComment)
@@ -43,4 +43,3 @@ class CommentsRepository {
     }
 }
 
-export const commentsRepository = new CommentsRepository();

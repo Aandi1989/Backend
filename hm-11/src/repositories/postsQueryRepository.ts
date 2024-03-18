@@ -2,7 +2,7 @@ import { CommentQueryOutputType, PostQueryOutputType } from "../assets/queryStri
 import { postsModel } from "../db/models";
 import { CommentType, DBCommentType, DBPostType, PostType, PostsWithQueryType } from "../types/types";
 
-class PostsQueryRepo {
+export class PostsQueryRepo {
     async getPosts(query: PostQueryOutputType): Promise<PostsWithQueryType> {
         const {pageNumber, pageSize, sortBy, sortDirection } = query;
         const sortDir = sortDirection == "asc" ? 1 : -1;  
@@ -66,5 +66,3 @@ class PostsQueryRepo {
         }
     }
 }
-
-export const postsQueryRepo = new PostsQueryRepo();

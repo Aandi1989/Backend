@@ -1,13 +1,19 @@
 import { ObjectId } from "mongodb";
 import { AuthBodyModel } from "../features/auth/Models/AuthBodyModel";
 import { CreateUserModel } from "../features/users/models/CreateUserModel"; 
-import { usersRepository } from "../repositories/users-db-repository";
-import { usersQueryRepo } from "../repositories/usersQueryRepository";
+import { UsersRepository } from "../repositories/users-db-repository";
+import { UsersQueryRepo } from "../repositories/usersQueryRepository";
 import { UserOutputType } from "../types/types";
 import bcrypt from 'bcrypt';
 import { User } from "../features/users/entities/user";
 
-class UsersService {
+export class UsersService {
+    usersRepository: UsersRepository;
+    usersQueryRepo: UsersQueryRepo;
+    constructor(){
+        this.usersRepository = new UsersRepository()
+        this.usersQueryRepo = new UsersQueryRepo()
+    }
     async createUser(data: CreateUserModel): Promise<UserOutputType>{
         const {login, email, password} = data;
 
@@ -15,12 +21,12 @@ class UsersService {
         const passwordHash = await this._generateHash(password, passwordSalt)
 
         const newAccount = new User (login, email, passwordHash, passwordSalt)
-        const result = await usersRepository.createUser(newAccount)
+        const result = await this.usersRepository.createUser(newAccount)
         return result.data;
     }
 
     async checkCredentials(data: AuthBodyModel){
-        const user = await usersQueryRepo.getByLoginOrEmail(data.loginOrEmail)
+        const user = await this.usersQueryRepo.getByLoginOrEmail(data.loginOrEmail)
         if(!user){
             return false ;
         }
@@ -32,7 +38,7 @@ class UsersService {
     }
 
     async deleteUser(id: string): Promise<boolean> {
-        return await usersRepository.deleteUser(id)
+        return await this.usersRepository.deleteUser(id)
     }
 
     async _generateHash(password: string, salt: string){
@@ -41,5 +47,4 @@ class UsersService {
     }
 } 
 
-export const usersService = new UsersService();
 
