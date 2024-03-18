@@ -8,12 +8,8 @@ import bcrypt from 'bcrypt';
 import { User } from "../features/users/entities/user";
 
 export class UsersService {
-    usersRepository: UsersRepository;
-    usersQueryRepo: UsersQueryRepo;
-    constructor(){
-        this.usersRepository = new UsersRepository()
-        this.usersQueryRepo = new UsersQueryRepo()
-    }
+    constructor(protected usersRepository: UsersRepository,
+                protected usersQueryRepo: UsersQueryRepo){}
     async createUser(data: CreateUserModel): Promise<UserOutputType>{
         const {login, email, password} = data;
 

@@ -4,12 +4,8 @@ import { Result, ResultCode, UserOutputType } from "../types/types";
 
 
 export class CommentsService {
-    commentsRepository: CommentsRepository;
-    commentsQueryRepo: CommentsQueryRepo;
-    constructor(){
-        this.commentsRepository = new CommentsRepository(),
-        this.commentsQueryRepo = new CommentsQueryRepo()
-    }
+    constructor(protected commentsRepository: CommentsRepository,
+                protected commentsQueryRepo: CommentsQueryRepo){}
     async createComment(postId: string, content: string, user: UserOutputType){
         const newComment = {
             id: (+new Date()).toString(),

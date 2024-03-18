@@ -12,16 +12,10 @@ import { JwtService } from '../application/jwt-service';
 import { User } from '../features/users/entities/user';
 
 export class AuthService {
-    usersRepository: UsersRepository;
-    authRepository: AuthRepository;
-    authQueryRepo: AuthQueryRepo;
-    jwtService: JwtService;
-    constructor(){
-        this.usersRepository = new UsersRepository(),
-        this.authRepository = new AuthRepository(),
-        this.authQueryRepo = new AuthQueryRepo(),
-        this.jwtService = new JwtService()
-    }
+    constructor(protected usersRepository: UsersRepository,
+                protected authRepository: AuthRepository,
+                protected authQueryRepo: AuthQueryRepo,
+                protected jwtService: JwtService){}
     async createUserAccount(data: CreateUserModel): Promise<Result>{
         const {login, email, password} = data;
 

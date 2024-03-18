@@ -4,10 +4,7 @@ import { BlogsRepository } from "../repositories/blogs-db-repository";
 import { BlogType } from "../types/types";
 
 export class BlogsService {
-    blogsRepository: BlogsRepository;
-    constructor(){
-        this.blogsRepository = new BlogsRepository();
-    }
+    constructor(protected blogsRepository: BlogsRepository){}
     async createBlog(data: CreateBlogModel): Promise<BlogType>{
         const newBlog = {
             id: (+new Date()).toString(),

@@ -4,14 +4,9 @@ import { SecurityQueryRepo } from "../repositories/securityQueryRepository";
 import { Result, ResultCode } from "../types/types";
 
 export class SecurityService {
-    jwtService: JwtService;
-    securityRepository: SecurityRepository;
-    securityQueryRepo: SecurityQueryRepo;
-    constructor(){
-        this.jwtService = new JwtService(),
-        this.securityRepository = new SecurityRepository(),
-        this.securityQueryRepo = new SecurityQueryRepo()
-    }
+    constructor(protected jwtService: JwtService,
+                protected securityRepository: SecurityRepository,
+                protected securityQueryRepo: SecurityQueryRepo){}
     async checkRefreshToken(token: string, device_id?: string): Promise<Result>{
         const tokenData = await this.jwtService.getRefreshTokenData(token);
         const deviceId = device_id ? device_id : tokenData.deviceId;

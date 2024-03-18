@@ -4,10 +4,7 @@ import { DBsessionType } from "../types/types";
 import { HTTP_STATUSES } from "../utils";
 
 export class SecurityQueryRepo {
-    jwtService: JwtService;
-    constructor(){
-        this.jwtService = new JwtService()
-    }
+    constructor(protected jwtService: JwtService){}
     async getSession(deviceId: string){
         const foundedSession = await sessionsModel.findOne({deviceId});
         return foundedSession;

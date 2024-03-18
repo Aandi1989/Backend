@@ -6,12 +6,8 @@ import { PostType, UserOutputType } from "../types/types";
 
 
 export class PostsService {
-    commentsRepository: CommentsRepository;
-    postsRepository: PostsRepository;
-    constructor(){
-        this.commentsRepository = new CommentsRepository(),
-        this.postsRepository = new PostsRepository()
-    }
+    constructor(protected commentsRepository: CommentsRepository,
+                protected postsRepository: PostsRepository){}
     async createPost(data: CreatePostModel, params?:URIParamsBlogIdModel): Promise<PostType>{
         const newPost = {
             id: (+new Date()).toString(),
