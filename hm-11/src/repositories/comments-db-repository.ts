@@ -1,10 +1,10 @@
 import { commentsModel } from "../db/models"
-import { CommentType, Result, ResultCode } from "../types/types"
+import { CommentType, DBCommentType, Result, ResultCode, myStatus } from "../types/types"
 
 export class CommentsRepository {
-    async createComment(newComment: CommentType):Promise<CommentType>{
+    async createComment(newComment: DBCommentType):Promise<CommentType>{
         const result = await commentsModel.insertMany([newComment])
-        return this._mapDBCommentTypeToCommentType(newComment)
+        return this._mapDBCommentTypeToCommentTypeAfterCreating(newComment)
     }
 
     async deleteComment(id: string): Promise<Result>{
@@ -30,7 +30,7 @@ export class CommentsRepository {
         }
     }
 
-    _mapDBCommentTypeToCommentType(comment: CommentType): CommentType{
+    _mapDBCommentTypeToCommentTypeAfterCreating(comment: DBCommentType): CommentType{
         return{
             id: comment.id,
             content: comment.content,
@@ -38,7 +38,12 @@ export class CommentsRepository {
                 userId: comment.commentatorInfo.userId,
                 userLogin: comment.commentatorInfo.userLogin
             },
-            createdAt: comment.createdAt 
+            createdAt: comment.createdAt ,
+            likesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: myStatus.None
+            }
         }
     }
 }

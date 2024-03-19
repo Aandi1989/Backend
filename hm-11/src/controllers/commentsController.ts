@@ -5,6 +5,7 @@ import { URIParamsCommentIdModel } from "../features/comments/models/URIParamsCo
 import { CommentsQueryRepo } from "../repositories/commentsQueryRepository";
 import { RequestWithParams, RequestWithParamsAndUserId, UserOutputType, ResultCode, RequestWithParamsAndBodyAndUserId } from "../types/types";
 import { HTTP_STATUSES } from "../utils";
+import { UpdateModelStatus } from "../features/comments/models/UpdateModelStatus";
 
 
 export class CommentsController {
@@ -26,6 +27,11 @@ export class CommentsController {
         const result = await this.commentsService.updateComment(req.params.id, req.body.content, req.user!);
         if(result.code === ResultCode.NotFound) return res.send(HTTP_STATUSES.NOT_FOUND_404);
         if(result.code === ResultCode.Forbidden) return res.send(HTTP_STATUSES.ACCESS_FORBIDDEN_403);
+        if(result.code === ResultCode.Success) return res.send(HTTP_STATUSES.NO_CONTENT_204);
+    }
+    async likeComment (req: RequestWithParamsAndBodyAndUserId<URIParamsCommentIdModel,UpdateModelStatus,UserOutputType>, res: Response) {
+        const result = await this.commentsService.likeComment(req.params.id, req.body.likeStatus, req.user!.id);
+        if(result.code === ResultCode.NotFound) return res.send(HTTP_STATUSES.NOT_FOUND_404);
         if(result.code === ResultCode.Success) return res.send(HTTP_STATUSES.NO_CONTENT_204);
     }
 }

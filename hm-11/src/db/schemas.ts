@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
-import { BlogType, CommentType, PostType, UserType, apiCallType, sessionType } from "../types/types";
+import { BlogType, CommentType, DBCommentType, PostType, UserType, apiCallType, myStatus, sessionType } from "../types/types";
 import { User } from "../features/users/entities/user";
 
 export const blogsSchema = new mongoose.Schema<BlogType>({
@@ -22,14 +22,17 @@ export const postsSchema = new mongoose.Schema<PostType>({
     createdAt: { type: String, required: true },
 }, { collection: 'posts'});
 
-export const commentsSchema = new mongoose.Schema<CommentType>({
+export const commentsSchema = new mongoose.Schema<DBCommentType>({
     id: { type: String, required: true },
     content: { type: String, required: true },
+    postId: { type: String, required: true},
     commentatorInfo: {
         userId: { type: String, required: true },
         userLogin: { type: String, required: true },
     },
     createdAt: { type: String, required: true },
+    likedId: {type: [String], required: true },
+    dislikedId: {type: [String], required: true }
 }, { collection: 'comments'});
 
 const accountDataSchema = new mongoose.Schema<UserType>({

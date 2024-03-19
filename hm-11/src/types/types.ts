@@ -116,6 +116,12 @@ export type Result = {
     data?: any
 }
 
+export enum myStatus {
+    None = "None",
+    Like = "Like",
+    Dislike = "Dislike"
+}
+
 export type CommentType = {
     id: string
     content: string
@@ -124,16 +130,24 @@ export type CommentType = {
         userLogin: string
     },
     createdAt: string
+    likesInfo: {
+        likesCount: number
+        dislikesCount: number
+        myStatus: myStatus
+    }
 }
 
 export type DBCommentType = {
     id: string
     content: string
+    postId: string
     commentatorInfo: {
         userId: string
         userLogin: string
     },
     createdAt: string
+    likedId: string[]
+    dislikedId: string[]
     _id: ObjectId
 }
 

@@ -1,6 +1,6 @@
 import { CommentQueryOutputType } from "../assets/queryStringModifiers";
 import { commentsModel } from "../db/models";
-import { CommentType, DBCommentType } from "../types/types";
+import { CommentType, DBCommentType, myStatus } from "../types/types";
 
 export class CommentsQueryRepo {
     async getCommentsByPostId(postId: string, query: CommentQueryOutputType){
@@ -31,6 +31,11 @@ export class CommentsQueryRepo {
         return dbComment ? this._mapDBCommentTypeToCommentType(dbComment) : null;
     }
 
+    async getDBTypeCommentById(id: string):Promise<DBCommentType | null>{
+        let dbComment: DBCommentType | null = await commentsModel.findOne({ id: id })
+        return dbComment ? dbComment : null;
+    }
+
     _mapDBCommentTypeToCommentType(comment: DBCommentType): CommentType{
         return{
             id: comment.id,
@@ -39,7 +44,12 @@ export class CommentsQueryRepo {
                 userId: comment.commentatorInfo.userId,
                 userLogin: comment.commentatorInfo.userLogin
             },
-            createdAt: comment.createdAt 
+            createdAt: comment.createdAt ,
+            likesInfo: {
+                likesCount: comment.likedId.length,
+                dislikesCount: comment.dislikedId.length,
+                myStatus: myStatus.None
+            }
         }
     }
 }
