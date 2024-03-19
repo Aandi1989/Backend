@@ -6,13 +6,19 @@ import { CommentsQueryRepo } from "../repositories/commentsQueryRepository";
 import { RequestWithParams, RequestWithParamsAndUserId, UserOutputType, ResultCode, RequestWithParamsAndBodyAndUserId } from "../types/types";
 import { HTTP_STATUSES } from "../utils";
 import { UpdateModelStatus } from "../features/comments/models/UpdateModelStatus";
+import { JwtService } from "../application/jwt-service";
 
 
 export class CommentsController {
     constructor(protected commentsService: CommentsService,
-                protected commentsQueryRepo: CommentsQueryRepo){}
+                protected commentsQueryRepo: CommentsQueryRepo,
+                protected jwtService: JwtService){}
     async getComment (req: RequestWithParams<URIParamsCommentIdModel>, res: Response) {
-        const foundComment = await this.commentsQueryRepo.getCommentById(req.params.id);
+        let accessTokenData;
+        if(req.headers.authorization){
+        const accessToken = req.headers.authorization.split(' ')[1];
+        accessTokenData = await this.jwtService.getUserIdByToken(accessToken)}
+        const foundComment = await this.commentsQueryRepo.getCommentById(req.params.id, accessTokenData?.userId);
         if (foundComment) return res.status(HTTP_STATUSES.OK_200).json(foundComment);
         return res.send(HTTP_STATUSES.NOT_FOUND_404);
     }

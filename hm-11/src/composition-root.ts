@@ -50,7 +50,7 @@ const usersService = new UsersService(usersRepository, usersQueryRepo);
 
 export const authController = new AuthController(usersQueryRepo, jwtService, authService, usersService);
 export const blogsController = new BlogsController(blogsService, postsService, blogsQueryRepo, postsQueryRepo);
-export const commentsController = new CommentsController(commentsService, commentsQueryRepo);
-export const postsController = new PostsController(commentsService, postsService, commentsQueryRepo, postsQueryRepo);
+export const commentsController = new CommentsController(commentsService, commentsQueryRepo, jwtService);
+export const postsController = new PostsController(commentsService, postsService, commentsQueryRepo, postsQueryRepo, jwtService);
 export const securityController = new SecurityController(securityService, securityQueryRepo);
 export const usersController = new UsersController(usersService, usersQueryRepo);

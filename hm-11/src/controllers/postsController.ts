@@ -9,12 +9,14 @@ import { CommentsQueryRepo } from "../repositories/commentsQueryRepository";
 import { PostsQueryRepo } from "../repositories/postsQueryRepository";
 import { RequestWithQuery, PostsWithQueryType, RequestWithBody, PostType, RequestWithParams, RequestWithParamsAndBody, RequestWithParamsAndBodyAndUserId, UserOutputType, RequestWithParamsAndQuery } from "../types/types";
 import { HTTP_STATUSES } from "../utils";
+import { JwtService } from "../application/jwt-service";
 
 export class PostsController {
     constructor(protected commentsService: CommentsService,
                 protected postsService: PostsService,
                 protected commentsQueryRepo: CommentsQueryRepo,
-                protected postsQueryRepo: PostsQueryRepo){}
+                protected postsQueryRepo: PostsQueryRepo,
+                protected jwtService: JwtService){}
     async getPosts (req: RequestWithQuery<Partial<PostQueryType>>, res: Response<PostsWithQueryType>) {
         const response = await this.postsQueryRepo.getPosts(postQueryParams(req.query));
         return res.status(HTTP_STATUSES.OK_200).json(response);
@@ -47,9 +49,14 @@ export class PostsController {
     }
     async getCommentsForPost (req: RequestWithParamsAndQuery<URIParamsPostIdModel,Partial<CommentQueryType>>, 
         res: Response){
+        let accessTokenData;
+        if(req.headers.authorization){
+        const accessToken = req.headers.authorization.split(' ')[1];
+        accessTokenData = await this.jwtService.getUserIdByToken(accessToken)}   
         const post = await this.postsQueryRepo.getPostById(req.params.id)
         if(!post) return res.send(HTTP_STATUSES.NOT_FOUND_404);
-        const comments = await this.commentsQueryRepo.getCommentsByPostId(req.params.id, commentQueryParams(req.query))  
+        const comments = await this.commentsQueryRepo.getCommentsByPostId(req.params.id, 
+            commentQueryParams(req.query), accessTokenData?.userId)  
          return res.status(HTTP_STATUSES.OK_200).json(comments)
     }
 }

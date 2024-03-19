@@ -1,9 +1,10 @@
+import { defineStatus } from "../assets/helperCommentStatus";
 import { CommentQueryOutputType } from "../assets/queryStringModifiers";
 import { commentsModel } from "../db/models";
 import { CommentType, DBCommentType, myStatus } from "../types/types";
 
 export class CommentsQueryRepo {
-    async getCommentsByPostId(postId: string, query: CommentQueryOutputType){
+    async getCommentsByPostId(postId: string, query: CommentQueryOutputType, userId: string = ''){
         const {pageNumber, pageSize, sortBy, sortDirection } = query;
         const sortDir = sortDirection == "asc" ? 1 : -1;  
         const skip = (pageNumber -1) * pageSize;  
@@ -21,14 +22,14 @@ export class CommentsQueryRepo {
             pageSize: pageSize,
             totalCount: totalCount,
             items: dbComments.map(dbPost => {
-                return this._mapDBCommentTypeToCommentType(dbPost)
+                return this._mapDBCommentTypeToCommentType(dbPost, userId)
             })
         }
     }
 
-    async getCommentById(id: string):Promise<CommentType | null>{
+    async getCommentById(id: string, userId: string = ''):Promise<CommentType | null>{
         let dbComment: DBCommentType | null = await commentsModel.findOne({ id: id })
-        return dbComment ? this._mapDBCommentTypeToCommentType(dbComment) : null;
+        return dbComment ? this._mapDBCommentTypeToCommentType(dbComment, userId) : null;
     }
 
     async getDBTypeCommentById(id: string):Promise<DBCommentType | null>{
@@ -36,7 +37,7 @@ export class CommentsQueryRepo {
         return dbComment ? dbComment : null;
     }
 
-    _mapDBCommentTypeToCommentType(comment: DBCommentType): CommentType{
+    _mapDBCommentTypeToCommentType(comment: DBCommentType, userId: string = ''): CommentType{
         return{
             id: comment.id,
             content: comment.content,
@@ -48,7 +49,7 @@ export class CommentsQueryRepo {
             likesInfo: {
                 likesCount: comment.likedId.length,
                 dislikesCount: comment.dislikedId.length,
-                myStatus: myStatus.None
+                myStatus: defineStatus(comment, userId)
             }
         }
     }
