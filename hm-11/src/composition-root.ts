@@ -1,5 +1,5 @@
 import { JwtService } from "./application/jwt-service";
-import { AuthController } from "./controllers/AuthController";
+import { AuthController } from "./controllers/authController";
 import { BlogsController } from "./controllers/blogsController";
 import { CommentsController } from "./controllers/commentsController";
 import { PostsController } from "./controllers/postsController";
