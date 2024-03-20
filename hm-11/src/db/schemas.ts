@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
-import { BlogType, CommentType, DBCommentType, PostType, UserType, apiCallType, myStatus, sessionType } from "../types/types";
+import { BlogType, CommentType, DBCommentType, PostType, UserType, apiCallType, likeType, myStatus, sessionType } from "../types/types";
 import { User } from "../features/users/entities/user";
 
 export const blogsSchema = new mongoose.Schema<BlogType>({
@@ -22,6 +22,14 @@ export const postsSchema = new mongoose.Schema<PostType>({
     createdAt: { type: String, required: true },
 }, { collection: 'posts'});
 
+export const likeTypeSchema = new mongoose.Schema<likeType>({
+    id: { type: String, required: true },
+    status: { type: String, required: true },
+    userId: { type: String, required: true },
+    parentId: { type: String, required: true },
+    createdAt: { type: String, required: true }
+}, { collection: 'likes'});
+
 export const commentsSchema = new mongoose.Schema<DBCommentType>({
     id: { type: String, required: true },
     content: { type: String, required: true },
@@ -31,8 +39,8 @@ export const commentsSchema = new mongoose.Schema<DBCommentType>({
         userLogin: { type: String, required: true },
     },
     createdAt: { type: String, required: true },
-    likedId: {type: [String], required: true },
-    dislikedId: {type: [String], required: true }
+    likes: {type: [likeTypeSchema], required: true },
+    dislikes: {type: [likeTypeSchema], required: true }
 }, { collection: 'comments'});
 
 const accountDataSchema = new mongoose.Schema<UserType>({
@@ -81,3 +89,4 @@ export const apiCallsSchema = new mongoose.Schema<apiCallType>({
     url: { type: String, required: true },
     date: { type: Date, required: true },
 }, { collection: 'apiCalls'});
+

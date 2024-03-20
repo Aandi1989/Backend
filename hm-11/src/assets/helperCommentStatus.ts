@@ -1,8 +1,8 @@
 import { CommentType, DBCommentType, myStatus } from "../types/types";
 
 export function defineStatus (comment: DBCommentType, userId: string) {
-    const likedStatus = comment.likedId.includes(userId)
-    const dislikedStatus = comment.dislikedId.includes(userId)
+    const likedStatus = comment.likes.some(like => like.userId == userId) ? myStatus.Like : null;
+    const dislikedStatus = comment.dislikes.some(dislike => dislike.userId == userId) ? myStatus.Dislike : null;
     if(likedStatus) return  myStatus.Like;
     if(dislikedStatus) return myStatus.Dislike;
     return myStatus.None

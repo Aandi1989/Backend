@@ -146,8 +146,8 @@ export type DBCommentType = {
         userLogin: string
     },
     createdAt: string
-    likedId: string[]
-    dislikedId: string[]
+    likes: likeType[]
+    dislikes: likeType[]
     _id: ObjectId
 }
 
@@ -202,7 +202,13 @@ export type refreshTokenDataType = {
     exp: number
 }
 
-
+export type likeType = {
+    id: string
+    status: myStatus
+    userId: string
+    parentId: string
+    createdAt: string
+}
 
 
 

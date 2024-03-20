@@ -18,8 +18,8 @@ export class CommentsService {
                 userLogin: user.login
             },
             createdAt: new Date().toISOString(),
-            likedId: [],
-            dislikedId: [],
+            likes: [],
+            dislikes: [],
             _id: new ObjectId()
         }
         const createdComment = await this.commentsRepository.createComment(newComment)
@@ -50,11 +50,18 @@ export class CommentsService {
         if(!foundComment) return { code: ResultCode.NotFound };
         const statusObj = setStatus(foundComment, myStatus, userId);
         if(!statusObj) return {code: ResultCode.Success};
+        const newStatus = {
+            id: (+new Date()).toString(),
+            status: myStatus,
+            userId: userId,
+            parentId: commentId,
+            createdAt: new Date().toISOString()
+        }
         if(foundComment){
-            foundComment.likedId = statusObj.like === 'add' ?  [userId, ...foundComment.likedId] : foundComment.likedId;
-            foundComment.likedId = statusObj.like === 'remove' ? foundComment.likedId.filter(id => id != userId) : foundComment.likedId;
-            foundComment.dislikedId = statusObj.dislike === 'add' ?  [userId, ...foundComment.dislikedId] : foundComment.dislikedId;
-            foundComment.dislikedId = statusObj.dislike === 'remove' ?  foundComment.dislikedId.filter(id => id != userId) : foundComment.dislikedId;
+            foundComment.likes = statusObj.like === 'add' ?  [newStatus, ...foundComment.likes] : foundComment.likes;
+            foundComment.likes = statusObj.like === 'remove' ? foundComment.likes.filter(like => like.userId != userId) : foundComment.likes;
+            foundComment.dislikes = statusObj.dislike === 'add' ?  [newStatus, ...foundComment.dislikes] : foundComment.dislikes;
+            foundComment.dislikes = statusObj.dislike === 'remove' ?  foundComment.dislikes.filter(dislike => dislike.userId != userId) : foundComment.dislikes;
             //@ts-ignore
             await foundComment.save()
         }

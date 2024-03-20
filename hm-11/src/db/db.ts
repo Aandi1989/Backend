@@ -4,8 +4,8 @@ import mongoose from 'mongoose';
 
 // const mongoUri = "mongodb://0.0.0.0:27017" || appConfig.MONGO_URL;
 const mongoUri = appConfig.MONGO_URL || "mongodb://0.0.0.0:27017";
-// let dbName = "hm-10";
-let dbName = "hm-10-test";
+let dbName = "hm-10";
+// let dbName = "hm-10-test";
 const connectionpOptions = { dbName: `${dbName}`};
 
 export async function runDb(){

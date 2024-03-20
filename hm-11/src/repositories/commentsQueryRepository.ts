@@ -47,8 +47,8 @@ export class CommentsQueryRepo {
             },
             createdAt: comment.createdAt ,
             likesInfo: {
-                likesCount: comment.likedId.length,
-                dislikesCount: comment.dislikedId.length,
+                likesCount: comment.likes.length,
+                dislikesCount: comment.dislikes.length,
                 myStatus: defineStatus(comment, userId)
             }
         }
