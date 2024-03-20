@@ -7,9 +7,10 @@ import { CreatePostModel } from "../features/posts/models/CreatePostModel";
 import { URIParamsPostIdModel } from "../features/posts/models/URIParamsPostIdModel";
 import { CommentsQueryRepo } from "../repositories/commentsQueryRepository";
 import { PostsQueryRepo } from "../repositories/postsQueryRepository";
-import { RequestWithQuery, PostsWithQueryType, RequestWithBody, PostType, RequestWithParams, RequestWithParamsAndBody, RequestWithParamsAndBodyAndUserId, UserOutputType, RequestWithParamsAndQuery } from "../types/types";
+import { RequestWithQuery, PostsWithQueryType, RequestWithBody, PostType, RequestWithParams, RequestWithParamsAndBody, RequestWithParamsAndBodyAndUserId, UserOutputType, RequestWithParamsAndQuery, ResultCode } from "../types/types";
 import { HTTP_STATUSES } from "../utils";
 import { JwtService } from "../application/jwt-service";
+import { UpdateModelStatus } from "../features/comments/models/UpdateModelStatus";
 
 export class PostsController {
     constructor(protected commentsService: CommentsService,
@@ -58,5 +59,10 @@ export class PostsController {
         const comments = await this.commentsQueryRepo.getCommentsByPostId(req.params.id, 
             commentQueryParams(req.query), accessTokenData?.userId)  
          return res.status(HTTP_STATUSES.OK_200).json(comments)
+    }
+    async likePost (req: RequestWithParamsAndBodyAndUserId<URIParamsPostIdModel,UpdateModelStatus,UserOutputType>, res: Response) {
+        const result = await this.postsService.likePost(req.params.id, req.body.likeStatus, req.user!.id);
+        if(result.code === ResultCode.NotFound) return res.send(HTTP_STATUSES.NOT_FOUND_404);
+        if(result.code === ResultCode.Success) return res.send(HTTP_STATUSES.NO_CONTENT_204);
     }
 }

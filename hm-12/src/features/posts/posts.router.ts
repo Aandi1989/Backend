@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { postsController } from "../../composition-root";
+import { commentsController, postsController } from "../../composition-root";
 import { accessTokenGuard } from "../../middlewares/access-token-guard-middleware";
 import { authenticateUser } from "../../middlewares/authenticateUser-middleware";
-import { commentCreateValidator } from "../../middlewares/comments-bodyValidation-middleware";
+import { commentCreateValidator, likeStatusValidator } from "../../middlewares/comments-bodyValidation-middleware";
 import { commentsQueryValidator } from "../../middlewares/comments-queryValidation-middleware";
 import { inputValidationMiddleware, postCreateValidator, postUpdateValidator } from "../../middlewares/posts-bodyValidation-middleware";
 import { postQueryValidationMiddleware, postQueryValidator } from "../../middlewares/posts-queryValidation-middleware";
@@ -23,3 +23,5 @@ postsRouter.post('/:id/comments', accessTokenGuard, commentCreateValidator, inpu
     postsController.createCommentForPost.bind(postsController))
 postsRouter.get('/:id/comments', ...commentsQueryValidator, userQueryValidationMiddleware, 
     postsController.getCommentsForPost.bind(postsController))
+postsRouter.put('/:id/like-status', accessTokenGuard, likeStatusValidator, inputValidationMiddleware,
+    postsController.likePost.bind(postsController))

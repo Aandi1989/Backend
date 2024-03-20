@@ -22,7 +22,7 @@ export const postsSchema = new mongoose.Schema<PostType>({
     createdAt: { type: String, required: true },
 }, { collection: 'posts'});
 
-export const likeTypeSchema = new mongoose.Schema<likeType>({
+export const likeSchema = new mongoose.Schema<likeType>({
     id: { type: String, required: true },
     status: { type: String, required: true },
     userId: { type: String, required: true },
@@ -39,8 +39,8 @@ export const commentsSchema = new mongoose.Schema<DBCommentType>({
         userLogin: { type: String, required: true },
     },
     createdAt: { type: String, required: true },
-    likes: {type: [likeTypeSchema], required: true },
-    dislikes: {type: [likeTypeSchema], required: true }
+    likes: {type: [likeSchema], required: true },
+    dislikes: {type: [likeSchema], required: true }
 }, { collection: 'comments'});
 
 const accountDataSchema = new mongoose.Schema<UserType>({

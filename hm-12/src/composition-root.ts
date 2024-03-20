@@ -17,6 +17,7 @@ import { BlogsRepository } from "./repositories/blogs-db-repository";
 import { BlogsQueryRepo } from "./repositories/blogsQueryRepository";
 import { CommentsRepository } from "./repositories/comments-db-repository";
 import { CommentsQueryRepo } from "./repositories/commentsQueryRepository";
+import { LikesRepository } from "./repositories/likes-db-repository";
 import { PostsRepository } from "./repositories/posts-db-repository";
 import { PostsQueryRepo } from "./repositories/postsQueryRepository";
 import { SecurityRepository } from "./repositories/security-db-repository";
@@ -38,12 +39,13 @@ const securityRepository = new SecurityRepository();
 const securityQueryRepo = new SecurityQueryRepo(jwtService);
 const usersRepository = new UsersRepository();
 export const usersQueryRepo = new UsersQueryRepo();
+const likesRepository = new LikesRepository();
 
 
 export const authService = new AuthService(usersRepository, authRepository, authQueryRepo, jwtService);
 const blogsService = new BlogsService(blogsRepository);
 const commentsService = new CommentsService(commentsRepository, commentsQueryRepo);
-const postsService = new PostsService(commentsRepository, postsRepository);
+const postsService = new PostsService(commentsRepository, postsRepository, postsQueryRepo, likesRepository);
 const securityService = new SecurityService(jwtService, securityRepository, securityQueryRepo);
 const usersService = new UsersService(usersRepository, usersQueryRepo);
 
