@@ -19,7 +19,7 @@ export class PostsController {
                 protected postsQueryRepo: PostsQueryRepo,
                 protected jwtService: JwtService){}
     async getPosts (req: RequestWithQuery<Partial<PostQueryType>>, res: Response<PostsWithQueryType>) {
-        const response = await this.postsQueryRepo.getPosts(postQueryParams(req.query));
+        const response = await this.postsQueryRepo.getPosts(postQueryParams(req.query), req.user?.id);
         return res.status(HTTP_STATUSES.OK_200).json(response);
     }
     async createPost (req: RequestWithBody<CreatePostModel>, res: Response<PostType>) {
@@ -27,7 +27,7 @@ export class PostsController {
         return res.status(HTTP_STATUSES.CREATED_201).json(createdBlog);
     }
     async getPost (req: RequestWithParams<URIParamsPostIdModel>,res: Response<PostType>) {
-        const foundBlog = await this.postsQueryRepo.getPostById(req.params.id);
+        const foundBlog = await this.postsQueryRepo.getPostById(req.params.id, req.user?.id);
         if (!foundBlog) return res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
         return res.status(HTTP_STATUSES.OK_200).json(foundBlog)
     }
@@ -45,22 +45,20 @@ export class PostsController {
         res:Response) {
         const post = await this.postsQueryRepo.getPostById(req.params.id)
         if(!post) return res.send(HTTP_STATUSES.NOT_FOUND_404);
+        /*  it is unsave to send userData in request. We should use here data from refreshToken and put it into servise's 
+            method as params */  
         const createdComment = await this.commentsService.createComment(req.params.id, req.body.content, req.user!);
         return res.status(HTTP_STATUSES.CREATED_201).json(createdComment);
     }
     async getCommentsForPost (req: RequestWithParamsAndQuery<URIParamsPostIdModel,Partial<CommentQueryType>>, 
         res: Response){
-        let accessTokenData;
-        if(req.headers.authorization){
-        const accessToken = req.headers.authorization.split(' ')[1];
-        accessTokenData = await this.jwtService.getUserIdByToken(accessToken)}   
         const post = await this.postsQueryRepo.getPostById(req.params.id)
         if(!post) return res.send(HTTP_STATUSES.NOT_FOUND_404);
         const comments = await this.commentsQueryRepo.getCommentsByPostId(req.params.id, 
-            commentQueryParams(req.query), accessTokenData?.userId)  
+            commentQueryParams(req.query), req.user?.id)  
          return res.status(HTTP_STATUSES.OK_200).json(comments)
     }
-    async likePost (req: RequestWithParamsAndBodyAndUserId<URIParamsPostIdModel,UpdateModelStatus,UserOutputType>, res: Response) {
+    async likePost (req: RequestWithParamsAndBody<URIParamsPostIdModel,UpdateModelStatus>, res: Response) {
         const result = await this.postsService.likePost(req.params.id, req.body.likeStatus, req.user!.id);
         if(result.code === ResultCode.NotFound) return res.send(HTTP_STATUSES.NOT_FOUND_404);
         if(result.code === ResultCode.Success) return res.send(HTTP_STATUSES.NO_CONTENT_204);

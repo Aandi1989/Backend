@@ -36,6 +36,16 @@ export type PostType = {
     blogId: string,
     blogName?: string,
     createdAt: string
+    extendedLikesInfo: {
+        likesCount: number
+        dislikesCount: number
+        myStatus: myStatus
+        newestLikes: {
+            addedAt: string
+            userId: string
+            login: string
+        }[]
+    }
 }
 
 export type DBPostType = {
@@ -47,6 +57,16 @@ export type DBPostType = {
     blogId: string,
     blogName?: string,
     createdAt: string
+    extendedLikesInfo: {
+        likesCount: number
+        dislikesCount: number
+        myStatus: myStatus
+        newestLikes: {
+            addedAt: string
+            userId: string
+            login: string
+        }[]
+    }
 }
 
 export type BlogsWithQueryType = {
@@ -209,6 +229,7 @@ export type likeType = {
     parentId: string
     createdAt: string
 }
+
 
 
 

@@ -12,6 +12,12 @@ export const blogsSchema = new mongoose.Schema<BlogType>({
     isMembership: { type: Boolean, required: true },
 }, { collection: 'blogs'});
 
+const newestLikes = new mongoose.Schema({
+    addedAt:{ type: String, required: true },
+    userId: { type: String, required: true },
+    login:{ type: String, required: true }
+})
+
 export const postsSchema = new mongoose.Schema<PostType>({
     id: { type: String, required: true },
     title: { type: String, required: true },
@@ -20,11 +26,18 @@ export const postsSchema = new mongoose.Schema<PostType>({
     blogId: { type: String, required: true },
     blogName: { type: String, required: false },
     createdAt: { type: String, required: true },
+    extendedLikesInfo: {
+        likesCount: { type: Number, required: true},
+        dislikesCount: { type: Number, required: true},
+        myStatus: { type: String, enum: Object.values(myStatus), required: true},
+        newestLikes: { type: [newestLikes], required: true}
+    }
 }, { collection: 'posts'});
+
 
 export const likeSchema = new mongoose.Schema<likeType>({
     id: { type: String, required: true },
-    status: { type: String, required: true },
+    status: { type: String, enum: Object.values(myStatus), required: true },
     userId: { type: String, required: true },
     parentId: { type: String, required: true },
     createdAt: { type: String, required: true }

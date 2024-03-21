@@ -6,6 +6,7 @@ import { blogPostValidator, blogUpdateValidator, inputValidationMiddleware } fro
 import { blogQueryValidationMiddleware, blogQueryValidator } from "../../middlewares/blogs-queryValidation-middleware";
 import { postCreateWithoutBlogIdValidator, inputValidationMiddleware as postInputValidationMiddleware } from "../../middlewares/posts-bodyValidation-middleware";
 import { postQueryValidationMiddleware, postQueryValidator } from "../../middlewares/posts-queryValidation-middleware";
+import { userDataFromAccessToken } from "../../middlewares/user-data-from-access-token-middleare";
 
 
 export const blogsRouter = Router();
@@ -17,7 +18,7 @@ blogsRouter.post('/', authenticateUser, ...blogPostValidator, inputValidationMid
 blogsRouter.get('/:id', blogsController.getBlog.bind(blogsController))
 blogsRouter.post('/:blogId/posts', authenticateUser, ...postCreateWithoutBlogIdValidator, blogIdValidator,
     postInputValidationMiddleware, blogIdValidationMiddleware, blogsController.createPostForBlog.bind(blogsController))
-blogsRouter.get('/:blogId/posts', blogIdValidator, ...postQueryValidator, postQueryValidationMiddleware,
+blogsRouter.get('/:blogId/posts', userDataFromAccessToken, blogIdValidator, ...postQueryValidator, postQueryValidationMiddleware,
     blogIdValidationMiddleware, blogsController.getPostsForBlog.bind(blogsController))
 blogsRouter.put('/:id', authenticateUser, ...blogUpdateValidator, inputValidationMiddleware, 
     blogsController.updateBlog.bind(blogsController))

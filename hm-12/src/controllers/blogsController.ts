@@ -39,7 +39,7 @@ export class BlogsController {
                            res: Response<PostsWithQueryType>) {
         const foundBlog = await this.blogsQueryRepo.findBlogById(req.params.blogId);
         if(!foundBlog) return res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
-        const response = await this.postsQueryRepo.getPostsByBlogId(req.params.blogId,postQueryParams(req.query));
+        const response = await this.postsQueryRepo.getPostsByBlogId(req.params.blogId,postQueryParams(req.query), req.user?.id);
         return res.status(HTTP_STATUSES.OK_200).json(response)
     }
     async updateBlog (req: RequestWithParamsAndBody<URIParamsIdModel, Partial<BlogType>>, res: Response) {

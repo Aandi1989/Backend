@@ -1,10 +1,11 @@
 import { defineStatus } from "../assets/helperCommentStatus";
 import { CommentQueryOutputType } from "../assets/queryStringModifiers";
 import { commentsModel } from "../db/models";
-import { CommentType, DBCommentType, myStatus } from "../types/types";
+import { CommentsWithQueryType, CommentType, DBCommentType, myStatus } from "../types/types";
 
 export class CommentsQueryRepo {
-    async getCommentsByPostId(postId: string, query: CommentQueryOutputType, userId: string = ''){
+    async getCommentsByPostId(postId: string, query: CommentQueryOutputType, 
+                                userId: string = ''):Promise<CommentsWithQueryType>{
         const {pageNumber, pageSize, sortBy, sortDirection } = query;
         const sortDir = sortDirection == "asc" ? 1 : -1;  
         const skip = (pageNumber -1) * pageSize;  
@@ -21,8 +22,8 @@ export class CommentsQueryRepo {
             page: pageNumber,
             pageSize: pageSize,
             totalCount: totalCount,
-            items: dbComments.map(dbPost => {
-                return this._mapDBCommentTypeToCommentType(dbPost, userId)
+            items: dbComments.map(dbComment => {
+                return this._mapDBCommentTypeToCommentType(dbComment, userId)
             })
         }
     }
