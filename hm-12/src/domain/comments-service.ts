@@ -3,8 +3,9 @@ import { CommentsRepository } from "../repositories/comments-db-repository";
 import { CommentsQueryRepo } from "../repositories/commentsQueryRepository";
 import { Result, ResultCode, UserOutputType, myStatus } from "../types/types";
 import { setStatus } from "../assets/helperCommentStatus";
+import { injectable } from 'inversify';
 
-
+@injectable()
 export class CommentsService {
     constructor(protected commentsRepository: CommentsRepository,
                 protected commentsQueryRepo: CommentsQueryRepo){}

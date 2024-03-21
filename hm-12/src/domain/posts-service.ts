@@ -7,8 +7,9 @@ import { LikesQueryRepo } from "../repositories/likesQueryRepository";
 import { PostsRepository} from "../repositories/posts-db-repository";
 import { PostsQueryRepo } from "../repositories/postsQueryRepository";
 import { PostType, Result, ResultCode, UserOutputType, myStatus } from "../types/types";
+import { injectable } from 'inversify';
 
-
+@injectable()
 export class PostsService {
     constructor(protected commentsRepository: CommentsRepository,
                 protected postsRepository: PostsRepository,

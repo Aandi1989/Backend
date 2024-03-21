@@ -3,7 +3,9 @@ import { getRecentLikes } from "../assets/getResentLikes";
 import { PostQueryOutputType } from "../assets/queryStringModifiers";
 import { likesModel, postsModel, usersModel } from "../db/models";
 import { DBPostType, PostType, PostsWithQueryType } from "../types/types";
+import { injectable } from 'inversify';
 
+@injectable()
 export class PostsQueryRepo {
     async getPosts(query: PostQueryOutputType, userId: string = ''): Promise<PostsWithQueryType> {
         const {pageNumber, pageSize, sortBy, sortDirection } = query;

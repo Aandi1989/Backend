@@ -1,7 +1,8 @@
 import { postsModel } from "../db/models";
 import { CommentType, DBCommentType, DBPostType, myStatus, PostType } from "../types/types";
+import { injectable } from 'inversify';
 
-
+@injectable()
 export class PostsRepository {
     async createPost(newPost: PostType): Promise<PostType> {
         const result = await postsModel.insertMany([newPost]);

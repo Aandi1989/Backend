@@ -1,9 +1,11 @@
 import { Router } from "express";
-import { commentsController } from "../../composition-root";
 import { accessTokenGuard } from "../../middlewares/access-token-guard-middleware";
 import { commentCreateValidator, likeStatusValidator } from "../../middlewares/comments-bodyValidation-middleware";
 import { inputValidationMiddleware } from "../../middlewares/posts-bodyValidation-middleware";
+import { CommentsController } from "../../controllers/commentsController";
+import { container } from "../../composition-root";
 
+const commentsController = container.resolve(CommentsController)
 
 export const commentsRouter = Router();
 

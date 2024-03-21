@@ -2,7 +2,9 @@ import { UserQueryOutputType } from "../assets/queryStringModifiers";
 import { usersModel } from "../db/models";
 import { User } from "../features/users/entities/user";
 import { UserAuthType, UserOutputType, UsersWithQueryType } from "../types/types";
+import { injectable } from 'inversify';
 
+@injectable()
 export class UsersQueryRepo {
     async getUsers(query: UserQueryOutputType): Promise<UsersWithQueryType>{
         const {pageNumber, pageSize, searchLoginTerm, searchEmailTerm, sortBy, sortDirection } = query;

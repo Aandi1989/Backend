@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { blogsController } from "../../composition-root";
 import { authenticateUser } from "../../middlewares/authenticateUser-middleware";
 import { blogIdValidationMiddleware, blogIdValidator } from "../../middlewares/blogId-paramsValidation-middleware";
 import { blogPostValidator, blogUpdateValidator, inputValidationMiddleware } from "../../middlewares/blogs-bodyValidation-middleware";
@@ -7,7 +6,10 @@ import { blogQueryValidationMiddleware, blogQueryValidator } from "../../middlew
 import { postCreateWithoutBlogIdValidator, inputValidationMiddleware as postInputValidationMiddleware } from "../../middlewares/posts-bodyValidation-middleware";
 import { postQueryValidationMiddleware, postQueryValidator } from "../../middlewares/posts-queryValidation-middleware";
 import { userDataFromAccessToken } from "../../middlewares/user-data-from-access-token-middleare";
+import { BlogsController } from "../../controllers/blogsController";
+import { container } from "../../composition-root";
 
+const blogsController = container.resolve(BlogsController)
 
 export const blogsRouter = Router();
 

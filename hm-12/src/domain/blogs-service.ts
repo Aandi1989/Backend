@@ -2,7 +2,9 @@
 import { CreateBlogModel } from "../features/blogs/models/CreateBlogModel";
 import { BlogsRepository } from "../repositories/blogs-db-repository"; 
 import { BlogType } from "../types/types";
+import { injectable } from 'inversify';
 
+@injectable()
 export class BlogsService {
     constructor(protected blogsRepository: BlogsRepository){}
     async createBlog(data: CreateBlogModel): Promise<BlogType>{

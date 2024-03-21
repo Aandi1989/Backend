@@ -7,8 +7,9 @@ import { RequestWithParams, RequestWithParamsAndUserId, UserOutputType, ResultCo
 import { HTTP_STATUSES } from "../utils";
 import { UpdateModelStatus } from "../features/comments/models/UpdateModelStatus";
 import { JwtService } from "../application/jwt-service";
+import { injectable } from "inversify";
 
-
+@injectable()
 export class CommentsController {
     constructor(protected commentsService: CommentsService,
                 protected commentsQueryRepo: CommentsQueryRepo,

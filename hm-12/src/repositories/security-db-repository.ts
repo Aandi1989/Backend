@@ -1,5 +1,7 @@
 import { sessionsModel } from "../db/models";
+import { injectable } from 'inversify';
 
+@injectable()
 export class SecurityRepository {
     async revokeSession(deviceId: string){
         const result = await sessionsModel.deleteOne({deviceId});

@@ -1,7 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import { HTTP_STATUSES } from "../utils";
 import { ResultCode } from "../types/types";
-import { jwtService, usersQueryRepo } from "../composition-root";
+import { container } from "../composition-root";
+import { JwtService } from "../application/jwt-service";
+import { UsersQueryRepo } from "../repositories/usersQueryRepository";
+
+const jwtService = container.resolve(JwtService);
+const usersQueryRepo = container.resolve(UsersQueryRepo);
 
 
 export const accessTokenGuard = async (req: Request, 

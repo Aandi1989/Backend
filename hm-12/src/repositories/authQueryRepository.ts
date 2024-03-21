@@ -1,7 +1,9 @@
 import { apiCallsModel, sessionsModel, usersModel } from "../db/models";
 import { User } from "../features/users/entities/user";
 import { apiCallType } from "../types/types";
+import { injectable } from 'inversify';
 
+@injectable()
 export class AuthQueryRepo {
     async findByConfirmationCode(code: string): Promise<User | null>{
         const foundedAccount = await usersModel.findOne({"emailConfirmation.confirmationCode": code});

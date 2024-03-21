@@ -2,7 +2,9 @@ import { JwtService } from "../application/jwt-service"
 import { SecurityRepository } from "../repositories/security-db-repository";
 import { SecurityQueryRepo } from "../repositories/securityQueryRepository";
 import { Result, ResultCode } from "../types/types";
+import { injectable } from 'inversify';
 
+@injectable()
 export class SecurityService {
     constructor(protected jwtService: JwtService,
                 protected securityRepository: SecurityRepository,

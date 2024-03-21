@@ -10,7 +10,9 @@ import { UsersRepository } from "../repositories/users-db-repository";
 import { Result, ResultCode, apiCallType, refreshTokenType, sessionType } from "../types/types";
 import { JwtService } from '../application/jwt-service';
 import { User } from '../features/users/entities/user';
+import { injectable } from 'inversify';
 
+@injectable()
 export class AuthService {
     constructor(protected usersRepository: UsersRepository,
                 protected authRepository: AuthRepository,

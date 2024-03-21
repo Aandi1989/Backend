@@ -6,7 +6,9 @@ import { UsersQueryRepo } from "../repositories/usersQueryRepository";
 import { UserOutputType } from "../types/types";
 import bcrypt from 'bcrypt';
 import { User } from "../features/users/entities/user";
+import { injectable } from 'inversify';
 
+@injectable()
 export class UsersService {
     constructor(protected usersRepository: UsersRepository,
                 protected usersQueryRepo: UsersQueryRepo){}

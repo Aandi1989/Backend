@@ -6,7 +6,9 @@ import { URIParamsUserIdModel } from "../features/users/models/URIParamsUserIdMo
 import { UsersQueryRepo } from "../repositories/usersQueryRepository";
 import { RequestWithQuery, UsersWithQueryType, RequestWithBody, UserOutputType, RequestWithParams } from "../types/types";
 import { HTTP_STATUSES } from "../utils";
+import { injectable } from "inversify";
 
+@injectable()
 export class UsersController {
     constructor(protected usersService: UsersService,
                 protected usersQueryRepo: UsersQueryRepo){}

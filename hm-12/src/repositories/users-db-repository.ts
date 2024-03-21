@@ -2,8 +2,9 @@ import { ObjectId } from "mongodb";
 import { usersModel } from "../db/models";
 import { Result, ResultCode, UserOutputType, codeRecoveryType } from "../types/types";
 import { User } from "../features/users/entities/user";
+import { injectable } from 'inversify';
 
-
+@injectable()
 export class UsersRepository {
     async createUser(newAccount: User): Promise<Result>{
         const result = await usersModel.insertMany([newAccount]);

@@ -1,5 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import { jwtService, usersQueryRepo } from "../composition-root";
+import { container } from "../composition-root";
+import { JwtService } from "../application/jwt-service";
+import { UsersQueryRepo } from "../repositories/usersQueryRepository";
+
+
+const jwtService = container.resolve(JwtService);
+const usersQueryRepo = container.resolve(UsersQueryRepo);
 
 
 export const userDataFromAccessToken = async(req: Request, res: Response, next: NextFunction) => {

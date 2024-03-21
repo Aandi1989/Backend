@@ -10,7 +10,9 @@ import { BlogsQueryRepo } from "../repositories/blogsQueryRepository";
 import { PostsQueryRepo } from "../repositories/postsQueryRepository";
 import { RequestWithQuery, BlogsWithQueryType, RequestWithBody, BlogType, RequestWithParams, RequestWithParamsAndBody, PostType, RequestWithParamsAndQuery, PostsWithQueryType } from "../types/types";
 import { HTTP_STATUSES } from "../utils";
+import { injectable } from "inversify";
 
+@injectable()
 export class BlogsController {
     constructor(protected blogsService: BlogsService,
                 protected postsService: PostsService,

@@ -1,11 +1,13 @@
 import { Router } from "express";
-import { authController } from "../../composition-root";
+import { container } from "../../composition-root";
 import { accessTokenGuard } from "../../middlewares/access-token-guard-middleware";
 import { apiCallsGuard } from "../../middlewares/api-calls-limit-guard-middleware";
 import { authValidator } from "../../middlewares/auth-bodyValidation";
 import { inputValidationMiddleware } from "../../middlewares/posts-bodyValidation-middleware";
 import { emailCofirmCodeValidator, emailValidator, newPasswordValidator, userCreateValidator } from "../../middlewares/users-bodyValidation-middleware";
+import { AuthController } from "../../controllers/authController";
 
+const authController = container.resolve(AuthController)
 
 export const authRouter = Router();
 

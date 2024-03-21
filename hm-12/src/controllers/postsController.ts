@@ -11,7 +11,9 @@ import { RequestWithQuery, PostsWithQueryType, RequestWithBody, PostType, Reques
 import { HTTP_STATUSES } from "../utils";
 import { JwtService } from "../application/jwt-service";
 import { UpdateModelStatus } from "../features/comments/models/UpdateModelStatus";
+import { injectable } from "inversify";
 
+@injectable()
 export class PostsController {
     constructor(protected commentsService: CommentsService,
                 protected postsService: PostsService,

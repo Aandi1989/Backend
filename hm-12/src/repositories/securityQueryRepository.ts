@@ -1,8 +1,9 @@
 import { JwtService } from "../application/jwt-service";
 import { sessionsModel } from "../db/models";
 import { DBsessionType } from "../types/types";
-import { HTTP_STATUSES } from "../utils";
+import { injectable } from 'inversify';
 
+@injectable()
 export class SecurityQueryRepo {
     constructor(protected jwtService: JwtService){}
     async getSession(deviceId: string){

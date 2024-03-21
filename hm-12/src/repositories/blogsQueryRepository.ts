@@ -1,7 +1,9 @@
 import { BlogQueryOutputType, BlogQueryType } from "../assets/queryStringModifiers";
 import { blogsModel } from "../db/models";
 import { BlogType, BlogsWithQueryType, DBBlogType } from "../types/types";
+import { injectable } from 'inversify';
 
+@injectable()
 export class BlogsQueryRepo {
     async getBlogs(query: BlogQueryOutputType): Promise<BlogsWithQueryType> {
         const {pageNumber, pageSize, searchNameTerm, sortBy, sortDirection } = query;  

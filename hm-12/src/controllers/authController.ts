@@ -10,7 +10,9 @@ import { CreateUserModel } from "../features/users/models/CreateUserModel";
 import { UsersQueryRepo } from "../repositories/usersQueryRepository";
 import { RequestWithBody, ResultCode } from "../types/types";
 import { HTTP_STATUSES } from "../utils";
+import { injectable } from "inversify";
 
+@injectable()
 export class AuthController {
     constructor(protected usersQueryRepo: UsersQueryRepo,
                 protected jwtService: JwtService,

@@ -4,7 +4,9 @@ import { URIParamsDeviceIdModel } from "../features/security/Models/URIParamsDev
 import { SecurityQueryRepo } from "../repositories/securityQueryRepository";
 import { ResultCode, RequestWithParams } from "../types/types";
 import { HTTP_STATUSES } from "../utils";
+import { injectable } from "inversify";
 
+@injectable()
 export class SecurityController {
     constructor(protected securityService: SecurityService,
                 protected securityQueryRepo: SecurityQueryRepo){}

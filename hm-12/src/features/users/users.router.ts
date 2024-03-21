@@ -1,10 +1,12 @@
 import { Router } from "express";
-import { usersController } from "../../composition-root";
 import { authenticateUser } from "../../middlewares/authenticateUser-middleware";
 import { inputValidationMiddleware } from "../../middlewares/posts-bodyValidation-middleware";
 import { userCreateValidator } from "../../middlewares/users-bodyValidation-middleware";
 import { userQueryValidationMiddleware, userQueryValidator } from "../../middlewares/users-queryValidation-middleware";
+import { UsersController } from "../../controllers/usersController";
+import { container } from "../../composition-root";
 
+const usersController = container.resolve(UsersController)
 
 export const usersRouter = Router();
 

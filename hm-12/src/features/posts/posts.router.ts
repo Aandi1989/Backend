@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { commentsController, postsController } from "../../composition-root";
 import { accessTokenGuard } from "../../middlewares/access-token-guard-middleware";
 import { authenticateUser } from "../../middlewares/authenticateUser-middleware";
 import { commentCreateValidator, likeStatusValidator } from "../../middlewares/comments-bodyValidation-middleware";
@@ -8,7 +7,10 @@ import { inputValidationMiddleware, postCreateValidator, postUpdateValidator } f
 import { postQueryValidationMiddleware, postQueryValidator } from "../../middlewares/posts-queryValidation-middleware";
 import { userQueryValidationMiddleware } from "../../middlewares/users-queryValidation-middleware";
 import { userDataFromAccessToken } from "../../middlewares/user-data-from-access-token-middleare";
+import { PostsController } from "../../controllers/postsController";
+import { container } from "../../composition-root";
 
+const postsController = container.resolve(PostsController)
 
 export const postsRouter = Router();
 

@@ -1,8 +1,9 @@
 import { ObjectId } from "mongodb";
 import { Result, ResultCode, apiCallType, refreshTokenDataType, sessionType } from "../types/types";
 import { apiCallsModel, sessionsModel, usersModel } from "../db/models";
+import { injectable } from 'inversify';
 
-
+@injectable()
 export class AuthRepository {
     async confirmEmail(_id: ObjectId): Promise<Result>{
         const result = await usersModel.updateOne({_id}, {$set: {'emailConfirmation.isConfirmed': true}})

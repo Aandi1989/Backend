@@ -2,7 +2,9 @@ import { defineStatus } from "../assets/helperCommentStatus";
 import { CommentQueryOutputType } from "../assets/queryStringModifiers";
 import { commentsModel } from "../db/models";
 import { CommentsWithQueryType, CommentType, DBCommentType, myStatus } from "../types/types";
+import { injectable } from 'inversify';
 
+@injectable()
 export class CommentsQueryRepo {
     async getCommentsByPostId(postId: string, query: CommentQueryOutputType, 
                                 userId: string = ''):Promise<CommentsWithQueryType>{
