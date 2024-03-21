@@ -1,7 +1,6 @@
 import express, { Request, Response } from 'express';
 import { HTTP_STATUSES } from '../utils';
-import { blogsModel, postsModel, commentsModel, usersModel, sessionsModel, apiCallsModel } from '../db/models';
-// import { apiCallsCollection, blogsCollection, commentsCollection, postsCollection, sessionsCollection, usersAcountsCollection } from '../db/db';
+import { blogsModel, postsModel, commentsModel, usersModel, sessionsModel, apiCallsModel, likesModel } from '../db/models';
 
 export const getTestRouter = () => {
     const router = express.Router();
@@ -13,6 +12,7 @@ export const getTestRouter = () => {
         await usersModel.deleteMany({});
         await sessionsModel.deleteMany({});
         await apiCallsModel.deleteMany({});
+        await likesModel.deleteMany({});
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     })
 
