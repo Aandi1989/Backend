@@ -2,8 +2,9 @@ import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
 import { BlogType, CommentType, DBCommentType, PostType, UserType, apiCallType, likeType, myStatus, sessionType } from "../types/types";
 import { User } from "../features/users/entities/user";
+import { BlogMethods, BlogModel } from "./models";
 
-export const blogsSchema = new mongoose.Schema<BlogType>({
+export const blogsSchema = new mongoose.Schema<BlogType, BlogModel, BlogMethods>({
     id: { type: String, required: true },
     name: { type: String, required: true },
     description: { type: String, required: true },
