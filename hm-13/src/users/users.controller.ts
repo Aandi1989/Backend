@@ -1,21 +1,24 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-  Query,
-} from '@nestjs/common';
-import { UsersService } from './users.service';
+import {Body, Controller, Delete, Get, Param, Post, Put, Query, Req, Res } from '@nestjs/common';
+import { UsersService } from './service/users.service';
+import { RequestWithQuery } from 'src/types/types';
+import { UserQueryType } from './types/types';
+import { UsersQueryRepo } from './repo/users.query.repository';
+import { userQueryParams } from 'src/helpers/queryStringModifiers';
+import { HTTP_STATUSES } from 'src/utils';
+import { Response } from 'express';
 
 @Controller('users')
 export class UsersController {
-  constructor(protected usersService: UsersService) {}
+  constructor(protected usersService: UsersService,
+              protected usersQueryRepo: UsersQueryRepo) {}
   @Get()
-  getUsers(@Query() query: { term: string }) {
-    return this.usersService.findUsers(query.term);
+  async getUsers(
+    @Req() req: RequestWithQuery<Partial<UserQueryType>>,
+    @Query() query: Partial<UserQueryType>,
+    @Res() res: Response ) {
+      
+    const response = await this.usersQueryRepo.getUsers(userQueryParams(req.query));
+    res.status(HTTP_STATUSES.OK_200).json(response)
   }
   @Get(':id')
   getUser(@Param('id') userId: string) {
