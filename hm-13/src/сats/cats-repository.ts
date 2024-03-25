@@ -8,16 +8,12 @@ export class CatsRepository {
   // CatModel is class, not the instance that is why it is written in capital letter
   constructor(
     @InjectModel(Cat.name)
-    private CatModel: Model<CatDocument> & CatModelStatikType, //CatModelStatikType is needed only if we use static method of class here
+    private CatModel: Model<CatDocument> & CatModelStatikType,
   ) {}
 
   async create(createCatDto: any): Promise<Cat> {
-    // just example how to use static methods
-    const superCat = this.CatModel.createSuperCat('abc');
-    console.log(superCat);
-    // ---------------------------------------
-    const createdCat = new this.CatModel(createCatDto);
-    return createdCat.save();
+    const superCat = this.CatModel.createSuperCat(createCatDto, this.CatModel);
+    return superCat.save();
   }
   async findAll(): Promise<CatDocument[]> {
     return this.CatModel.find().exec();
