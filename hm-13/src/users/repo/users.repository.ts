@@ -22,6 +22,9 @@ export class UsersRepository {
     const result = await this.UserModel.deleteOne({ 'accountData.id': id })
     return result.deletedCount === 1
   }
+  async deleteAllData(){
+    await this.UserModel.deleteMany({});
+  }
   _mapDBAccountToUserOutputType(user: Account): UserOutputType {
     return {
       id: user.accountData.id,

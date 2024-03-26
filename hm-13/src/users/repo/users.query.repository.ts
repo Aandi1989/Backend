@@ -47,7 +47,6 @@ export class UsersQueryRepo {
       })
     }
   }
-
   _mapDBAccountToUserOutputType(user: User): UserOutputType {
     return {
       id: user.accountData.id,

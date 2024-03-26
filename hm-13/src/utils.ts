@@ -11,12 +11,13 @@ export enum HTTP_STATUSES {
 }
 
 export const RouterPaths = {
-  posts: '/posts',
-  blogs: '/blogs',
-  users: '/users',
-  comments: '/comments',
-  auth: '/auth',
-  security: '/security',
+  posts: 'posts',
+  blogs: 'blogs',
+  users: 'users',
+  comments: 'comments',
+  auth: 'auth',
+  security: 'security',
+  allData: 'all-data',
 
-  __test__: '/testing',
+  __test__: 'testing',
 };
