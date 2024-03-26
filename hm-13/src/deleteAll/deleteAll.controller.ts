@@ -6,7 +6,7 @@ import { UsersRepository } from "src/users/repo/users.repository";
 import { HTTP_STATUSES, RouterPaths } from "src/utils";
 import { Response } from 'express';
 
-@Controller(RouterPaths.allData)
+@Controller(RouterPaths.testingAllData)
 export class DeleteAllDataController {
     constructor(protected usersRepository: UsersRepository,
                 protected blogsRepository: BlogsRepository,

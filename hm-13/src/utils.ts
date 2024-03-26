@@ -17,7 +17,7 @@ export const RouterPaths = {
   comments: 'comments',
   auth: 'auth',
   security: 'security',
-  allData: 'all-data',
+  testingAllData: 'testing/all-data',
 
   __test__: 'testing',
 };
