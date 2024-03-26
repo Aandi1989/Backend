@@ -1,26 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import { AccountData, CodeRecoveryInfo, EmailConfirmation } from './types/types';
 
-export interface AccountData {
-  id: string;
-  login: string;
-  email: string;
-  createdAt: string;
-  passwordHash: string;
-  passwordSalt: string;
-}
-
-export interface EmailConfirmation {
-  confirmationCode: string;
-  expirationDate: Date;
-  isConfirmed: boolean;
-}
-
-export interface CodeRecoveryInfo {
-  recoveryCode: string;
-  expirationDate: Date;
-  isConfirmed: boolean;
-}
 
 @Schema({ collection: 'accounts' })
 export class User extends Document {
