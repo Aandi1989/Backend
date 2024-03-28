@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, Req, Res } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { UsersService } from '../application/users.service';
 import { UserQueryType } from '../types/types';
 import { UsersQueryRepo } from '../repo/users.query.repository';
@@ -7,11 +7,14 @@ import { Response } from 'express';
 import { RouterPaths, HTTP_STATUSES } from 'src/common/utils/utils';
 import { UserOutputModel, UsersWithQueryOutputModel } from './models/output/user.output.model';
 import { CreateUserModel } from './models/input/create-user.input.model';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 
 @Controller(RouterPaths.users)
 export class UsersController {
   constructor(protected usersService: UsersService,
               protected usersQueryRepo: UsersQueryRepo) { }
+  // we can use @UseGuards(AuthGuard) also for the whole @Controller 
+  @UseGuards(AuthGuard)
   @Get()
   async getUsers(
     @Query() query: Partial<UserQueryType>, @Res() res): Promise<UsersWithQueryOutputModel> {
