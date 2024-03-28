@@ -23,6 +23,8 @@ import { UsersService } from './features/users/application/users.service';
 import { User, UserSchema } from './features/users/domain/users.schema';
 import { UsersQueryRepo } from './features/users/repo/users.query.repository';
 import { UsersRepository } from './features/users/repo/users.repository';
+import { CreateUserUseCase } from './features/users/application/use-cases/create-user.use-case';
+import { CqrsModule } from '@nestjs/cqrs';
 
 const schemas = [{ name: User.name, schema: UserSchema },{ name: Blog.name, schema: BlogSchema }, 
   { name: Post.name, schema: PostSchema }, { name: Comment.name, schema: CommentSchema }];
@@ -33,6 +35,8 @@ const controllers = [AppController, UsersController, BlogsController, PostsContr
 const providers = [AppService, UsersService, UsersRepository, UsersQueryRepo, BlogsService, BlogsQueryRepo, 
   BlogsRepository, PostsQueryRepo, PostsRepository, PostsService, CommentsQueryRepo, CommentsRepository];
 
+const useCases = [CreateUserUseCase]
+
 @Module({
   imports: [
     MongooseModule.forRoot(appConfig.MONGO_URL || 'mongodb://0.0.0.0:27017', {
@@ -40,8 +44,9 @@ const providers = [AppService, UsersService, UsersRepository, UsersQueryRepo, Bl
       dbName: 'hm-10',
     }),
     MongooseModule.forFeature(schemas),
+    CqrsModule
   ],
-  controllers: controllers,
-  providers: providers,
+  controllers: [...controllers],
+  providers: [...providers, ...useCases],
 })
 export class AppModule { }

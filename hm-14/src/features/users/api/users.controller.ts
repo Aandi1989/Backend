@@ -8,11 +8,15 @@ import { RouterPaths, HTTP_STATUSES } from 'src/common/utils/utils';
 import { UserOutputModel, UsersWithQueryOutputModel } from './models/output/user.output.model';
 import { CreateUserModel } from './models/input/create-user.input.model';
 import { AuthGuard } from 'src/common/guards/auth.guard';
+import { CreateUserCommand, CreateUserUseCase } from '../application/use-cases/create-user.use-case';
+import { CommandBus } from '@nestjs/cqrs';
 
 @Controller(RouterPaths.users)
 export class UsersController {
   constructor(protected usersService: UsersService,
-              protected usersQueryRepo: UsersQueryRepo) { }
+              protected usersQueryRepo: UsersQueryRepo,
+              private commandBus: CommandBus){}
+  
   // we can use @UseGuards(AuthGuard) also for the whole @Controller 
   @UseGuards(AuthGuard)
   @Get()
@@ -29,7 +33,7 @@ export class UsersController {
     //     {message: 'Bad blogger id', field: 'bloggerId'}
     //   ])
     // }
-    const newUser = await this.usersService.createUser(body);
+    const newUser = await this.commandBus.execute(new CreateUserCommand(body));
     return res.status(HTTP_STATUSES.CREATED_201).send(newUser);
   }
   @Delete(':id')
