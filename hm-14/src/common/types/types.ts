@@ -29,3 +29,12 @@ export enum ResultCode {
     AlredyConfirmed = 'AlredyConfirmed',
     Expired = 'Expired'
 }
+
+export type ErrorResponse = {
+    errorsMessages: { message: string; field: string }[];
+  }
+
+export type ErrorType = {
+    message: string
+    field: string
+}

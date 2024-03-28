@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt';
 import { Account } from '../entities/account';
 import { CreateUserModel } from '../api/models/input/create-user.input.model';
 import { UserOutputModel } from '../api/models/output/user.output.model';
+import { validateOrReject } from 'class-validator';
 
 @Injectable()
 export class UsersService {
@@ -12,6 +13,7 @@ export class UsersService {
               protected usersQueryRepo: UsersQueryRepo) { }
  
   async createUser(data: CreateUserModel): Promise<UserOutputModel>{
+    await validateOrReject(CreateUserModel)
     const {login, email, password} = data;
 
     const passwordSalt = await bcrypt.genSalt(10);
