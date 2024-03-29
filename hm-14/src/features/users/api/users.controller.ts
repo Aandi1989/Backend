@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { UsersService } from '../application/users.service';
 import { UserQueryType } from '../types/types';
 import { UsersQueryRepo } from '../repo/users.query.repository';
@@ -20,13 +20,13 @@ export class UsersController {
   
   // we can use @UseGuards(AuthGuard) also for the whole @Controller 
   // @UseGuards(AuthGuard)
+ //  @HttpCode(HTTP_STATUSES.OK_200)    /* we can return special status using @HttpCode */
   @Get()
   async getUsers( @Req() request: Request,
-    @Query() query: Partial<UserQueryType>, @Res() res): Promise<UsersWithQueryOutputModel> {
+    @Query() query: Partial<UserQueryType>): Promise<UsersWithQueryOutputModel> {
     // ! ip cookie deviceName url
     console.log(request.socket.remoteAddress, request.headers['user-agent'], request.url, request.cookies)
-    const response = await this.usersQueryRepo.getUsers(userQueryParams(query));
-    return res.status(HTTP_STATUSES.OK_200).send(response);
+    return await this.usersQueryRepo.getUsers(userQueryParams(query));
   }
   @Post()
   async createUser(@Body() body: CreateUserModel, @Res() res): Promise<UserOutputModel> {
