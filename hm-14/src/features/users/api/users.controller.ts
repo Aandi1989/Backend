@@ -10,6 +10,7 @@ import { CreateUserModel } from './models/input/create-user.input.model';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { CreateUserCommand, CreateUserUseCase } from '../application/use-cases/create-user.use-case';
 import { CommandBus } from '@nestjs/cqrs';
+import { Request } from 'express';
 
 @Controller(RouterPaths.users)
 export class UsersController {
@@ -18,10 +19,12 @@ export class UsersController {
               private commandBus: CommandBus){}
   
   // we can use @UseGuards(AuthGuard) also for the whole @Controller 
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @Get()
-  async getUsers(
+  async getUsers( @Req() request: Request,
     @Query() query: Partial<UserQueryType>, @Res() res): Promise<UsersWithQueryOutputModel> {
+    // ! ip cookie deviceName url
+    console.log(request.socket.remoteAddress, request.headers['user-agent'], request.url, request.cookies)
     const response = await this.usersQueryRepo.getUsers(userQueryParams(query));
     return res.status(HTTP_STATUSES.OK_200).send(response);
   }
@@ -34,6 +37,8 @@ export class UsersController {
     //   ])
     // }
     const newUser = await this.commandBus.execute(new CreateUserCommand(body));
+    // ! how to set cookies
+    res.cookie('refreshToken', 'abc', { httpOnly: true, secure: true }); 
     return res.status(HTTP_STATUSES.CREATED_201).send(newUser);
   }
   @Delete(':id')
@@ -45,3 +50,7 @@ export class UsersController {
     return res.send(HTTP_STATUSES.NOT_FOUND_404);
   }
 }
+// @Get()
+// findAll(@Res({ passthrough: true }) response: Response) {
+//   response.cookie('key', 'value')
+// }
