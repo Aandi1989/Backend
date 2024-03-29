@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { UsersService } from '../application/users.service';
 import { UserQueryType } from '../types/types';
 import { UsersQueryRepo } from '../repo/users.query.repository';
@@ -15,42 +15,43 @@ import { Request } from 'express';
 @Controller(RouterPaths.users)
 export class UsersController {
   constructor(protected usersService: UsersService,
-              protected usersQueryRepo: UsersQueryRepo,
-              private commandBus: CommandBus){}
-  
+    protected usersQueryRepo: UsersQueryRepo,
+    private commandBus: CommandBus) { }
+
   // we can use @UseGuards(AuthGuard) also for the whole @Controller 
   // @UseGuards(AuthGuard)
- //  @HttpCode(HTTP_STATUSES.OK_200)    /* we can return special status using @HttpCode */
+  //  @HttpCode(HTTP_STATUSES.OK_200)    /* we can return special status using @HttpCode */
   @Get()
-  async getUsers( @Req() request: Request,
+  async getUsers(@Req() request: Request,
     @Query() query: Partial<UserQueryType>): Promise<UsersWithQueryOutputModel> {
     // ! ip cookie deviceName url
     console.log(request.socket.remoteAddress, request.headers['user-agent'], request.url, request.cookies)
     return await this.usersQueryRepo.getUsers(userQueryParams(query));
   }
   @Post()
-  async createUser(@Body() body: CreateUserModel, @Res() res): Promise<UserOutputModel> {
+  async createUser(@Body() body: CreateUserModel): Promise<UserOutputModel> {
     // by such way we also can throw errors
     // if(11 > 10){
     //   throw new BadRequestException([
     //     {message: 'Bad blogger id', field: 'bloggerId'}
     //   ])
     // }
-    const newUser = await this.commandBus.execute(new CreateUserCommand(body));
     // ! how to set cookies
-    res.cookie('refreshToken', 'abc', { httpOnly: true, secure: true }); 
-    return res.status(HTTP_STATUSES.CREATED_201).send(newUser);
+    // res.cookie('refreshToken', 'abc', { httpOnly: true, secure: true }); 
+    // @Get()
+    // findAll(@Res({ passthrough: true }) response: Response) {
+    //   response.cookie('key', 'value')
+    // }
+    return await this.commandBus.execute(new CreateUserCommand(body));
   }
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   // ParseIntPipe is used to transform uri string param into number 
   // async deleteUser(@Param('id' ParseIntPipe) userId: number, @Res() res: Response) {
-  async deleteUser(@Param('id') userId: string, @Res() res: Response) {
-    const isDeleted = await this.usersService.deleteUser(userId)
-    if(isDeleted) return res.send(HTTP_STATUSES.NO_CONTENT_204);
-    return res.send(HTTP_STATUSES.NOT_FOUND_404);
+  async deleteUser(@Param('id') userId: string) {
+    const isDeleted = await this.usersService.deleteUser(userId);
+    if(isDeleted) return;
+    throw new HttpException('User not found', HttpStatus.NOT_FOUND);
   }
 }
-// @Get()
-// findAll(@Res({ passthrough: true }) response: Response) {
-//   response.cookie('key', 'value')
-// }
+

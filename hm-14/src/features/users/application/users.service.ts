@@ -13,6 +13,6 @@ export class UsersService {
   // in services we leave only common logic for our use-cases 
 
   async deleteUser(id: string): Promise<boolean> {
-    return await this.usersRepository.deleteUser(id)
+    return await this.usersRepository.deleteUser(id);
   }
 }

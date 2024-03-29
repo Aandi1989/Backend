@@ -21,7 +21,7 @@ export class UsersRepository {
   }
   async deleteUser(id: string): Promise<boolean> {
     const result = await this.UserModel.deleteOne({ 'accountData.id': id })
-    return result.deletedCount === 1
+    return result.deletedCount === 1;
   }
   async deleteAllData(){
     await this.UserModel.deleteMany({});

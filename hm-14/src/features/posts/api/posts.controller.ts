@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, Res } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query, Res } from "@nestjs/common";
 import { PostQueryType, PostType } from "../types/types";
 import { Response } from 'express';
 import { commentQueryParams, postQueryParams } from "src/common/helpers/queryStringModifiers";
@@ -18,39 +18,38 @@ export class PostsController{
                 protected postsService: PostsService,
                 protected commentsQueryRepo: CommentsQueryRepo){}
     @Get()
-    async getPosts(@Query() query: Partial<PostQueryType>, @Res() res): Promise<PostsWithQueryOutputModel>{
-        const response = await this.postsQueryRepo.getPosts(postQueryParams(query));
-        return res.status(HTTP_STATUSES.OK_200).send(response);
+    async getPosts(@Query() query: Partial<PostQueryType>): Promise<PostsWithQueryOutputModel>{
+        return await this.postsQueryRepo.getPosts(postQueryParams(query));
     }
     @Post()
-    async createPost(@Body() body: CreatePostModel,  @Res() res): Promise<PostType> {
-        const createdPost = await this.postsService.createPost(body);
-        return res.status(HTTP_STATUSES.CREATED_201).json(createdPost);
+    async createPost(@Body() body: CreatePostModel): Promise<PostType> {
+        return await this.postsService.createPost(body);
     }
     @Get(':id')
-    async getPost(@Param('id') postId: string,  @Res() res): Promise<PostType | null> {
-        const foundBlog = await this.postsQueryRepo.getPostById(postId);
-        if (!foundBlog) return res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
-        return res.status(HTTP_STATUSES.OK_200).send(foundBlog)
+    async getPost(@Param('id') postId: string): Promise<PostType | null> {
+        const foundPost = await this.postsQueryRepo.getPostById(postId);
+        if (!foundPost) throw new NotFoundException('Post not found');
+        return foundPost;
     }
+    @HttpCode(HTTP_STATUSES.NO_CONTENT_204)
     @Put(':id')
-    async updatePost(@Param('id') postId: string, @Body() body: Partial<CreatePostModel>, @Res() res: Response ){
+    async updatePost(@Param('id') postId: string, @Body() body: Partial<CreatePostModel>){
         const isUpdated = await this.postsService.updatePost(postId, body);
-        if(isUpdated) return res.send(HTTP_STATUSES.NO_CONTENT_204);
-        return res.send(HTTP_STATUSES.NOT_FOUND_404); 
+        if(isUpdated) return true;
+        throw new NotFoundException('Post not found'); 
     }
+    @HttpCode(HTTP_STATUSES.NO_CONTENT_204)
     @Delete(':id')
-    async deletePost(@Param('id') postId: string, @Res() res: Response ){
+    async deletePost(@Param('id') postId: string){
         const isDeleted = await this.postsService.deletePost(postId)
-        if(isDeleted) return res.send(HTTP_STATUSES.NO_CONTENT_204);
-        return res.send(HTTP_STATUSES.NOT_FOUND_404);
+        if(isDeleted) return;
+        throw new NotFoundException('Post not found');
     }
     @Get(`:id/${RouterPaths.comments}`)
-    async getCommentsForPost(@Param('id') postId: string, @Query() query: Partial<CommentQueryType>,
-         @Res() res): Promise<CommentsWithQueryOutputModel>{
+    async getCommentsForPost(@Param('id') postId: string, 
+        @Query() query: Partial<CommentQueryType>): Promise<CommentsWithQueryOutputModel>{
         const post = await this.postsQueryRepo.getPostById(postId)
-        if(!post) return res.send(HTTP_STATUSES.NOT_FOUND_404);
-        const comments = await this.commentsQueryRepo.getCommentsByPostId(postId ,commentQueryParams(query))  
-        return res.status(HTTP_STATUSES.OK_200).send(comments)
+        if(!post) throw new NotFoundException('Post not found');
+        return await this.commentsQueryRepo.getCommentsByPostId(postId ,commentQueryParams(query));
     }
 }

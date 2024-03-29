@@ -3,7 +3,7 @@ import { CreateUserModel } from "../../api/models/input/create-user.input.model"
 import { UserOutputModel } from "../../api/models/output/user.output.model";
 import { Account } from "../../entities/account";
 import { UsersRepository } from "../../repo/users.repository";
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
 export class CreateUserCommand {

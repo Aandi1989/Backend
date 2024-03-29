@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, Res } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query, Res } from "@nestjs/common";
 import { BlogQueryType, BlogType } from "../types/types";
 import { blogQueryParams, postQueryParams } from "src/common/helpers/queryStringModifiers";
 import { Response } from 'express';
@@ -20,45 +20,44 @@ export class BlogsController {
                 protected postsService: PostsService,
                 protected postsQueryRepo: PostsQueryRepo){}
     @Get()
-    async getBlogs(@Query() query: Partial<BlogQueryType>, @Res() res): Promise<BlogsWithQueryOutputModel>{
-        const response = await this.blogsQueryRepo.getBlogs(blogQueryParams(query));
-        return res.status(HTTP_STATUSES.OK_200).send(response)
+    async getBlogs(@Query() query: Partial<BlogQueryType>): Promise<BlogsWithQueryOutputModel>{
+        return await this.blogsQueryRepo.getBlogs(blogQueryParams(query));
     }
     @Post()
-    async createBlog (@Body() body: CreateBlogModel, @Res() res): Promise<BlogType>{
-        const createdBlog = await this.blogsService.createBlog(body);
-        return res.status(HTTP_STATUSES.CREATED_201).send(createdBlog);
+    async createBlog (@Body() body: CreateBlogModel): Promise<BlogType>{
+        return await this.blogsService.createBlog(body);
+
     }
     @Get(':id')
-    async getBlog(@Param('id') blogId: string, @Res() res): Promise<BlogType>{
+    async getBlog(@Param('id') blogId: string): Promise<BlogType>{
         const foundBlog = await this.blogsQueryRepo.findBlogById(blogId);
-        if(!foundBlog) return res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
-        return res.status(HTTP_STATUSES.OK_200).json(foundBlog)
+        if(!foundBlog) throw new NotFoundException('Blog not found');
+        return foundBlog;
     }
+    @HttpCode(HTTP_STATUSES.NO_CONTENT_204)
     @Put(':id')
-    async updateBlog(@Param('id') blogId: string, @Body() body: Partial<CreateBlogModel>, @Res() res: Response){
+    async updateBlog(@Param('id') blogId: string, @Body() body: Partial<CreateBlogModel>){
         const isUpdated = await this.blogsService.updateBlog(blogId, body);
-        if(isUpdated) return res.send(HTTP_STATUSES.NO_CONTENT_204);  
-        return res.send(HTTP_STATUSES.NOT_FOUND_404);
+        if(isUpdated) return;  
+        throw new NotFoundException('Blog not found');
     }
+    @HttpCode(HTTP_STATUSES.NO_CONTENT_204)
     @Delete(':id')
-    async deleteBlog(@Param('id') blogId: string, @Res() res: Response){
+    async deleteBlog(@Param('id') blogId: string){
         const isDeleted = await this.blogsService.deleteBlog(blogId)
-        if(isDeleted) return res.send(HTTP_STATUSES.NO_CONTENT_204);
-        return res.send(HTTP_STATUSES.NOT_FOUND_404);  
+        if(isDeleted) return;
+        throw new NotFoundException('Blog not found');
     }
     @Post(`:id/${RouterPaths.posts}`)
-    async createPostForBlog(@Param('id') blogId: string, @Body() body: CreatePostModel, @Res() res): Promise<PostType | null>{
+    async createPostForBlog(@Param('id') blogId: string, @Body() body: CreatePostModel): Promise<PostType | null>{
         const foundBlog = await this.blogsQueryRepo.findBlogById(blogId);
-        if(!foundBlog) return res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
-        const createdPost = await this.postsService.createPost(body, blogId);
-        return res.status(HTTP_STATUSES.CREATED_201).json(createdPost);
+        if(!foundBlog) throw new NotFoundException('Blog not found');
+        return await this.postsService.createPost(body, blogId);
     }
     @Get(`:id/${RouterPaths.posts}`)
-    async getPostsForBlog(@Param('id') blogId: string, @Query() query:Partial<PostQueryType>, @Res() res): Promise<PostsWithQueryOutputModel>{
+    async getPostsForBlog(@Param('id') blogId: string, @Query() query:Partial<PostQueryType>): Promise<PostsWithQueryOutputModel>{
         const foundBlog = await this.blogsQueryRepo.findBlogById(blogId);
-        if(!foundBlog) return res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
-        const response = await this.postsQueryRepo.getPostsByBlogId(blogId,postQueryParams(query));
-        return res.status(HTTP_STATUSES.OK_200).send(response)
+        if(!foundBlog) throw new NotFoundException('Blog not found');
+        return await this.postsQueryRepo.getPostsByBlogId(blogId,postQueryParams(query));
     }
 }
