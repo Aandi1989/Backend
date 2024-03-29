@@ -11,6 +11,7 @@ import { AuthGuard } from 'src/common/guards/auth.guard';
 import { CreateUserCommand, CreateUserUseCase } from '../application/use-cases/create-user.use-case';
 import { CommandBus } from '@nestjs/cqrs';
 import { Request } from 'express';
+import { DeleteUserCommand } from '../application/use-cases/delete-user.use-case';
 
 @Controller(RouterPaths.users)
 export class UsersController {
@@ -49,7 +50,7 @@ export class UsersController {
   // ParseIntPipe is used to transform uri string param into number 
   // async deleteUser(@Param('id' ParseIntPipe) userId: number, @Res() res: Response) {
   async deleteUser(@Param('id') userId: string) {
-    const isDeleted = await this.usersService.deleteUser(userId);
+    const isDeleted = await this.commandBus.execute(new DeleteUserCommand(userId));
     if(isDeleted) return;
     throw new HttpException('User not found', HttpStatus.NOT_FOUND);
   }

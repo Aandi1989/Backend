@@ -9,10 +9,7 @@ import { UserOutputModel } from '../api/models/output/user.output.model';
 
 @Injectable()
 export class UsersService {
-  constructor(protected usersRepository: UsersRepository) { }
+  constructor() { }
   // in services we leave only common logic for our use-cases 
 
-  async deleteUser(id: string): Promise<boolean> {
-    return await this.usersRepository.deleteUser(id);
-  }
 }

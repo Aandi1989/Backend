@@ -25,6 +25,13 @@ import { UsersQueryRepo } from './features/users/repo/users.query.repository';
 import { UsersRepository } from './features/users/repo/users.repository';
 import { CreateUserUseCase } from './features/users/application/use-cases/create-user.use-case';
 import { CqrsModule } from '@nestjs/cqrs';
+import { DeleteUserUseCase } from './features/users/application/use-cases/delete-user.use-case';
+import { CreatePostUseCase } from './features/posts/application/use-cases/create-post.use-case';
+import { DeletePostUseCase } from './features/posts/application/use-cases/delete-post.use-case';
+import { UpdatePostUseCase } from './features/posts/application/use-cases/update-post.use-case';
+import { CreateblogUseCase } from './features/blogs/application/use-case/create-blog.use-case';
+import { DeleteBlogUseCase } from './features/blogs/application/use-case/delete-blog.use-case';
+import { UpdateBlogUseCase } from './features/blogs/application/use-case/update-blog.use-case';
 
 const schemas = [{ name: User.name, schema: UserSchema },{ name: Blog.name, schema: BlogSchema }, 
   { name: Post.name, schema: PostSchema }, { name: Comment.name, schema: CommentSchema }];
@@ -35,7 +42,8 @@ const controllers = [AppController, UsersController, BlogsController, PostsContr
 const providers = [AppService, UsersService, UsersRepository, UsersQueryRepo, BlogsService, BlogsQueryRepo, 
   BlogsRepository, PostsQueryRepo, PostsRepository, PostsService, CommentsQueryRepo, CommentsRepository];
 
-const useCases = [CreateUserUseCase]
+const useCases = [CreateUserUseCase, DeleteUserUseCase, CreatePostUseCase, DeletePostUseCase, UpdatePostUseCase,
+  CreateblogUseCase, DeleteBlogUseCase, UpdateBlogUseCase]
 
 @Module({
   imports: [
