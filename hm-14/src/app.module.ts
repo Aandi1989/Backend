@@ -32,15 +32,21 @@ import { UpdatePostUseCase } from './features/posts/application/use-cases/update
 import { CreateblogUseCase } from './features/blogs/application/use-case/create-blog.use-case';
 import { DeleteBlogUseCase } from './features/blogs/application/use-case/delete-blog.use-case';
 import { UpdateBlogUseCase } from './features/blogs/application/use-case/update-blog.use-case';
+import { JwtService } from './common/services/jwt-service';
+import { Like, LikeSchema } from './features/posts/domain/likes.schema';
+import { AliCallSchema, ApiCall } from './features/auth/domain/apiCall.schema';
+import { Session, SessionSchema } from './features/security/domain/session.schema';
 
-const schemas = [{ name: User.name, schema: UserSchema },{ name: Blog.name, schema: BlogSchema }, 
-  { name: Post.name, schema: PostSchema }, { name: Comment.name, schema: CommentSchema }];
+const schemas = [{ name: User.name, schema: UserSchema }, { name: Blog.name, schema: BlogSchema },
+{ name: Post.name, schema: PostSchema }, { name: Comment.name, schema: CommentSchema },
+{ name: Like.name, schema: LikeSchema }, { name: ApiCall.name, schema: AliCallSchema},
+{ name: Session.name, schema: SessionSchema}];
 
-const controllers = [AppController, UsersController, BlogsController, PostsController, 
-    CommentsController, DeleteAllDataController];
+const controllers = [AppController, UsersController, BlogsController, PostsController,
+  CommentsController, DeleteAllDataController];
 
-const providers = [AppService, UsersService, UsersRepository, UsersQueryRepo, BlogsService, BlogsQueryRepo, 
-  BlogsRepository, PostsQueryRepo, PostsRepository, PostsService, CommentsQueryRepo, CommentsRepository];
+const providers = [AppService, UsersService, UsersRepository, UsersQueryRepo, BlogsService, BlogsQueryRepo,
+  BlogsRepository, PostsQueryRepo, PostsRepository, PostsService, CommentsQueryRepo, CommentsRepository, JwtService];
 
 const useCases = [CreateUserUseCase, DeleteUserUseCase, CreatePostUseCase, DeletePostUseCase, UpdatePostUseCase,
   CreateblogUseCase, DeleteBlogUseCase, UpdateBlogUseCase]

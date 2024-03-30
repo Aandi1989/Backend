@@ -20,8 +20,7 @@ export class UsersController {
     private commandBus: CommandBus) { }
 
   // we can use @UseGuards(AuthGuard) also for the whole @Controller 
-  // @UseGuards(AuthGuard)
-  //  @HttpCode(HTTP_STATUSES.OK_200)    /* we can return special status using @HttpCode */
+  @UseGuards(AuthGuard)
   @Get()
   async getUsers(@Req() request: Request,
     @Query() query: Partial<UserQueryType>): Promise<UsersWithQueryOutputModel> {
@@ -29,6 +28,7 @@ export class UsersController {
     console.log(request.socket.remoteAddress, request.headers['user-agent'], request.url, request.cookies)
     return await this.usersQueryRepo.getUsers(userQueryParams(query));
   }
+  @UseGuards(AuthGuard)
   @Post()
   async createUser(@Body() body: CreateUserModel): Promise<UserOutputModel> {
     // by such way we also can throw errors
@@ -45,6 +45,7 @@ export class UsersController {
     // }
     return await this.commandBus.execute(new CreateUserCommand(body));
   }
+  @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   // ParseIntPipe is used to transform uri string param into number 

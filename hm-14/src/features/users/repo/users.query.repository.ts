@@ -48,6 +48,10 @@ export class UsersQueryRepo {
       })
     }
   }
+  async getUserById(id: string): Promise<UserOutputModel | null>{
+    let dbUser: User | null = await this.UserModel.findOne({'accountData.id': id})
+    return dbUser ? this._mapDBAccountToUserOutputType(dbUser) : null;
+}
   _mapDBAccountToUserOutputType(user: User): UserOutputModel {
     return {
       id: user.accountData.id,
