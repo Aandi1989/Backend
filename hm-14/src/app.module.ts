@@ -41,6 +41,10 @@ import { AuthController } from './features/auth/api/auth.controller';
 import { CheckCredentialsUseCase } from './features/auth/application/use-case/check-credentials.use-case';
 import { CreateSessionUseCase } from './features/security/application/use-case/create-session.use-case';
 import { SecurityRepository } from './features/security/repo/security.repository';
+import { CheckRefreshTokenUseCase } from './features/security/application/use-case/check-refreshToken.use-case';
+import { SecurityQueryRepo } from './features/security/repo/security.query.repository';
+import { RevokeSessionUseCase } from './features/security/application/use-case/revoke-session.use-case';
+import { RefreshTokensUseCase } from './features/blogs/application/use-case/refresh-tokens.use-case';
 
 const schemas = [{ name: User.name, schema: UserSchema }, { name: Blog.name, schema: BlogSchema },
 { name: Post.name, schema: PostSchema }, { name: Comment.name, schema: CommentSchema },
@@ -52,10 +56,11 @@ const controllers = [AppController, UsersController, BlogsController, PostsContr
 
 const providers = [AppService, UsersService, UsersRepository, UsersQueryRepo, BlogsService, BlogsQueryRepo,
   BlogsRepository, PostsQueryRepo, PostsRepository, PostsService, CommentsQueryRepo, CommentsRepository, JwtService,
-  AuthService, SecurityRepository];
+  AuthService, SecurityRepository, SecurityQueryRepo];
 
 const useCases = [CreateUserUseCase, DeleteUserUseCase, CreatePostUseCase, DeletePostUseCase, UpdatePostUseCase,
-  CreateblogUseCase, DeleteBlogUseCase, UpdateBlogUseCase, CheckCredentialsUseCase, CreateSessionUseCase]
+  CreateblogUseCase, DeleteBlogUseCase, UpdateBlogUseCase, CheckCredentialsUseCase, CreateSessionUseCase, 
+  CheckRefreshTokenUseCase, RevokeSessionUseCase, RefreshTokensUseCase]
 
 @Module({
   imports: [

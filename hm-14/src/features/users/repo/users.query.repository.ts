@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { User } from '../domain/users.schema';
 import { UserQueryOutputType } from '../types/types';
 import { UserAuthOutputModel, UserOutputModel, UsersWithQueryOutputModel } from '../api/models/output/user.output.model';
+import { MeOutputModel } from 'src/features/auth/api/models/output/me.output.model';
 
 @Injectable()
 export class UsersQueryRepo {
@@ -55,6 +56,10 @@ export class UsersQueryRepo {
 async getByLoginOrEmail(loginOrEmail:string): Promise<User | null>{
   let user = await this.UserModel.findOne({ $or: [ { 'accountData.email': loginOrEmail}, {'accountData.login': loginOrEmail}]})
   return user;
+}
+async getAuthById(id: string): Promise<MeOutputModel | null>{
+  let dbUser: User | null = await this.UserModel.findOne({'accountData.id': id})
+  return dbUser ? this._mapDBAccountToUserAuthType(dbUser) : null;
 }
   _mapDBAccountToUserOutputType(user: User): UserOutputModel {
     return {
