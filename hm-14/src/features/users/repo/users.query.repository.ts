@@ -52,6 +52,10 @@ export class UsersQueryRepo {
     let dbUser: User | null = await this.UserModel.findOne({'accountData.id': id})
     return dbUser ? this._mapDBAccountToUserOutputType(dbUser) : null;
 }
+async getByLoginOrEmail(loginOrEmail:string): Promise<User | null>{
+  let user = await this.UserModel.findOne({ $or: [ { 'accountData.email': loginOrEmail}, {'accountData.login': loginOrEmail}]})
+  return user;
+}
   _mapDBAccountToUserOutputType(user: User): UserOutputModel {
     return {
       id: user.accountData.id,

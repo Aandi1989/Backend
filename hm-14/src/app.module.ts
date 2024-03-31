@@ -36,6 +36,11 @@ import { JwtService } from './common/services/jwt-service';
 import { Like, LikeSchema } from './features/posts/domain/likes.schema';
 import { AliCallSchema, ApiCall } from './features/auth/domain/apiCall.schema';
 import { Session, SessionSchema } from './features/security/domain/session.schema';
+import { AuthService } from './features/auth/application/auth.service';
+import { AuthController } from './features/auth/api/auth.controller';
+import { CheckCredentialsUseCase } from './features/auth/application/use-case/check-credentials.use-case';
+import { CreateSessionUseCase } from './features/security/application/use-case/create-session.use-case';
+import { SecurityRepository } from './features/security/repo/security.repository';
 
 const schemas = [{ name: User.name, schema: UserSchema }, { name: Blog.name, schema: BlogSchema },
 { name: Post.name, schema: PostSchema }, { name: Comment.name, schema: CommentSchema },
@@ -43,13 +48,14 @@ const schemas = [{ name: User.name, schema: UserSchema }, { name: Blog.name, sch
 { name: Session.name, schema: SessionSchema}];
 
 const controllers = [AppController, UsersController, BlogsController, PostsController,
-  CommentsController, DeleteAllDataController];
+  CommentsController, DeleteAllDataController, AuthController];
 
 const providers = [AppService, UsersService, UsersRepository, UsersQueryRepo, BlogsService, BlogsQueryRepo,
-  BlogsRepository, PostsQueryRepo, PostsRepository, PostsService, CommentsQueryRepo, CommentsRepository, JwtService];
+  BlogsRepository, PostsQueryRepo, PostsRepository, PostsService, CommentsQueryRepo, CommentsRepository, JwtService,
+  AuthService, SecurityRepository];
 
 const useCases = [CreateUserUseCase, DeleteUserUseCase, CreatePostUseCase, DeletePostUseCase, UpdatePostUseCase,
-  CreateblogUseCase, DeleteBlogUseCase, UpdateBlogUseCase]
+  CreateblogUseCase, DeleteBlogUseCase, UpdateBlogUseCase, CheckCredentialsUseCase, CreateSessionUseCase]
 
 @Module({
   imports: [

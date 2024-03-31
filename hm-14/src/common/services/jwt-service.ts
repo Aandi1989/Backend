@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken';
 import { appConfig } from "../../../config";
 import { v4 as uuidv4 } from 'uuid';
 import { Injectable } from '@nestjs/common';
@@ -6,6 +6,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class JwtService {
+    constructor(){}
     async createAccessToken(userId: string){
         const accessToken = jwt.sign({userId: userId}, appConfig.JWT_ACCESS_SECRET, {expiresIn: appConfig.EXPIRE_ACCESS_TOKER_TIME})
         return {

@@ -25,7 +25,7 @@ export class UsersController {
   async getUsers(@Req() request: Request,
     @Query() query: Partial<UserQueryType>): Promise<UsersWithQueryOutputModel> {
     // ! ip cookie deviceName url
-    console.log(request.socket.remoteAddress, request.headers['user-agent'], request.url, request.cookies)
+    // console.log(request.socket.remoteAddress, request.headers['user-agent'], request.url, request.cookies)
     return await this.usersQueryRepo.getUsers(userQueryParams(query));
   }
   @UseGuards(AuthGuard)
