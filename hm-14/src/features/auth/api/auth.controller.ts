@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Post, Req, Res, UnauthorizedException, UseGuards } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, HttpCode, Post, Req, Res, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { JwtService } from "src/common/services/jwt-service";
 import { HTTP_STATUSES, RouterPaths } from "src/common/utils/utils";
@@ -14,6 +14,8 @@ import { CheckRefreshTokenCommand } from "src/features/security/application/use-
 import { ResultCode } from "src/common/types/types";
 import { RevokeSessionCommand } from "src/features/security/application/use-case/revoke-session.use-case";
 import { RefreshTokensCommand } from "src/features/blogs/application/use-case/refresh-tokens.use-case";
+import { CreateUserModel } from "src/features/users/api/models/input/create-user.input.model";
+import { CreateAccountCommand } from "../application/use-case/create-account.use-case";
 
 
 
@@ -69,6 +71,15 @@ export class AuthController {
         res.cookie('refreshToken', newRefreshToken.refreshToken, { httpOnly: true, secure: true });
          //@ts-ignore 
         return res.send(newAccessToken);
+    }
+
+    @HttpCode(HTTP_STATUSES.NO_CONTENT_204) 
+    @Post('registration')
+    async registration (@Body() body:CreateUserModel){
+        const result = await this.commandBus.execute(new CreateAccountCommand (body));
+        if(result.code === ResultCode.Forbidden) throw new BadRequestException(result.errorsMessages);
+        if(result.code === ResultCode.Failed) throw new BadRequestException();
+        return;
     }
 }
 

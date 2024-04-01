@@ -10,7 +10,7 @@ import { Request } from 'express';
 
 export type Result = {
     code: ResultCode;
-    errorsMessages?: errorMessageType;
+    errorsMessages?: ErrorType[];
     data?: any
 }
 
@@ -31,7 +31,7 @@ export enum ResultCode {
 }
 
 export type ErrorResponse = {
-    errorsMessages: { message: string; field: string }[];
+    errorsMessages: ErrorType[];
   }
 
 export type ErrorType = {
