@@ -50,6 +50,8 @@ import { CreateAccountUseCase } from './features/auth/application/use-case/creat
 import { ConfirmEmailUseCase } from './features/auth/application/use-case/confirm-email.use-case';
 import { AuthRepository } from './features/auth/repo/auth.repository';
 import { ResendEmailUseCase } from './features/auth/application/use-case/resend-email.use-case';
+import { RecoveryCodeUseCase } from './features/auth/application/use-case/recovery-code.use-case';
+import { ChangeCodeUseCase } from './features/auth/application/use-case/change-code.use-case';
 
 const schemas = [{ name: User.name, schema: UserSchema }, { name: Blog.name, schema: BlogSchema },
 { name: Post.name, schema: PostSchema }, { name: Comment.name, schema: CommentSchema },
@@ -66,7 +68,7 @@ const providers = [AppService, UsersService, UsersRepository, UsersQueryRepo, Bl
 const useCases = [CreateUserUseCase, DeleteUserUseCase, CreatePostUseCase, DeletePostUseCase, UpdatePostUseCase,
   CreateblogUseCase, DeleteBlogUseCase, UpdateBlogUseCase, CheckCredentialsUseCase, CreateSessionUseCase, 
   CheckRefreshTokenUseCase, RevokeSessionUseCase, RefreshTokensUseCase, CreateAccountUseCase, ConfirmEmailUseCase,
-  ResendEmailUseCase]
+  ResendEmailUseCase, RecoveryCodeUseCase, ChangeCodeUseCase]
 
 @Module({
   imports: [

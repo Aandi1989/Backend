@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, Ip, Post, Req, Res, UnauthorizedException, UseGuards } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpException, Ip, Post, Req, Res, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { JwtService } from "src/common/services/jwt-service";
 import { HTTP_STATUSES, RouterPaths } from "src/common/utils/utils";
@@ -20,6 +20,9 @@ import { ConfirmEmailCommand } from "../application/use-case/confirm-email.use-c
 import { ConfirmCodeModel } from "./models/input/confirm.code.model";
 import { ResendEmailModel } from "./models/input/resend.email.model";
 import { ResendEmailCommand } from "../application/use-case/resend-email.use-case";
+import { RecoveryCodeCommand } from "../application/use-case/recovery-code.use-case";
+import { ChangePasswordModel } from "./models/input/change.password.model";
+import { ChangeCodeCommand } from "../application/use-case/change-code.use-case";
 
 
 
@@ -99,6 +102,22 @@ export class AuthController {
     async registrationEmailResending (@Body() body: ResendEmailModel){
         const result = await this.commandBus.execute(new ResendEmailCommand(body.email));
         if(result.code != ResultCode.Success) throw new BadRequestException(result.errorsMessages);
+        return;
+    }
+
+    @HttpCode(HTTP_STATUSES.NO_CONTENT_204) 
+    @Post('password-recovery')
+    async passwordRecovery (@Body() body: ResendEmailModel){
+        const result = await this.commandBus.execute(new RecoveryCodeCommand(body.email));
+        if(result.code != ResultCode.Success) throw new BadRequestException();
+        return;
+    }
+
+    @HttpCode(HTTP_STATUSES.NO_CONTENT_204) 
+    @Post('new-password')
+    async newPassword (@Body() body: ChangePasswordModel){
+        const result = await this.commandBus.execute(new ChangeCodeCommand(body));
+        if(result.code != ResultCode.Success) throw new BadRequestException();
         return;
     }
 

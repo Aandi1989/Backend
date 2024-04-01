@@ -21,4 +21,8 @@ export class AuthQueryRepo {
         const foundedAccount = await this.UserModel.findOne({"emailConfirmation.confirmationCode": code});
         return foundedAccount as User | null;
     }
+    async findByRecoveryCode(recoveryCode: string): Promise<User | null>{
+        const foundedAccount = await this.UserModel.findOne({'codeRecoveryInfo.recoveryCode': recoveryCode})
+        return foundedAccount as User | null;
+    }
 }
