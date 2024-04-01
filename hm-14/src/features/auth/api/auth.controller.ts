@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, Post, Req, Res, UnauthorizedException, UseGuards } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, HttpCode, Ip, Post, Req, Res, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { JwtService } from "src/common/services/jwt-service";
 import { HTTP_STATUSES, RouterPaths } from "src/common/utils/utils";
@@ -16,6 +16,10 @@ import { RevokeSessionCommand } from "src/features/security/application/use-case
 import { RefreshTokensCommand } from "src/features/blogs/application/use-case/refresh-tokens.use-case";
 import { CreateUserModel } from "src/features/users/api/models/input/create-user.input.model";
 import { CreateAccountCommand } from "../application/use-case/create-account.use-case";
+import { ConfirmEmailCommand } from "../application/use-case/confirm-email.use-case";
+import { ConfirmCodeModel } from "./models/input/confirm.code.model";
+import { ResendEmailModel } from "./models/input/resend.email.model";
+import { ResendEmailCommand } from "../application/use-case/resend-email.use-case";
 
 
 
@@ -34,7 +38,7 @@ export class AuthController {
         return await this.usersQueryRepo.getAuthById(userId);
     }
                 
-    @HttpCode(HTTP_STATUSES.OK_200)            
+    @HttpCode(HTTP_STATUSES.OK_200)         
     @Post('login')
     async login (@Req() req: Request, @Body() body: AuthBodyModel, @Res() res: Response):Promise<LoginOutputModel>{
         const user = await this.commandBus.execute(new CheckCredentialsCommand(body));
@@ -81,6 +85,23 @@ export class AuthController {
         if(result.code === ResultCode.Failed) throw new BadRequestException();
         return;
     }
+
+    @HttpCode(HTTP_STATUSES.NO_CONTENT_204) 
+    @Post('registration-confirmation')
+    async confirmEmail (@Body() body: ConfirmCodeModel){
+        const result = await this.commandBus.execute(new ConfirmEmailCommand(body.code));
+        if(result.code != ResultCode.Success) throw new BadRequestException(result.errorsMessages);
+        return;
+    }
+
+    @HttpCode(HTTP_STATUSES.NO_CONTENT_204) 
+    @Post('registration-email-resending')
+    async registrationEmailResending (@Body() body: ResendEmailModel){
+        const result = await this.commandBus.execute(new ResendEmailCommand(body.email));
+        if(result.code != ResultCode.Success) throw new BadRequestException(result.errorsMessages);
+        return;
+    }
+
 }
 
 

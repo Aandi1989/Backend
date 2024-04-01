@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import { add } from "date-fns";
 import { UserType } from "../types/types";
+import {v4 as uuidv4} from 'uuid';
 
 export class Account {
     _id: ObjectId;
@@ -32,7 +33,7 @@ export class Account {
             createdAt: new Date().toISOString(),
         },
         this.emailConfirmation = {
-            confirmationCode: '',
+            confirmationCode: uuidv4(),
             expirationDate: add (new Date(), {
                             hours:1,
                             minutes: 3
@@ -40,7 +41,7 @@ export class Account {
             isConfirmed: false,
         }
         this.codeRecoveryInfo = {
-            recoveryCode: '',
+            recoveryCode: uuidv4(),
             expirationDate: add (new Date(), {
                 hours:1,
                 minutes: 3

@@ -17,5 +17,8 @@ export class AuthQueryRepo {
                                                                         { 'accountData.email': email } ] });
         return foundedAccount as User | null;
     }
-    
+    async findByConfirmationCode(code: string): Promise<User | null>{
+        const foundedAccount = await this.UserModel.findOne({"emailConfirmation.confirmationCode": code});
+        return foundedAccount as User | null;
+    }
 }

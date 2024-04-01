@@ -48,6 +48,8 @@ import { RefreshTokensUseCase } from './features/blogs/application/use-case/refr
 import { AuthQueryRepo } from './features/auth/repo/auth.query.repo';
 import { CreateAccountUseCase } from './features/auth/application/use-case/create-account.use-case';
 import { ConfirmEmailUseCase } from './features/auth/application/use-case/confirm-email.use-case';
+import { AuthRepository } from './features/auth/repo/auth.repository';
+import { ResendEmailUseCase } from './features/auth/application/use-case/resend-email.use-case';
 
 const schemas = [{ name: User.name, schema: UserSchema }, { name: Blog.name, schema: BlogSchema },
 { name: Post.name, schema: PostSchema }, { name: Comment.name, schema: CommentSchema },
@@ -59,11 +61,12 @@ const controllers = [AppController, UsersController, BlogsController, PostsContr
 
 const providers = [AppService, UsersService, UsersRepository, UsersQueryRepo, BlogsService, BlogsQueryRepo,
   BlogsRepository, PostsQueryRepo, PostsRepository, PostsService, CommentsQueryRepo, CommentsRepository, JwtService,
-  AuthService, SecurityRepository, SecurityQueryRepo, AuthQueryRepo];
+  AuthService, SecurityRepository, SecurityQueryRepo, AuthQueryRepo, AuthRepository];
 
 const useCases = [CreateUserUseCase, DeleteUserUseCase, CreatePostUseCase, DeletePostUseCase, UpdatePostUseCase,
   CreateblogUseCase, DeleteBlogUseCase, UpdateBlogUseCase, CheckCredentialsUseCase, CreateSessionUseCase, 
-  CheckRefreshTokenUseCase, RevokeSessionUseCase, RefreshTokensUseCase, CreateAccountUseCase, ConfirmEmailUseCase]
+  CheckRefreshTokenUseCase, RevokeSessionUseCase, RefreshTokensUseCase, CreateAccountUseCase, ConfirmEmailUseCase,
+  ResendEmailUseCase]
 
 @Module({
   imports: [
