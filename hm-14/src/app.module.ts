@@ -59,6 +59,10 @@ import { LikePostUseCase } from './features/likes/application/use-cases/like-pos
 import { DeleteCommentUseCase } from './features/comments/application/use-case/delete-comment.use-case';
 import { UpdateCommentUseCase } from './features/comments/application/use-case/update-comment.use-case';
 import { LikeCommentUseCase } from './features/comments/application/use-case/like-comment.use-case';
+import { SecurytyController } from './features/security/api/security.controller';
+import { CheckSecurityRefreshTokenUseCase } from './features/security/application/use-case/check-security-refreshToken.use-case.';
+import { RevokeSessionsUseCase } from './features/security/application/use-case/revoke-sessions.use-case';
+import { AddRequestUseCase } from './features/security/application/use-case/add-request.use-case';
 
 const schemas = [{ name: User.name, schema: UserSchema }, { name: Blog.name, schema: BlogSchema },
 { name: Post.name, schema: PostSchema }, { name: Comment.name, schema: CommentSchema },
@@ -66,7 +70,7 @@ const schemas = [{ name: User.name, schema: UserSchema }, { name: Blog.name, sch
 { name: Session.name, schema: SessionSchema}];
 
 const controllers = [AppController, UsersController, BlogsController, PostsController,
-  CommentsController, DeleteAllDataController, AuthController];
+  CommentsController, DeleteAllDataController, AuthController, SecurytyController];
 
 const providers = [AppService, UsersService, UsersRepository, UsersQueryRepo, BlogsService, BlogsQueryRepo,
   BlogsRepository, PostsQueryRepo, PostsRepository, PostsService, CommentsQueryRepo, CommentsRepository, JwtService,
@@ -76,13 +80,13 @@ const useCases = [CreateUserUseCase, DeleteUserUseCase, CreatePostUseCase, Delet
   CreateblogUseCase, DeleteBlogUseCase, UpdateBlogUseCase, CheckCredentialsUseCase, CreateSessionUseCase, 
   CheckRefreshTokenUseCase, RevokeSessionUseCase, RefreshTokensUseCase, CreateAccountUseCase, ConfirmEmailUseCase,
   ResendEmailUseCase, RecoveryCodeUseCase, ChangeCodeUseCase, CreateCommentUseCase, LikePostUseCase, DeleteCommentUseCase,
-  UpdateCommentUseCase, LikeCommentUseCase]
+  UpdateCommentUseCase, LikeCommentUseCase, CheckSecurityRefreshTokenUseCase, RevokeSessionsUseCase, AddRequestUseCase]
 
 @Module({
   imports: [
     MongooseModule.forRoot(appConfig.MONGO_URL || 'mongodb://0.0.0.0:27017', {
-      // dbName: 'hm-10-test',
-      dbName: 'hm-10',
+      dbName: 'hm-10-test',
+      // dbName: 'hm-10',
     }),
     MongooseModule.forFeature(schemas),
     CqrsModule

@@ -23,6 +23,7 @@ import { ResendEmailCommand } from "../application/use-case/resend-email.use-cas
 import { RecoveryCodeCommand } from "../application/use-case/recovery-code.use-case";
 import { ChangePasswordModel } from "./models/input/change.password.model";
 import { ChangeCodeCommand } from "../application/use-case/change-code.use-case";
+import { ApiCallsGuard } from "src/common/guards/apiCalls.guard";
 
 
 
@@ -33,6 +34,7 @@ export class AuthController {
                 private commandBus: CommandBus){}
 
     @UseGuards(AuthGuard)
+    @UseGuards(ApiCallsGuard)
     @HttpCode(HTTP_STATUSES.OK_200)
     @Get('me')
     async me (@Req() req: Request): Promise<MeOutputModel | null>{
@@ -40,7 +42,8 @@ export class AuthController {
         if(!userId) throw new UnauthorizedException();
         return await this.usersQueryRepo.getAuthById(userId);
     }
-                
+     
+    // @UseGuards(ApiCallsGuard)
     @HttpCode(HTTP_STATUSES.OK_200)         
     @Post('login')
     async login (@Req() req: Request, @Body() body: AuthBodyModel, @Res() res: Response):Promise<LoginOutputModel>{
@@ -80,6 +83,7 @@ export class AuthController {
         return res.send(newAccessToken);
     }
 
+    // @UseGuards(ApiCallsGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204) 
     @Post('registration')
     async registration (@Body() body:CreateUserModel){
@@ -89,6 +93,7 @@ export class AuthController {
         return;
     }
 
+    // @UseGuards(ApiCallsGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204) 
     @Post('registration-confirmation')
     async confirmEmail (@Body() body: ConfirmCodeModel){
@@ -97,6 +102,7 @@ export class AuthController {
         return;
     }
 
+    // @UseGuards(ApiCallsGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204) 
     @Post('registration-email-resending')
     async registrationEmailResending (@Body() body: ResendEmailModel){
@@ -105,6 +111,7 @@ export class AuthController {
         return;
     }
 
+    // @UseGuards(ApiCallsGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204) 
     @Post('password-recovery')
     async passwordRecovery (@Body() body: ResendEmailModel){
@@ -113,6 +120,7 @@ export class AuthController {
         return;
     }
 
+    // @UseGuards(ApiCallsGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204) 
     @Post('new-password')
     async newPassword (@Body() body: ChangePasswordModel){
@@ -122,23 +130,3 @@ export class AuthController {
     }
 
 }
-
-
-
-// import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-// import { AuthBodyModel } from "../../api/models/input/login.input.model";
-
-
-
-// export class CheckCredentialsCommand {
-//     constructor(public data: AuthBodyModel){}
-// }
-
-// @CommandHandler(CheckCredentialsCommand)
-// export class CheckCredentialsUseCase implements ICommandHandler<CheckCredentialsCommand>{
-//     constructor(){}
-
-//     async execute(command: CheckCredentialsCommand): Promise<any> {
-        
-//     }
-// }

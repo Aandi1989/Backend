@@ -8,7 +8,7 @@ export class ApiCall extends Document {
     _id: Types.ObjectId;
 
     @Prop({ required: true })
-    id: string;
+    ip: string;
 
     @Prop({ required: true })
     url: string;
