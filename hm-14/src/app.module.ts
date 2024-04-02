@@ -63,6 +63,8 @@ import { SecurytyController } from './features/security/api/security.controller'
 import { CheckSecurityRefreshTokenUseCase } from './features/security/application/use-case/check-security-refreshToken.use-case.';
 import { RevokeSessionsUseCase } from './features/security/application/use-case/revoke-sessions.use-case';
 import { AddRequestUseCase } from './features/security/application/use-case/add-request.use-case';
+import { CreatePostForBlogUseCase } from './features/posts/application/use-cases/create-post-for-blog.use-case';
+import { CheckRefreshAfterDeleteSessionTokenUseCase } from './features/security/application/use-case/check-refreshTokenAfterDeleteSession.use-case';
 
 const schemas = [{ name: User.name, schema: UserSchema }, { name: Blog.name, schema: BlogSchema },
 { name: Post.name, schema: PostSchema }, { name: Comment.name, schema: CommentSchema },
@@ -80,13 +82,14 @@ const useCases = [CreateUserUseCase, DeleteUserUseCase, CreatePostUseCase, Delet
   CreateblogUseCase, DeleteBlogUseCase, UpdateBlogUseCase, CheckCredentialsUseCase, CreateSessionUseCase, 
   CheckRefreshTokenUseCase, RevokeSessionUseCase, RefreshTokensUseCase, CreateAccountUseCase, ConfirmEmailUseCase,
   ResendEmailUseCase, RecoveryCodeUseCase, ChangeCodeUseCase, CreateCommentUseCase, LikePostUseCase, DeleteCommentUseCase,
-  UpdateCommentUseCase, LikeCommentUseCase, CheckSecurityRefreshTokenUseCase, RevokeSessionsUseCase, AddRequestUseCase]
+  UpdateCommentUseCase, LikeCommentUseCase, CheckSecurityRefreshTokenUseCase, RevokeSessionsUseCase, AddRequestUseCase,
+  CreatePostForBlogUseCase, CheckRefreshAfterDeleteSessionTokenUseCase]
 
 @Module({
   imports: [
     MongooseModule.forRoot(appConfig.MONGO_URL || 'mongodb://0.0.0.0:27017', {
-      dbName: 'hm-10-test',
-      // dbName: 'hm-10',
+      // dbName: 'hm-10-test',
+      dbName: 'hm-10',
     }),
     MongooseModule.forFeature(schemas),
     CqrsModule

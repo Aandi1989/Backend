@@ -5,7 +5,7 @@ import { UsersQueryRepo } from 'src/features/users/repo/users.query.repository';
 import { JwtService } from '../services/jwt-service';
 
 @Injectable()
-export class UserId implements CanActivate {
+export class RefreshUserId implements CanActivate {
     constructor(protected usersQueryRepo: UsersQueryRepo,
                 protected jwtService: JwtService) { }
     async canActivate(context: ExecutionContext): Promise<boolean> {

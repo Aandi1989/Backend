@@ -5,7 +5,7 @@ import { myStatus, PostType } from "../../types/types";
 
 export class UpdatePostCommand {
     constructor(public id: string,
-                public data: Partial<CreatePostModel>){}
+                public data: CreatePostModel){}
 }
 
 @CommandHandler(UpdatePostCommand)

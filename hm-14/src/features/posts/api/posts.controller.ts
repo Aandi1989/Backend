@@ -20,7 +20,8 @@ import { CreateCommentCommand } from "src/features/comments/application/use-case
 import { SetStatusModel } from "../../likes/api/models/input/set-status.input.model";
 import { LikePostCommand } from "../../likes/application/use-cases/like-post.use-case";
 import { ResultCode } from "src/common/types/types";
-import { UserId } from "src/common/guards/userId.guard";
+import { BasicAuthGuard } from "src/common/guards/basicAuth";
+import { AccessUserId } from "src/common/guards/accessUserId";
 
 
 @Controller(RouterPaths.posts)
@@ -29,32 +30,32 @@ export class PostsController{
                 protected postsService: PostsService,
                 protected commentsQueryRepo: CommentsQueryRepo,
                 private commandBus: CommandBus){}
-    @UseGuards(UserId)
+    @UseGuards(AccessUserId)
     @Get()
     async getPosts(@Req() req: Request, @Query() query: Partial<PostQueryType>): Promise<PostsWithQueryOutputModel>{
         return await this.postsQueryRepo.getPosts(postQueryParams(query), req.userId!);
     }
-    @UseGuards(AuthGuard)
+    @UseGuards(BasicAuthGuard)
     @Post()
     async createPost(@Body() body: CreatePostModel): Promise<PostType> {
         return await this.commandBus.execute(new CreatePostCommand(body));
     }
-    @UseGuards(UserId)
+    @UseGuards(AccessUserId)
     @Get(':id')
     async getPost(@Req() req: Request, @Param('id') postId: string): Promise<PostType | null> {
         const foundPost = await this.postsQueryRepo.getPostById(postId, req.userId!);
         if (!foundPost) throw new NotFoundException('Post not found');
         return foundPost;
     }
-    @UseGuards(AuthGuard)
+    @UseGuards(BasicAuthGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204)
     @Put(':id')
-    async updatePost(@Param('id') postId: string, @Body() body: Partial<CreatePostModel>){
+    async updatePost(@Param('id') postId: string, @Body() body: CreatePostModel){
         const isUpdated = await this.commandBus.execute(new UpdatePostCommand(postId, body));
         if(isUpdated) return true;
         throw new NotFoundException('Post not found'); 
     }
-    @UseGuards(AuthGuard)
+    @UseGuards(BasicAuthGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204)
     @Delete(':id')
     async deletePost(@Param('id') postId: string){
@@ -62,12 +63,13 @@ export class PostsController{
         if(isDeleted) return;
         throw new NotFoundException('Post not found');
     }
+    @UseGuards(AccessUserId)
     @Get(`:id/${RouterPaths.comments}`)
-    async getCommentsForPost(@Param('id') postId: string, 
+    async getCommentsForPost(@Req() req: Request, @Param('id') postId: string, 
         @Query() query: Partial<CommentQueryType>): Promise<CommentsWithQueryOutputModel>{
-        const post = await this.postsQueryRepo.getPostById(postId)
+        const post = await this.postsQueryRepo.getPostById(postId, req.userId!)
         if(!post) throw new NotFoundException('Post not found');
-        return await this.commentsQueryRepo.getCommentsByPostId(postId ,commentQueryParams(query));
+        return await this.commentsQueryRepo.getCommentsByPostId(postId ,commentQueryParams(query), req.userId!);
     }
     @UseGuards(AuthGuard)
     @Post(':id/comments')

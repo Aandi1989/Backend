@@ -21,6 +21,6 @@ export class CheckRefreshTokenUseCase implements ICommandHandler<CheckRefreshTok
             .getSession(tokenData.userId, tokenData.deviceId, new Date(tokenData.iat*1000).toISOString());
         if(!tokenExist) return {code: ResultCode.Forbidden};
         if(tokenData.message === 'jwt expired') return {code: ResultCode.Expired}
-        return {code: ResultCode.Success}
+        return {code: ResultCode.Success, data:tokenData}
     }
 }

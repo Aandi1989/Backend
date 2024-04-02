@@ -5,7 +5,7 @@ import { SecurityRepository } from "../../repo/security.repository";
 
 
 export class RevokeSessionCommand {
-    constructor(public token: string){}
+    constructor(public id: string){}
 }
 
 @CommandHandler(RevokeSessionCommand)
@@ -14,8 +14,7 @@ export class RevokeSessionUseCase implements ICommandHandler<RevokeSessionComman
                 protected securityRepository: SecurityRepository) { }
   
     async execute(command: RevokeSessionCommand) {
-        const tokenData = await this.jwtService.getRefreshTokenData(command.token);
-        const revokedSession = await this.securityRepository.revokeSession(tokenData);
+        const revokedSession = await this.securityRepository.revokeSession(command.id);
         return revokedSession;
     }
   }

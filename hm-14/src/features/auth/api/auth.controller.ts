@@ -43,7 +43,7 @@ export class AuthController {
         return await this.usersQueryRepo.getAuthById(userId);
     }
      
-    // @UseGuards(ApiCallsGuard)
+    @UseGuards(ApiCallsGuard)
     @HttpCode(HTTP_STATUSES.OK_200)         
     @Post('login')
     async login (@Req() req: Request, @Body() body: AuthBodyModel, @Res() res: Response):Promise<LoginOutputModel>{
@@ -65,9 +65,9 @@ export class AuthController {
     @Post('logout')
     async logout (@Req() req: Request){
         const refreshToken = req.cookies.refreshToken;
-        const response = await this.commandBus.execute(new CheckRefreshTokenCommand(refreshToken));
-        if(response.code !== ResultCode.Success) throw new UnauthorizedException();
-        await this.commandBus.execute(new RevokeSessionCommand(refreshToken));
+        const result = await this.commandBus.execute(new CheckRefreshTokenCommand(refreshToken));
+        if(result.code !== ResultCode.Success) throw new UnauthorizedException();
+        await this.commandBus.execute(new RevokeSessionCommand(result.data.deviceId));
     }
 
     @HttpCode(HTTP_STATUSES.OK_200)
@@ -83,7 +83,7 @@ export class AuthController {
         return res.send(newAccessToken);
     }
 
-    // @UseGuards(ApiCallsGuard)
+    @UseGuards(ApiCallsGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204) 
     @Post('registration')
     async registration (@Body() body:CreateUserModel){
@@ -93,7 +93,7 @@ export class AuthController {
         return;
     }
 
-    // @UseGuards(ApiCallsGuard)
+    @UseGuards(ApiCallsGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204) 
     @Post('registration-confirmation')
     async confirmEmail (@Body() body: ConfirmCodeModel){
@@ -102,7 +102,7 @@ export class AuthController {
         return;
     }
 
-    // @UseGuards(ApiCallsGuard)
+    @UseGuards(ApiCallsGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204) 
     @Post('registration-email-resending')
     async registrationEmailResending (@Body() body: ResendEmailModel){
@@ -111,7 +111,7 @@ export class AuthController {
         return;
     }
 
-    // @UseGuards(ApiCallsGuard)
+    @UseGuards(ApiCallsGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204) 
     @Post('password-recovery')
     async passwordRecovery (@Body() body: ResendEmailModel){
@@ -120,7 +120,7 @@ export class AuthController {
         return;
     }
 
-    // @UseGuards(ApiCallsGuard)
+    @UseGuards(ApiCallsGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204) 
     @Post('new-password')
     async newPassword (@Body() body: ChangePasswordModel){

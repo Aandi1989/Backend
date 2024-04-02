@@ -1,23 +1,25 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { CreatePostModel } from "../../api/models/input/create-post.input.model";
 import { PostsRepository } from "../../repo/posts.repository";
 import { myStatus, PostType } from "../../types/types";
+import { CreatePostForBlogModel } from "src/features/blogs/api/models/input/create-post-for-blog.model";
 
-export class CreatePostCommand {
-    constructor(public data: CreatePostModel){}
+
+export class CreatePostForBlogCommand {
+    constructor(public data: CreatePostForBlogModel,
+                public blogId: string){}
 }
 
-@CommandHandler(CreatePostCommand)
-export class CreatePostUseCase implements ICommandHandler<CreatePostCommand>{
+@CommandHandler(CreatePostForBlogCommand)
+export class CreatePostForBlogUseCase implements ICommandHandler<CreatePostForBlogCommand>{
     constructor(protected postsRepository: PostsRepository) { }
   
-    async execute(command: CreatePostCommand): Promise<PostType> {
+    async execute(command: CreatePostForBlogCommand): Promise<PostType> {
             const newPost = {
                 id: (+new Date()).toString(),
                 title: command.data.title,
                 shortDescription: command.data.shortDescription,
                 content: command.data.content,
-                blogId: command.data.blogId,
+                blogId: command.blogId,
                 blogName: command.data.blogName ? command.data.blogName : '',
                 createdAt: new Date().toISOString(),
                 extendedLikesInfo: {

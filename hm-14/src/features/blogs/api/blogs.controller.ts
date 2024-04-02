@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query, Req, Res, UseGuards } from "@nestjs/common";
 import { BlogQueryType, BlogType } from "../types/types";
 import { blogQueryParams, postQueryParams } from "src/common/helpers/queryStringModifiers";
 import { BlogsQueryRepo } from "../repo/blogs.query.repository";
@@ -9,14 +9,16 @@ import { PostsQueryRepo } from "src/features/posts/repo/posts.query.repository";
 import { RouterPaths, HTTP_STATUSES } from "src/common/utils/utils";
 import { CreateBlogModel } from "./models/input/create-blog.input.model";
 import { BlogsWithQueryOutputModel } from "./models/output/blog.output.model";
-import { CreatePostModel } from "src/features/posts/api/models/input/create-post.input.model";
 import { PostsWithQueryOutputModel } from "src/features/posts/api/models/output/post.output.model";
-import { CreatePostCommand } from "src/features/posts/application/use-cases/create-post.use-case";
 import { CommandBus } from "@nestjs/cqrs";
 import { CreateBlogCommand } from "../application/use-case/create-blog.use-case";
 import { DeleteBlogCommand } from "../application/use-case/delete-blog.use-case";
 import { UpdateBlogCommand } from "../application/use-case/update-blog.use-case";
-import { AuthGuard } from "src/common/guards/auth.guard";
+import { BasicAuthGuard } from "src/common/guards/basicAuth";
+import { CreatePostForBlogCommand } from "src/features/posts/application/use-cases/create-post-for-blog.use-case";
+import { CreatePostForBlogModel } from "./models/input/create-post-for-blog.model";
+import { AccessUserId } from "src/common/guards/accessUserId";
+import { Response, Request } from 'express';
 
 @Controller(RouterPaths.blogs)
 export class BlogsController {
@@ -29,7 +31,7 @@ export class BlogsController {
     async getBlogs(@Query() query: Partial<BlogQueryType>): Promise<BlogsWithQueryOutputModel>{
         return await this.blogsQueryRepo.getBlogs(blogQueryParams(query));
     }
-    @UseGuards(AuthGuard)
+    @UseGuards(BasicAuthGuard)
     @Post()
     async createBlog (@Body() body: CreateBlogModel): Promise<BlogType>{
         return await this.commandBus.execute(new CreateBlogCommand(body));
@@ -40,7 +42,7 @@ export class BlogsController {
         if(!foundBlog) throw new NotFoundException('Blog not found');
         return foundBlog;
     }
-    @UseGuards(AuthGuard)
+    @UseGuards(BasicAuthGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204)
     @Put(':id')
     async updateBlog(@Param('id') blogId: string, @Body() body: Partial<CreateBlogModel>){
@@ -48,7 +50,7 @@ export class BlogsController {
         if(isUpdated) return;  
         throw new NotFoundException('Blog not found');
     }
-    @UseGuards(AuthGuard)
+    @UseGuards(BasicAuthGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204)
     @Delete(':id')
     async deleteBlog(@Param('id') blogId: string){
@@ -56,17 +58,19 @@ export class BlogsController {
         if(isDeleted) return;
         throw new NotFoundException('Blog not found');
     }
-    @UseGuards(AuthGuard)
+    @UseGuards(BasicAuthGuard)
     @Post(`:id/${RouterPaths.posts}`)
-    async createPostForBlog(@Param('id') blogId: string, @Body() body: CreatePostModel): Promise<PostType | null>{
+    async createPostForBlog(@Param('id') blogId: string, @Body() body: CreatePostForBlogModel): Promise<PostType | null>{
         const foundBlog = await this.blogsQueryRepo.findBlogById(blogId);
-        if(!foundBlog) throw new NotFoundException('Blog not found');
-        return await this.commandBus.execute(new CreatePostCommand(body, blogId));
+        if(!foundBlog) throw new NotFoundException();
+        return await this.commandBus.execute(new CreatePostForBlogCommand(body, blogId));
     }
+    @UseGuards(AccessUserId)
     @Get(`:id/${RouterPaths.posts}`)
-    async getPostsForBlog(@Param('id') blogId: string, @Query() query:Partial<PostQueryType>): Promise<PostsWithQueryOutputModel>{
+    async getPostsForBlog(@Req() req: Request, @Param('id') blogId: string, 
+        @Query() query:Partial<PostQueryType>): Promise<PostsWithQueryOutputModel>{
         const foundBlog = await this.blogsQueryRepo.findBlogById(blogId);
         if(!foundBlog) throw new NotFoundException('Blog not found');
-        return await this.postsQueryRepo.getPostsByBlogId(blogId,postQueryParams(query));
+        return await this.postsQueryRepo.getPostsByBlogId(blogId,postQueryParams(query), req.userId!);
     } //
 }

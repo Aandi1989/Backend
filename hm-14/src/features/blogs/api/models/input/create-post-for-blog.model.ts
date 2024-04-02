@@ -1,7 +1,7 @@
 import { Length, IsString, IsNotEmpty, IsOptional } from "class-validator"
 import { Trim } from "src/common/pipes/trim-pipe"
 
-export class CreatePostModel  {
+export class CreatePostForBlogModel  {
     @Trim()
     @Length(3,30)
     @IsString()
@@ -16,11 +16,6 @@ export class CreatePostModel  {
     @Length(5,1000)
     @IsString()
     content: string
-
-    @IsString()
-    @IsNotEmpty()
-    @Length(6,30)
-    blogId: string
 
     @IsOptional()
     @IsString()

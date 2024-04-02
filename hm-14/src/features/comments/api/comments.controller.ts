@@ -3,7 +3,6 @@ import { Response, Request } from 'express';
 import { CommentsQueryRepo } from "../repo/comments.query.repository";
 import { RouterPaths, HTTP_STATUSES } from "src/common/utils/utils";
 import { CommentOutputModel } from "./models/output/comment.output.model";
-import { UserId } from "src/common/guards/userId.guard";
 import { AuthGuard } from "src/common/guards/auth.guard";
 import { CommandBus } from "@nestjs/cqrs";
 import { DeleteCommentCommand } from "../application/use-case/delete-comment.use-case";
@@ -12,12 +11,13 @@ import { CreateCommentModel } from "./models/input/create-comment.input.model";
 import { UpdateCommentCommand } from "../application/use-case/update-comment.use-case";
 import { SetStatusModel } from "src/features/likes/api/models/input/set-status.input.model";
 import { LikeCommentCommand } from "../application/use-case/like-comment.use-case";
+import { AccessUserId } from "src/common/guards/accessUserId";
 
 @Controller(RouterPaths.comments)
 export class CommentsController {
     constructor(protected commentsQueryRepo: CommentsQueryRepo,
                 private commandBus: CommandBus){}
-    @UseGuards(UserId)
+    @UseGuards(AccessUserId)
     @Get(':id')
     async getComment(@Req() req: Request, @Param('id') commentId: string): Promise<CommentOutputModel>{
         const foundComment = await this.commentsQueryRepo.getCommentById(commentId, req.userId!);

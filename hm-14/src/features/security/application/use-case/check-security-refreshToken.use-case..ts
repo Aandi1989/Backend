@@ -7,7 +7,8 @@ import { SecurityQueryRepo } from "../../repo/security.query.repository";
 
 export class CheckSecurityRefreshTokenCommand {
     constructor(public token: string,
-                public device_id?: string){}
+                public device_id?: string
+                ){}
 }
 
 @CommandHandler(CheckSecurityRefreshTokenCommand)

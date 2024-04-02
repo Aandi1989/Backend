@@ -20,8 +20,8 @@ export class SecurityRepository {
         const result = await this.SessionModel.insertMany([newSession]);
         return result;
     }
-    async revokeSession(tokenData: RefreshTokenDataModel) {
-        const result = await this.SessionModel.deleteOne({ userId: tokenData.userId, deviceId: tokenData.deviceId });
+    async revokeSession(deviceId: string) {
+        const result = await this.SessionModel.deleteOne({deviceId});
         return result;
     }
     async updateSession(oldData:RefreshTokenDataModel, newData:RefreshTokenDataModel, ip:string){

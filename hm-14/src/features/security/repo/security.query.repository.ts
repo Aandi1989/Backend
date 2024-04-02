@@ -19,8 +19,8 @@ export class SecurityQueryRepo {
         return result;
     }
     async getSessionByDeviceId(deviceId: string){
-        const result = await this.SessionModel.findOne({ deviceId })
-        return result;
+        const foundedSession = await this.SessionModel.findOne({deviceId});
+        return foundedSession;
     }
     async getSessions(userId: string){
         const sessions = await this.SessionModel.find({userId}).lean();
