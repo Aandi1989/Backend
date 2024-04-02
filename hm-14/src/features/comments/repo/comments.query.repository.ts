@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { Comment } from '../domain/comments.schema';
 import { CommentQueryOutputType, DBCommentType, myStatus } from '../types/types';
 import { CommentOutputModel, CommentsWithQueryOutputModel } from '../api/models/output/comment.output.model';
+import { defineStatus } from 'src/common/helpers/getCommentStatus';
 
 @Injectable()
 export class CommentsQueryRepo {
@@ -38,6 +39,10 @@ export class CommentsQueryRepo {
         let dbComment: DBCommentType | null = await this.CommentModel.findOne({ id: id })
         return dbComment ? this._mapDBCommentTypeToCommentType(dbComment, userId) : null;
     }
+    async getDBTypeCommentById(id: string):Promise<DBCommentType | null>{
+        let dbComment: DBCommentType | null = await this.CommentModel.findOne({ id: id })
+        return dbComment ? dbComment : null;
+    }
     _mapDBCommentTypeToCommentType(comment: DBCommentType, userId: string = ''): CommentOutputModel {
         return {
             id: comment.id,
@@ -48,12 +53,9 @@ export class CommentsQueryRepo {
             },
             createdAt: comment.createdAt,
             likesInfo: {
-                // likesCount: comment.likes.length,
-                // dislikesCount: comment.dislikes.length,
-                // myStatus: defineStatus(comment, userId)
-                likesCount: 0,
-                dislikesCount: 0,
-                myStatus: myStatus.None
+                likesCount: comment.likes.length,
+                dislikesCount: comment.dislikes.length,
+                myStatus: defineStatus(comment, userId)
             }
         }
     }

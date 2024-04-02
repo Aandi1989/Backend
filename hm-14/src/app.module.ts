@@ -56,6 +56,9 @@ import { Like, LikeSchema } from './features/likes/domain/likes.schema';
 import { LikesQueryRepo } from './features/likes/repo/like.query.repository';
 import { LikesRepository } from './features/likes/repo/like.repository';
 import { LikePostUseCase } from './features/likes/application/use-cases/like-post.use-case';
+import { DeleteCommentUseCase } from './features/comments/application/use-case/delete-comment.use-case';
+import { UpdateCommentUseCase } from './features/comments/application/use-case/update-comment.use-case';
+import { LikeCommentUseCase } from './features/comments/application/use-case/like-comment.use-case';
 
 const schemas = [{ name: User.name, schema: UserSchema }, { name: Blog.name, schema: BlogSchema },
 { name: Post.name, schema: PostSchema }, { name: Comment.name, schema: CommentSchema },
@@ -72,7 +75,8 @@ const providers = [AppService, UsersService, UsersRepository, UsersQueryRepo, Bl
 const useCases = [CreateUserUseCase, DeleteUserUseCase, CreatePostUseCase, DeletePostUseCase, UpdatePostUseCase,
   CreateblogUseCase, DeleteBlogUseCase, UpdateBlogUseCase, CheckCredentialsUseCase, CreateSessionUseCase, 
   CheckRefreshTokenUseCase, RevokeSessionUseCase, RefreshTokensUseCase, CreateAccountUseCase, ConfirmEmailUseCase,
-  ResendEmailUseCase, RecoveryCodeUseCase, ChangeCodeUseCase, CreateCommentUseCase, LikePostUseCase]
+  ResendEmailUseCase, RecoveryCodeUseCase, ChangeCodeUseCase, CreateCommentUseCase, LikePostUseCase, DeleteCommentUseCase,
+  UpdateCommentUseCase, LikeCommentUseCase]
 
 @Module({
   imports: [

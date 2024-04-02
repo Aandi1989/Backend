@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { Comment } from '../domain/comments.schema';
 import { DBCommentType, myStatus } from '../types/types';
 import { CommentOutputModel } from '../api/models/output/comment.output.model';
+import { Result, ResultCode } from 'src/common/types/types';
 
 @Injectable()
 export class CommentsRepository {
@@ -18,6 +19,27 @@ export class CommentsRepository {
   async deleteAllData() {
     await this.CommentModel.deleteMany({});
   }
+  async deleteComment(id: string): Promise<Result> {
+    const result = await this.CommentModel.deleteOne({ id: id })
+    if (result.deletedCount === 1) return {
+      code: ResultCode.Success
+    }
+    return {
+      code: ResultCode.NotFound
+    }
+  }
+  async updateComment(id: string, content: string): Promise<Result>{
+    const result = await this.CommentModel.updateOne(
+        {id: id},
+        { $set: {content: content}}
+    );
+    if(result.modifiedCount === 1) return {
+        code: ResultCode.Success
+    }
+    return {
+        code: ResultCode.NotFound
+    }
+}
   _mapDBCommentTypeToCommentTypeAfterCreating(comment: DBCommentType): CommentOutputModel {
     return {
       id: comment.id,
