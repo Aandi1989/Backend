@@ -4,12 +4,19 @@ import { Post } from "../domain/posts.schema";
 import { Model } from "mongoose";
 import { DBPostType, myStatus, PostQueryOutputType, PostType } from "../types/types";
 import { PostsWithQueryOutputModel } from "../api/models/output/post.output.model";
+import { Like } from "src/features/likes/domain/likes.schema";
+import { likeCounter } from "src/common/helpers/countLikes";
+import { getRecentLikes } from "src/common/helpers/getRecentLikes";
+import { User } from "src/features/users/domain/users.schema";
+
 
 @Injectable()
 export class PostsQueryRepo {
     constructor(
-        @InjectModel(Post.name)
-        private PostModel: Model<Post>,
+        @InjectModel(Post.name) private PostModel: Model<Post>,
+        @InjectModel( Like.name) private LikeModel: Model<Like>,
+        @InjectModel( User.name) private UserModel: Model<User>,
+
     ) { }
     async getPosts(query: PostQueryOutputType, userId: string = ''): Promise<PostsWithQueryOutputModel> {
         const { pageNumber, pageSize, sortBy, sortDirection } = query;
@@ -71,13 +78,13 @@ export class PostsQueryRepo {
         await this.PostModel.deleteMany({});
       }
     async _mapDBPostToBlogOutputModel(post: DBPostType, userId: string): Promise<PostType> {
-        // const likes = await likesModel.find({parentId: post.id});
-        // const { likesArray, dislikesCount, myStatusLike } = likeCounter(likes, userId);
-        // const recentLikes = getRecentLikes(likesArray);
-        // const recentLikesWithLogins = await Promise.all(recentLikes.map(async (like) => {
-        //     const user = await usersModel.findOne({'accountData.id': like.userId})
-        //     return { userId: like.userId, addedAt: like.createdAt, login: user!.accountData.login };
-        // }));
+        const likes = await this.LikeModel.find({parentId: post.id});
+        const { likesArray, dislikesCount, myStatusLike } = likeCounter(likes, userId);
+        const recentLikes = getRecentLikes(likesArray);
+        const recentLikesWithLogins = await Promise.all(recentLikes.map(async (like) => {
+            const user = await this.UserModel.findOne({'accountData.id': like.userId})
+            return { userId: like.userId, addedAt: like.createdAt, login: user!.accountData.login };
+        }));
 
         return {
             id: post.id,
@@ -88,14 +95,10 @@ export class PostsQueryRepo {
             blogName: post.blogName ? post.blogName : '',
             createdAt: post.createdAt,
             extendedLikesInfo: {
-                // likesCount: likesArray.length,
-                // dislikesCount: dislikesCount,
-                // myStatus: myStatusLike,
-                // newestLikes: recentLikesWithLogins
-                likesCount: 0,
-                dislikesCount: 0,
-                myStatus: myStatus.None,
-                newestLikes: []
+                likesCount: likesArray.length,
+                dislikesCount: dislikesCount,
+                myStatus: myStatusLike,
+                newestLikes: recentLikesWithLogins
             }
         }
     }

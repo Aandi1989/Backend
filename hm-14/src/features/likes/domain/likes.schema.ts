@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import { myStatus } from '../../posts/types/types';
 
 @Schema({ collection: 'likes'})
 export class Like extends Document {
@@ -8,6 +9,9 @@ export class Like extends Document {
 
     @Prop({ required: true })
     id: string;
+
+    @Prop({ required: true })
+    status: myStatus;
 
     @Prop({ required: true })
     userId: string;

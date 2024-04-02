@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Comment } from '../domain/comments.schema';
-import { CommentQueryOutputType, CommentType, DBCommentType, myStatus } from '../types/types';
-import { CommentsWithQueryOutputModel } from '../api/models/output/comment.output.model';
+import { CommentQueryOutputType, DBCommentType, myStatus } from '../types/types';
+import { CommentOutputModel, CommentsWithQueryOutputModel } from '../api/models/output/comment.output.model';
 
 @Injectable()
 export class CommentsQueryRepo {
@@ -34,11 +34,11 @@ export class CommentsQueryRepo {
             })
         }
     }
-    async getCommentById(id: string, userId: string = ''): Promise<CommentType | null> {
+    async getCommentById(id: string, userId: string = ''): Promise<CommentOutputModel | null> {
         let dbComment: DBCommentType | null = await this.CommentModel.findOne({ id: id })
         return dbComment ? this._mapDBCommentTypeToCommentType(dbComment, userId) : null;
     }
-    _mapDBCommentTypeToCommentType(comment: DBCommentType, userId: string = ''): CommentType {
+    _mapDBCommentTypeToCommentType(comment: DBCommentType, userId: string = ''): CommentOutputModel {
         return {
             id: comment.id,
             content: comment.content,

@@ -4,12 +4,14 @@ import { Model } from 'mongoose';
 import { Post } from '../domain/posts.schema';
 import { DBPostType, myStatus, PostType } from '../types/types';
 import { CreatePostModel } from '../api/models/input/create-post.input.model';
+import { Like } from '../../likes/domain/likes.schema';
+import { LikeStatus } from 'src/features/likes/entities/like';
 
 @Injectable()
 export class PostsRepository {
     constructor(
         @InjectModel(Post.name)
-        private PostModel: Model<Post>,
+        private PostModel: Model<Post>
     ) { }
 
     async createPost(newPost: PostType): Promise<PostType> {

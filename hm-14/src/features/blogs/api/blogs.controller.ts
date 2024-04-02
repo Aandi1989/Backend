@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query, Res } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query, Res, UseGuards } from "@nestjs/common";
 import { BlogQueryType, BlogType } from "../types/types";
 import { blogQueryParams, postQueryParams } from "src/common/helpers/queryStringModifiers";
 import { BlogsQueryRepo } from "../repo/blogs.query.repository";
@@ -16,6 +16,7 @@ import { CommandBus } from "@nestjs/cqrs";
 import { CreateBlogCommand } from "../application/use-case/create-blog.use-case";
 import { DeleteBlogCommand } from "../application/use-case/delete-blog.use-case";
 import { UpdateBlogCommand } from "../application/use-case/update-blog.use-case";
+import { AuthGuard } from "src/common/guards/auth.guard";
 
 @Controller(RouterPaths.blogs)
 export class BlogsController {
@@ -28,6 +29,7 @@ export class BlogsController {
     async getBlogs(@Query() query: Partial<BlogQueryType>): Promise<BlogsWithQueryOutputModel>{
         return await this.blogsQueryRepo.getBlogs(blogQueryParams(query));
     }
+    @UseGuards(AuthGuard)
     @Post()
     async createBlog (@Body() body: CreateBlogModel): Promise<BlogType>{
         return await this.commandBus.execute(new CreateBlogCommand(body));
@@ -38,6 +40,7 @@ export class BlogsController {
         if(!foundBlog) throw new NotFoundException('Blog not found');
         return foundBlog;
     }
+    @UseGuards(AuthGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204)
     @Put(':id')
     async updateBlog(@Param('id') blogId: string, @Body() body: Partial<CreateBlogModel>){
@@ -45,6 +48,7 @@ export class BlogsController {
         if(isUpdated) return;  
         throw new NotFoundException('Blog not found');
     }
+    @UseGuards(AuthGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204)
     @Delete(':id')
     async deleteBlog(@Param('id') blogId: string){
@@ -52,6 +56,7 @@ export class BlogsController {
         if(isDeleted) return;
         throw new NotFoundException('Blog not found');
     }
+    @UseGuards(AuthGuard)
     @Post(`:id/${RouterPaths.posts}`)
     async createPostForBlog(@Param('id') blogId: string, @Body() body: CreatePostModel): Promise<PostType | null>{
         const foundBlog = await this.blogsQueryRepo.findBlogById(blogId);

@@ -33,7 +33,6 @@ import { CreateblogUseCase } from './features/blogs/application/use-case/create-
 import { DeleteBlogUseCase } from './features/blogs/application/use-case/delete-blog.use-case';
 import { UpdateBlogUseCase } from './features/blogs/application/use-case/update-blog.use-case';
 import { JwtService } from './common/services/jwt-service';
-import { Like, LikeSchema } from './features/posts/domain/likes.schema';
 import { AliCallSchema, ApiCall } from './features/auth/domain/apiCall.schema';
 import { Session, SessionSchema } from './features/security/domain/session.schema';
 import { AuthService } from './features/auth/application/auth.service';
@@ -52,6 +51,11 @@ import { AuthRepository } from './features/auth/repo/auth.repository';
 import { ResendEmailUseCase } from './features/auth/application/use-case/resend-email.use-case';
 import { RecoveryCodeUseCase } from './features/auth/application/use-case/recovery-code.use-case';
 import { ChangeCodeUseCase } from './features/auth/application/use-case/change-code.use-case';
+import { CreateCommentUseCase } from './features/comments/application/use-case/create-comment.use-case';
+import { Like, LikeSchema } from './features/likes/domain/likes.schema';
+import { LikesQueryRepo } from './features/likes/repo/like.query.repository';
+import { LikesRepository } from './features/likes/repo/like.repository';
+import { LikePostUseCase } from './features/likes/application/use-cases/like-post.use-case';
 
 const schemas = [{ name: User.name, schema: UserSchema }, { name: Blog.name, schema: BlogSchema },
 { name: Post.name, schema: PostSchema }, { name: Comment.name, schema: CommentSchema },
@@ -63,12 +67,12 @@ const controllers = [AppController, UsersController, BlogsController, PostsContr
 
 const providers = [AppService, UsersService, UsersRepository, UsersQueryRepo, BlogsService, BlogsQueryRepo,
   BlogsRepository, PostsQueryRepo, PostsRepository, PostsService, CommentsQueryRepo, CommentsRepository, JwtService,
-  AuthService, SecurityRepository, SecurityQueryRepo, AuthQueryRepo, AuthRepository];
+  AuthService, SecurityRepository, SecurityQueryRepo, AuthQueryRepo, AuthRepository, LikesQueryRepo, LikesRepository];
 
 const useCases = [CreateUserUseCase, DeleteUserUseCase, CreatePostUseCase, DeletePostUseCase, UpdatePostUseCase,
   CreateblogUseCase, DeleteBlogUseCase, UpdateBlogUseCase, CheckCredentialsUseCase, CreateSessionUseCase, 
   CheckRefreshTokenUseCase, RevokeSessionUseCase, RefreshTokensUseCase, CreateAccountUseCase, ConfirmEmailUseCase,
-  ResendEmailUseCase, RecoveryCodeUseCase, ChangeCodeUseCase]
+  ResendEmailUseCase, RecoveryCodeUseCase, ChangeCodeUseCase, CreateCommentUseCase, LikePostUseCase]
 
 @Module({
   imports: [
