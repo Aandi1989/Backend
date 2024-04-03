@@ -1,5 +1,5 @@
-import { appConfig } from "config";
 import * as nodemailer from "nodemailer";
+import config from '../../../settings/configuration'
 
 
 
@@ -10,13 +10,13 @@ export const emailAdapter = {
             port: 465,
             secure: true, // Use `true` for port 465, `false` for all other ports
             auth: {
-              user: appConfig.EMAIL_SENDER,
-              pass: appConfig.EMAIL_PASSWORD, // password from mail.ru for side applications
+              user: config().emailSetting.EMAIL_SENDER,
+              pass: config().emailSetting.EMAIL_PASSWORD, // password from mail.ru for side applications
             },
           });
         
         let info = await transport.sendMail({
-            from: `My nodemailer <${appConfig.EMAIL_SENDER}>`,
+            from: `My nodemailer <${config().emailSetting.EMAIL_SENDER}>`,
             to: email, // list of receivers
             subject: subject, // Subject line
             html: message,  // html body

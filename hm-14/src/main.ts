@@ -4,6 +4,7 @@ import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './common/exeption-filters/exception.filter';
 import { ErrorType, ErrorResponse } from './common/types/types';
 import * as cookieParser from 'cookie-parser';
+import config from './common/settings/configuration'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -31,6 +32,6 @@ async function bootstrap() {
   }));
   app.useGlobalFilters(new HttpExceptionFilter());
   app.use(cookieParser());
-  await app.listen(3000);
+  await app.listen(config().apiSettings.PORT);
 }
 bootstrap();

@@ -1,4 +1,4 @@
-import { Controller, Delete, ForbiddenException, Get, HttpCode, ImATeapotException, NotFoundException, Param, Req, UnauthorizedException } from "@nestjs/common";
+import { Controller, Delete, ForbiddenException, Get, HttpCode, NotFoundException, Param, Req, UnauthorizedException } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { Request } from 'express';
 import { JwtService } from "src/common/services/jwt-service";
@@ -10,8 +10,6 @@ import { RevokeSessionsCommand } from "../application/use-case/revoke-sessions.u
 import { SecurityQueryRepo } from "../repo/security.query.repository";
 import { DeleteSessionModel } from "./models/input/delete-session.input.model";
 import { SessionOutputModel } from "./models/output/security.output.model";
-import { CheckRefreshTokenCommand } from "../application/use-case/check-refreshToken.use-case";
-import { CheckRefreshAfterDeleteSessionTokenCommand } from "../application/use-case/check-refreshTokenAfterDeleteSession.use-case";
 
 
 @Controller(RouterPaths.security)
@@ -24,11 +22,7 @@ export class SecurytyController{
     @Get('devices')
     async getSessions(@Req() req: Request): Promise<SessionOutputModel[]>{
         const refreshToken = req.cookies.refreshToken;
-        const result = await this.commandBus.execute(new CheckRefreshAfterDeleteSessionTokenCommand(refreshToken));
-        
-        // if(result.code === ResultCode.Forbidden) throw new ForbiddenException();
-        // if(result.code === ResultCode.Expired) throw new ImATeapotException();
-        // if(result.code === ResultCode.NotFound) throw new NotFoundException();
+        const result = await this.commandBus.execute(new CheckSecurityRefreshTokenCommand(refreshToken));
 
         if(result.code != ResultCode.Success) throw new UnauthorizedException();
         return await this.securityQueryRepo.getSessions(result.data.userId);
@@ -48,7 +42,7 @@ export class SecurytyController{
     @Delete('devices')
     async deleteSessions(@Req() req: Request){
         const refreshToken = req.cookies.refreshToken;
-        const result = await this.commandBus.execute(new CheckRefreshTokenCommand(refreshToken));
+        const result = await this.commandBus.execute(new CheckSecurityRefreshTokenCommand(refreshToken));
         if(result.code != ResultCode.Success) throw new UnauthorizedException();
         return await this.commandBus.execute(new RevokeSessionsCommand(result.data.userId, result.data.deviceId))
     }

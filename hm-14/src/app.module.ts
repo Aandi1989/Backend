@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { appConfig } from 'config';
 import { PostsQueryRepo } from './features/posts/repo/posts.query.repository';
 import { Post, PostSchema } from './features/posts/domain/posts.schema';
 import { PostsController } from './features/posts/api/posts.controller';
@@ -64,12 +64,14 @@ import { CheckSecurityRefreshTokenUseCase } from './features/security/applicatio
 import { RevokeSessionsUseCase } from './features/security/application/use-case/revoke-sessions.use-case';
 import { AddRequestUseCase } from './features/security/application/use-case/add-request.use-case';
 import { CreatePostForBlogUseCase } from './features/posts/application/use-cases/create-post-for-blog.use-case';
-import { CheckRefreshAfterDeleteSessionTokenUseCase } from './features/security/application/use-case/check-refreshTokenAfterDeleteSession.use-case';
+import config from './common/settings/configuration';
+
+
 
 const schemas = [{ name: User.name, schema: UserSchema }, { name: Blog.name, schema: BlogSchema },
 { name: Post.name, schema: PostSchema }, { name: Comment.name, schema: CommentSchema },
-{ name: Like.name, schema: LikeSchema }, { name: ApiCall.name, schema: AliCallSchema},
-{ name: Session.name, schema: SessionSchema}];
+{ name: Like.name, schema: LikeSchema }, { name: ApiCall.name, schema: AliCallSchema },
+{ name: Session.name, schema: SessionSchema }];
 
 const controllers = [AppController, UsersController, BlogsController, PostsController,
   CommentsController, DeleteAllDataController, AuthController, SecurytyController];
@@ -79,17 +81,20 @@ const providers = [AppService, UsersService, UsersRepository, UsersQueryRepo, Bl
   AuthService, SecurityRepository, SecurityQueryRepo, AuthQueryRepo, AuthRepository, LikesQueryRepo, LikesRepository];
 
 const useCases = [CreateUserUseCase, DeleteUserUseCase, CreatePostUseCase, DeletePostUseCase, UpdatePostUseCase,
-  CreateblogUseCase, DeleteBlogUseCase, UpdateBlogUseCase, CheckCredentialsUseCase, CreateSessionUseCase, 
+  CreateblogUseCase, DeleteBlogUseCase, UpdateBlogUseCase, CheckCredentialsUseCase, CreateSessionUseCase,
   CheckRefreshTokenUseCase, RevokeSessionUseCase, RefreshTokensUseCase, CreateAccountUseCase, ConfirmEmailUseCase,
   ResendEmailUseCase, RecoveryCodeUseCase, ChangeCodeUseCase, CreateCommentUseCase, LikePostUseCase, DeleteCommentUseCase,
   UpdateCommentUseCase, LikeCommentUseCase, CheckSecurityRefreshTokenUseCase, RevokeSessionsUseCase, AddRequestUseCase,
-  CreatePostForBlogUseCase, CheckRefreshAfterDeleteSessionTokenUseCase]
+  CreatePostForBlogUseCase]
 
 @Module({
   imports: [
-    MongooseModule.forRoot(appConfig.MONGO_URL || 'mongodb://0.0.0.0:27017', {
-      // dbName: 'hm-10-test',
-      dbName: 'hm-10',
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [config],
+    }),
+    MongooseModule.forRoot(config().databaseSettings.MONGO_CONNECTION_URI || 'mongodb://0.0.0.0:27017', {
+      dbName: config().databaseSettings.MONGO_DB_NAME
     }),
     MongooseModule.forFeature(schemas),
     CqrsModule
