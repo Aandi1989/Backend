@@ -20,7 +20,7 @@ export class SecurityRepository {
         const result = await this.SessionModel.insertMany([newSession]);
         return result;
     }
-    async revokeSession(deviceId: string) {
+    async revokeSession(deviceId: string):Promise<any> {
         const result = await this.SessionModel.deleteOne({deviceId});
         return result;
     }
