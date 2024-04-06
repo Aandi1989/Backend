@@ -65,6 +65,7 @@ import { RevokeSessionsUseCase } from './features/security/application/use-case/
 import { AddRequestUseCase } from './features/security/application/use-case/add-request.use-case';
 import { CreatePostForBlogUseCase } from './features/posts/application/use-cases/create-post-for-blog.use-case';
 import config from './common/settings/configuration';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 
 
@@ -93,6 +94,19 @@ const useCases = [CreateUserUseCase, DeleteUserUseCase, CreatePostUseCase, Delet
       isGlobal: true,
       load: [config],
     }),
+    TypeOrmModule.forRoot({
+      type: config().databaseSettings.DB_TYPE,
+      host: config().databaseSettings.POSTGRES_DB_HOST,
+      port: config().databaseSettings.POSTGRES_DB_PORT,
+      username: config().databaseSettings.POSTGRES_DB_USER_NAME, 
+      password: config().databaseSettings.POSTGRESS_DB_PASSWORD, 
+      database: config().databaseSettings.POSTGRES_DB_DATABASE_NAME,
+      ssl: {
+        rejectUnauthorized: false, 
+      },
+      autoLoadEntities: false,
+      synchronize: false,
+    }),
     MongooseModule.forRoot(config().databaseSettings.MONGO_CONNECTION_URI || 'mongodb://0.0.0.0:27017', {
       dbName: config().databaseSettings.MONGO_DB_NAME
     }),
@@ -103,3 +117,7 @@ const useCases = [CreateUserUseCase, DeleteUserUseCase, CreatePostUseCase, Delet
   providers: [...providers, ...useCases],
 })
 export class AppModule { }
+
+// nodejs is name of user that we created in pgAdmin 4
+// to execute command below to solve problems with access rights
+// GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO nodejs 

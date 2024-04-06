@@ -21,3 +21,6 @@ export const RouterPaths = {
 
   __test__: 'testing',
 };
+
+export type DBType = "postgres" | "mysql" | "mariadb" | "cockroachdb" | "aurora-mysql"
+

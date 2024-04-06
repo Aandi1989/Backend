@@ -4,12 +4,15 @@ import { Model } from 'mongoose';
 import { Blog } from '../domain/blogs.schema';
 import { BlogQueryOutputType, BlogType, DBBlogType } from '../types/types';
 import { BlogsWithQueryOutputModel } from '../api/models/output/blog.output.model';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class BlogsQueryRepo {
     constructor(
-      @InjectModel(Blog.name)
-      private BlogModel: Model<Blog>,
+        @InjectDataSource() protected dataSourse: DataSource,
+        @InjectModel(Blog.name)
+        private BlogModel: Model<Blog>,
     ) { }
     async getBlogs(query: BlogQueryOutputType): Promise<BlogsWithQueryOutputModel> {
         const {pageNumber, pageSize, searchNameTerm, sortBy, sortDirection } = query;  
@@ -38,6 +41,15 @@ export class BlogsQueryRepo {
         let dbBlog: DBBlogType | null = await this.BlogModel.findOne({ id: id })
         return dbBlog ? this._mapDBBlogToBlogOutputModel(dbBlog) : null
     }
+    // first raw SQL request
+    async findUsers() {
+        const result = await this.dataSourse.query(`
+        SELECT *
+        FROM public."MyFirstTable" as w
+        `);
+        return result;
+      }
+      // -------------------
     _mapDBBlogToBlogOutputModel(blog: DBBlogType): BlogType {
         return {
             id: blog.id,

@@ -1,5 +1,7 @@
 // https://docs.nestjs.com/techniques/configuration#custom-configuration-files
 
+import { DBType } from "../utils/utils";
+
 enum Environments {
     DEVELOPMENT = 'DEVELOPMENT',
     STAGING = 'STAGING',
@@ -25,6 +27,12 @@ enum Environments {
         MONGO_CONNECTION_URI: environmentVariables.MONGO_URL,
         MONGO_DB_NAME: environmentVariables.ENV === "DEVELOPMENT" ? environmentVariables.MongoDBName
                                                                   : environmentVariables.MongoDBNameForTest,
+        DB_TYPE: environmentVariables.DB_TYPE as DBType,
+        POSTGRES_DB_HOST: environmentVariables.POSTGRES_DB_HOST,
+        POSTGRES_DB_PORT: parseInt(environmentVariables.POSTGRES_DB_PORT!, 10),
+        POSTGRES_DB_USER_NAME: environmentVariables.POSTGRES_DB_USER_NAME,
+        POSTGRESS_DB_PASSWORD: environmentVariables.POSTGRESS_DB_PASSWORD,
+        POSTGRES_DB_DATABASE_NAME: environmentVariables.POSTGRES_DB_DATABASE_NAME,                                              
         
       },
       emailSetting:{

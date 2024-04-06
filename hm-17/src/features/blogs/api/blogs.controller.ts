@@ -31,6 +31,12 @@ export class BlogsController {
     async getBlogs(@Query() query: Partial<BlogQueryType>): Promise<BlogsWithQueryOutputModel>{
         return await this.blogsQueryRepo.getBlogs(blogQueryParams(query));
     }
+    // first raw SQL request
+    @Get('users')
+    findUsers() {
+    return this.blogsQueryRepo.findUsers();
+    }
+    // --------------------
     @UseGuards(BasicAuthGuard)
     @Post()
     async createBlog (@Body() body: CreateBlogModel): Promise<BlogType>{
