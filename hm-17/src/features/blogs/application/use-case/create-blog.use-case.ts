@@ -2,6 +2,7 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CreateBlogModel } from "../../api/models/input/create-blog.input.model";
 import { BlogsRepository } from "../../repo/blogs.repository";
 import { BlogType } from "../../types/types";
+import {v4 as uuidv4} from 'uuid';
 
 
 export class CreateBlogCommand {
@@ -14,7 +15,7 @@ export class CreateblogUseCase implements ICommandHandler<CreateBlogCommand>{
   
     async execute(command: CreateBlogCommand): Promise<BlogType> {
         const newBlog = {
-            id: (+new Date()).toString(),
+            id: uuidv4(),
             name: command.data.name,
             description: command.data.description,
             websiteUrl: command.data.websiteUrl,

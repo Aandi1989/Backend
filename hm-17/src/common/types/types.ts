@@ -1,12 +1,4 @@
-import { Request } from 'express';
-
-// export type RequestWithBody<T> = Request<unknown, unknown, T>;
-// export type RequestWithQuery<T> = Request<unknown, unknown, unknown, T>;
-// export type RequestWithParams<T> = Request<T>;
-// export type RequestWithParamsAndQuery<T, B> = Request<T, unknown, unknown, B>;
-// export type RequestWithParamsAndBodyAndUserId<P, B, U extends Record<string, any>,> = Request<P, unknown, B, unknown, U>;
-// export type RequestWithParamsAndUserId<T, U extends Record<string, any>,> = Request<T, unknown, unknown, unknown, U>;
-// export type RequestWithParamsAndBody<T, B> = Request<T, unknown, B>;
+import { myStatus } from "src/features/posts/types/types";
 
 export type Result = {
     code: ResultCode;
@@ -37,4 +29,71 @@ export type ErrorResponse = {
 export type ErrorType = {
     message: string
     field: string
+}
+
+
+export class BlogSQL {
+    id: string
+    name: string
+    description: string
+    websiteUrl: string
+    createdAt: string
+    isMembership: boolean
+}
+
+export class PostSQL {
+    id: string
+    title: string
+    shortDescription: string
+    content: string
+    blogId: string
+    blogName?: string
+    createdAt: string
+}
+
+export class CommentSQL {
+    id: string
+    content: string
+    postId: string
+    userId: string
+    createdAt: string
+}
+
+export class UserSQL {
+    id:string
+    login:string
+    email:string
+    createdAt:string
+    passwordHash:string
+    passwordSalt:string
+    confirmationCode?: string
+    confCodeExpDate?: Date
+    confCodeConfirmed?: boolean
+    recoveryCode?: string
+    recCodeExpDate?: Date
+    recCodeConfirmed?: boolean
+}
+
+export class LikeSQL {
+    id: string
+    status: myStatus
+    userId: string
+    parentId: string
+    createdAt: string
+}
+
+export class SessionSQL {
+    id: string
+    userId: string
+    deviceId: string
+    deviceName: string
+    iat: string
+    exp: string
+    ip: string
+}
+
+export class ApiCallSQL {
+    ip: string
+    url: string
+    date: Date
 }

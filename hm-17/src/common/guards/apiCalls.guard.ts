@@ -1,8 +1,5 @@
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, HttpException } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, HttpException } from '@nestjs/common';
 import { Request } from 'express';
-import { Observable } from 'rxjs';
-import { UsersQueryRepo } from 'src/features/users/repo/users.query.repository';
-import { JwtService } from '../services/jwt-service';
 import { CommandBus } from '@nestjs/cqrs';
 import { SecurityQueryRepo } from 'src/features/security/repo/security.query.repository';
 import { AddRequestCommand } from 'src/features/security/application/use-case/add-request.use-case';
