@@ -1,41 +1,49 @@
-import { ObjectId } from "mongoose";
 import { Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { User } from "src/features/users/domain/users.schema";
-import { Model } from "mongoose";
 import { Result, ResultCode } from "src/common/types/types";
 import { CodeRecoveryModel } from "../api/models/input/recovery.code.model";
+import { DataSource } from "typeorm";
+import { InjectDataSource } from "@nestjs/typeorm";
 
 
 @Injectable()
 export class AuthRepository {
-    constructor(
-        @InjectModel(User.name)
-        private UserModel: Model<User>,
-    ) { }
-    async confirmEmail(_id: ObjectId): Promise<Result>{
-        const result = await this.UserModel.updateOne({_id}, {$set: {'emailConfirmation.isConfirmed': true}})
-        return result.modifiedCount === 1 ? {code: ResultCode.Success} : {code: ResultCode.Failed};
+    constructor(@InjectDataSource() protected dataSourse: DataSource) { }
+    
+    async confirmEmail(id: string): Promise<Result>{
+       const query = `
+        UPDATE public."Users"
+        SET "confCodeConfirmed" = 'true'
+        WHERE "id" = '${id}'
+       `;
+       const result = await this.dataSourse.query(query);
+       return result[1] === 1 ? {code: ResultCode.Success} : {code: ResultCode.Failed};
     }
-    async updateConfirmationCode(_id: ObjectId, newCode: string): Promise<Result>{
-        const result = await this.UserModel.updateOne({_id}, {$set: {'emailConfirmation.confirmationCode': newCode}})
-        return result.modifiedCount === 1 ? {code: ResultCode.Success} : {code: ResultCode.Failed};
+    async updateConfirmationCode(id: string, newCode: string): Promise<Result>{
+        const query = `
+        UPDATE public."Users"
+        SET "confirmationCode" = '${newCode}'
+        WHERE "id" = '${id}'
+       `;
+       const result = await this.dataSourse.query(query);
+       return result[1] === 1 ? {code: ResultCode.Success} : {code: ResultCode.Failed};
     }
-    async updateCodeRecovery( _id: ObjectId, codeDate: CodeRecoveryModel){
-        const result = await this.UserModel.updateOne({_id}, {$set: {
-            'codeRecoveryInfo.recoveryCode': codeDate.recoveryCode,
-            'codeRecoveryInfo.expirationDate': codeDate.expirationDate,
-            'codeRecoveryInfo.isConfirmed': codeDate.isConfirmed,
-        }});
-        return result;
+    async updateCodeRecovery( id: string, codeDate: CodeRecoveryModel){
+        const { recoveryCode, recCodeExpDate, recCodeConfirmed } = codeDate;
+        const query = `
+            UPDATE public."Users"
+            SET "recoveryCode" = '${recoveryCode}', "recCodeExpDate" = '${recCodeExpDate}', "recCodeConfirmed" = '${recCodeConfirmed}'
+            WHERE "id" = '${id}'
+        `;
+        const result = await this.dataSourse.query(query);
+        return result[1] === 1;
     }
-    async changePassword(_id: ObjectId, passwordSalt: string, passwordHash: string){
-        const result = await this.UserModel.updateOne({_id},{$set: {
-            'accountData.passwordHash':passwordHash,
-            'accountData.passwordSalt':passwordSalt, 
-            'codeRecoveryInfo.isConfirmed': true
-        }});
-        return result;
+    async changePassword(id: string, passwordSalt: string, passwordHash: string){
+        const query = `
+            UPDATE public."Users"
+            SET "passwordSalt" = '${passwordSalt}', "passwordHash" = '${passwordHash}'
+            WHERE "id" = '${id}'
+        `;
+        const result = await this.dataSourse.query(query);
+        return result[1] === 1;
     }
-
 }

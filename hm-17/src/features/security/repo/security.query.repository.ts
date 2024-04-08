@@ -1,40 +1,52 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Session } from '../domain/session.schema';
 import { SessionOutputModel } from '../api/models/output/security.output.model';
-import { ApiCall } from 'src/features/auth/domain/apiCall.schema';
 import { ApiCallModel } from '../api/models/input/api-call.input.model';
+import { DataSource } from 'typeorm';
+import { InjectDataSource } from '@nestjs/typeorm';
 
 
 @Injectable()
 export class SecurityQueryRepo {
-    constructor(
-        @InjectModel(Session.name) private SessionModel: Model<Session>,
-        @InjectModel( ApiCall.name) private ApiCallModel: Model<ApiCall>,
-    ) { }
+    constructor(@InjectDataSource() protected dataSourse: DataSource) { }
 
     async getSession(userId: string, deviceId: string, iat: string) {
-        const result = await this.SessionModel.findOne({ userId, deviceId, iat })
-        return result;
+        const query =
+            `SELECT * 
+                FROM public."Sessions"
+                WHERE "userId" = '${userId}' AND "deviceId" = '${deviceId}' AND "iat" = '${iat}'`;
+        const result = await this.dataSourse.query(query);
+        return result[0];
     }
-    async getSessionByDeviceId(deviceId: string){
-        const foundedSession = await this.SessionModel.findOne({deviceId});
-        return foundedSession;
+    async getSessionByDeviceId(deviceId: string) {
+        const query =
+            `SELECT * 
+                FROM public."Sessions"
+                WHERE "deviceId" = '${deviceId}'`;
+        const result = await this.dataSourse.query(query);
+        return result[0];
     }
-    async getSessions(userId: string){
-        const sessions = await this.SessionModel.find({userId}).lean();
-        return sessions.map(session => {
-            return this._mapDBSessionTypeToOutputType(session)
+    async getSessions(userId: string) {
+        const query =
+        `SELECT * 
+            FROM public."Sessions"
+            WHERE "userId" = '${userId}'`;
+        const result = await this.dataSourse.query(query);
+        return result.map(session => {
+                    return this._mapDBSessionTypeToOutputType(session)
         });
     }
-    async countRequests(request: ApiCallModel, currentDate: Date){
-        const result = await this.ApiCallModel.countDocuments({
-            ip: request.ip,
-            url: request.url,
-            date: { $gt: currentDate}
-        });
-        return result;
+    async countRequests(request: ApiCallModel, currentDate: string) {
+        const { ip, url, date } = request;
+        const query = `
+            SELECT COUNT(*)
+            FROM public."ApiCalls"
+            WHERE
+                "ip" = '${ip}'
+                AND "url" = '${url}'
+                AND "date" > '${currentDate}'
+        `;
+        const result = await this.dataSourse.query(query);
+        return result[0].count;
     }
     _mapDBSessionTypeToOutputType(session): SessionOutputModel {
         return {

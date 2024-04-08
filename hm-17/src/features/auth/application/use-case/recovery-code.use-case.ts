@@ -22,10 +22,13 @@ export class RecoveryCodeUseCase implements ICommandHandler<RecoveryCodeCommand>
         if(!account) return {code: ResultCode.NotFound};
         const newCodeData = {
             recoveryCode: uuidv4(),
-            expirationDate: add (new Date(), { minutes: 10 }),
-            isConfirmed: false
+            recCodeExpDate: add (new Date(), {
+                hours:1,
+                minutes: 3
+            }).toISOString(),
+            recCodeConfirmed: false
         };
-        const updatedUser = await this.authRepository.updateCodeRecovery(account._id, newCodeData);
+        const updatedUser = await this.authRepository.updateCodeRecovery(account.id, newCodeData);
         try {
             // comented to avoid annoying messages during testing
             // await emailManager.sendRecoveryCode(command.email, newCodeData.recoveryCode)

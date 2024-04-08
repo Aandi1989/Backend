@@ -13,12 +13,12 @@ export class ApiCallsGuard implements CanActivate {
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request: Request = context.switchToHttp().getRequest();
 
-        const currentDateMinus10Sec = new Date(Date.now() - 10000);
+        const currentDateMinus10Sec = new Date(Date.now() - 10000).toISOString();
 
         const newRequest: ApiCallModel = {
             ip: request.socket.remoteAddress!,
             url: request.url,
-            date: new Date()
+            date: new Date().toISOString()
         }
 
         const addedRequest = await this.commandBus.execute(new AddRequestCommand(newRequest));

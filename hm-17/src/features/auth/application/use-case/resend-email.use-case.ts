@@ -21,9 +21,9 @@ export class ResendEmailUseCase implements ICommandHandler<ResendEmailCommand>{
     async execute(command: ResendEmailCommand): Promise<any> {
         const account = await this.authQueryRepo.findByLoginOrEmail(command.email)
         if(!account) return {code: ResultCode.Failed, errorsMessages: emailDoesntExist(command.email)};
-        if(account.emailConfirmation.isConfirmed) return {code: ResultCode.Failed, errorsMessages: emailAlredyConfirmed(command.email)};
+        if(account.confCodeConfirmed) return {code: ResultCode.Failed, errorsMessages: emailAlredyConfirmed(command.email)};
         const newConfirmationCode = uuidv4();
-        const updatedAccountData = await this.authRepository.updateConfirmationCode(account._id, newConfirmationCode);
+        const updatedAccountData = await this.authRepository.updateConfirmationCode(account.id, newConfirmationCode);
         try {
             // comented to avoid annoying messages during testing
             // await emailManager.resendConfirmationalEmail(command.email, newConfirmationCode)

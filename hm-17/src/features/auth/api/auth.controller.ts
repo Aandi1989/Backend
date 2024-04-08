@@ -49,8 +49,8 @@ export class AuthController {
     async login (@Req() req: Request, @Body() body: AuthBodyModel, @Res() res: Response):Promise<LoginOutputModel>{
         const user = await this.commandBus.execute(new CheckCredentialsCommand(body));
         if(user){
-            const accessToken = await this.jwtService.createAccessToken(user.accountData.id);
-            const { refreshToken }  = await this.jwtService.createRefreshToken(user.accountData.id);
+            const accessToken = await this.jwtService.createAccessToken(user.id);
+            const { refreshToken }  = await this.jwtService.createRefreshToken(user.id);
             const deviceName = req.headers['user-agent'];
             const ip = req.socket.remoteAddress!;
             const createdSession = await this.commandBus.execute(new CreateSessionCommand({refreshToken, ip, deviceName}))

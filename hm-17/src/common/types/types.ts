@@ -82,15 +82,15 @@ export class LikeSQL {
     createdAt: string
 }
 
-export class SessionSQL {
-    id: string
-    userId: string
-    deviceId: string
-    deviceName: string
-    iat: string
-    exp: string
-    ip: string
-}
+// export class SessionSQL {
+//     id: string
+//     userId: string
+//     deviceId: string
+//     deviceName: string
+//     iat: string
+//     exp: string
+//     ip: string
+// }
 
 export class ApiCallSQL {
     ip: string

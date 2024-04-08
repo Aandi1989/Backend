@@ -21,12 +21,12 @@ export class ChangeCodeUseCase implements ICommandHandler<ChangeCodeCommand>{
     async execute(command: ChangeCodeCommand): Promise<any> {
         const account = await this.authQueryRepo.findByRecoveryCode(command.body.recoveryCode);
         if(!account) return {code: ResultCode.NotFound, errorsMessages: recoveryCodeDoesntExist(command.body.recoveryCode)};
-        if( new Date() > account!.codeRecoveryInfo!.expirationDate!) return {code: ResultCode.Expired};
-        if(account.codeRecoveryInfo.isConfirmed) return {code: ResultCode.Forbidden};
+        if( new Date() > new Date (account!.recCodeExpDate!) ) return {code: ResultCode.Expired};
+        if(account.recCodeConfirmed) return {code: ResultCode.Forbidden};
 
         const passwordSalt = await bcrypt.genSalt(10);
         const passwordHash = await bcrypt.hash(command.body.newPassword, passwordSalt);
-        const updatedUser = await this.authRepository.changePassword(account._id, passwordSalt, passwordHash);
+        const updatedUser = await this.authRepository.changePassword(account.id, passwordSalt, passwordHash);
         return {code: ResultCode.Success};
     }
 }

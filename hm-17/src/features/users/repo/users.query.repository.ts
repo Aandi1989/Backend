@@ -1,20 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User } from '../domain/users.schema';
 import { UserQueryOutputType, UserSQL } from '../types/types';
-import { UserAuthOutputModel, UserOutputModel, UsersWithQueryOutputModel } from '../api/models/output/user.output.model';
+import { UserAuthOutputModel, UserOutputModel } from '../api/models/output/user.output.model';
 import { MeOutputModel } from 'src/features/auth/api/models/output/me.output.model';
 import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
+import { Account } from '../entities/account';
 
 @Injectable()
 export class UsersQueryRepo {
-  constructor(
-    @InjectDataSource() protected dataSourse: DataSource,
-    @InjectModel(User.name) private UserModel: Model<User>,
-  ) { }
-  
+  constructor(@InjectDataSource() protected dataSourse: DataSource) { }
+
   async getUsers(query: UserQueryOutputType): Promise<any> {
     const { pageNumber, pageSize, searchLoginTerm, searchEmailTerm, sortBy, sortDirection } = query;
     const sortDir = sortDirection === "asc" ? "ASC" : "DESC";
@@ -53,32 +48,35 @@ export class UsersQueryRepo {
     };
   }
   async getUserById(id: string): Promise<UserOutputModel | null> {
-    let dbUser: User | null = await this.UserModel.findOne({ 'accountData.id': id })
-    return dbUser ? this._mapDBAccountToUserOutputType(dbUser) : null;
+    const query =
+            `SELECT * 
+            FROM public."Users"
+            WHERE "id" = '${id}'`;
+        const result = await this.dataSourse.query(query);
+        return result ? this._mapAccountToUserOutputType(result[0]) : null;
   }
-  async getByLoginOrEmail(loginOrEmail: string): Promise<User | null> {
-    let user = await this.UserModel.findOne({ $or: [{ 'accountData.email': loginOrEmail }, { 'accountData.login': loginOrEmail }] })
-    return user;
+  async getByLoginOrEmail(loginOrEmail: string): Promise<Account | null> {
+    const query = `
+            SELECT * FROM public."Users"
+            WHERE "email" = '${loginOrEmail}' OR "login" = '${loginOrEmail}'
+        `;
+    const foundedAccount = await this.dataSourse.query(query);
+    return foundedAccount[0] as Account | null;
   }
   async getAuthById(id: string): Promise<MeOutputModel | null> {
-    let dbUser: User | null = await this.UserModel.findOne({ 'accountData.id': id })
-    return dbUser ? this._mapDBAccountToUserAuthType(dbUser) : null;
+    const query =
+            `SELECT * 
+            FROM public."Users"
+            WHERE "id" = '${id}'`;
+            console.log(query);
+        const result = await this.dataSourse.query(query);
+        return result ? this._mapAccountToUserAuthType(result[0]) : null;
   }
-  // must be deleted after refactoring 
-  _mapDBAccountToUserOutputType(user: User): UserOutputModel {
+  _mapAccountToUserAuthType(user: Account): UserAuthOutputModel {
     return {
-      id: user.accountData.id,
-      login: user.accountData.login,
-      email: user.accountData.email,
-      createdAt: user.accountData.createdAt
-    }
-  }
-  // must be deleted after refactoring 
-  _mapDBAccountToUserAuthType(user: User): UserAuthOutputModel {
-    return {
-      userId: user.accountData.id,
-      login: user.accountData.login,
-      email: user.accountData.email,
+      userId: user.id,
+      login: user.login,
+      email: user.email,
     }
   }
   _mapAccountToUserOutputType(user: UserSQL): UserOutputModel {

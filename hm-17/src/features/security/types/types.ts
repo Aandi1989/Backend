@@ -6,3 +6,13 @@ export type sessionType = {
     ip: string
     exp: string
 }
+
+export class SessionSQL {
+    id: string
+    userId: string
+    deviceId: string
+    deviceName: string
+    iat: string
+    exp: string
+    ip: string
+}

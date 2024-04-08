@@ -1,16 +1,27 @@
 import { Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { Like } from "../domain/likes.schema";
+// import { InjectModel } from "@nestjs/mongoose";
+// import { Model } from "mongoose";
+// import { Like } from "../domain/likes.schema";
+import { DataSource } from "typeorm";
+import { InjectDataSource } from "@nestjs/typeorm";
 
 @Injectable()
 export class LikesQueryRepo {
     constructor(
-        @InjectModel(Like.name)
-        private LikeModel: Model<Like>
+        @InjectDataSource() protected dataSourse: DataSource,
+        // @InjectModel(Like.name)
+        // private LikeModel: Model<Like>
     ) { }
+    // async getLike(postId: string, userId: string){
+    //     const result = await this.LikeModel.findOne({parentId: postId, userId: userId})
+    //     return result;
+    // }
     async getLike(postId: string, userId: string){
-        const result = await this.LikeModel.findOne({parentId: postId, userId: userId})
-        return result;
+        const query = `
+            SELECT * FROM public."Likes"
+            WHERE "postId" = ${postId} AND "userId" = ${userId}
+        `;
+        const result = await this.dataSourse.query(query);
+        return result[0];
     }
 }

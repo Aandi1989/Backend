@@ -16,8 +16,8 @@ export class CheckCredentialsUseCase implements ICommandHandler<CheckCredentials
     async execute(command: CheckCredentialsCommand): Promise<any> {
         const user = await this.usersQueryRepo.getByLoginOrEmail(command.data.loginOrEmail);
         if(!user) return false;
-        const passwordHash = await bcrypt.hash(command.data.password, user.accountData.passwordSalt);
-        if(user.accountData.passwordHash !== passwordHash) return false;
+        const passwordHash = await bcrypt.hash(command.data.password, user.passwordSalt);
+        if(user.passwordHash !== passwordHash) return false;
         return user;
     }
 }

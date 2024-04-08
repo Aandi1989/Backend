@@ -1,14 +1,14 @@
-import { ObjectId } from "mongodb";
 import { myStatus } from "../../comments/types/types";
+import {v4 as uuidv4} from 'uuid';
 
 
 export class LikeStatus {
-    id: ObjectId;
+    id: string;
     createdAt: string;
     constructor(public userId: string,
                 public parentId: string,
                 public status: myStatus) {
-                    this.id = new ObjectId(),
+                    this.id = uuidv4(),
                     this.createdAt = new Date().toISOString()
     }
 }

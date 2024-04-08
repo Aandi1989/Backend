@@ -31,7 +31,7 @@ export class CreateAccountUseCase implements ICommandHandler<CreateAccountComman
 
         const existedUser = await this.authQueryRepo.findByLoginOrEmail(email, login);
         if(existedUser) {
-            let result = existedUser.accountData.email === email
+            let result = existedUser.email === email
             ?  {code: ResultCode.Forbidden, errorsMessages: accountExistError('email', email)}
             :  {code: ResultCode.Forbidden, errorsMessages: accountExistError('login', login)};
             return result;

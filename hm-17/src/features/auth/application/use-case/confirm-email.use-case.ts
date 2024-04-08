@@ -18,8 +18,8 @@ export class ConfirmEmailUseCase implements ICommandHandler<ConfirmEmailCommand>
     async execute(command: ConfirmEmailCommand): Promise<any> {
         const account = await this.authQueryRepo.findByConfirmationCode(command.code);
         if(!account) return {code: ResultCode.Failed, errorsMessages: codeDoesntExist(command.code)};
-        if(account.emailConfirmation.isConfirmed) return {code: ResultCode.AlredyConfirmed, errorsMessages: codeAlredyConfirmed(command.code)};
-        if(account.emailConfirmation.expirationDate < new Date()) return {code: ResultCode.Failed, errorsMessages: codeExpired(command.code)};
-        return this.authRepository.confirmEmail(account._id)
+        if(account.confCodeConfirmed) return {code: ResultCode.AlredyConfirmed, errorsMessages: codeAlredyConfirmed(command.code)};
+        if(new Date (account!.confCodeExpDate!) < new Date()) return {code: ResultCode.Failed, errorsMessages: codeExpired(command.code)};
+        return this.authRepository.confirmEmail(account.id)
     }
 }
