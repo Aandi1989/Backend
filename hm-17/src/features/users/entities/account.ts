@@ -1,52 +1,35 @@
-import { ObjectId } from "mongodb";
 import { add } from "date-fns";
-import { UserType } from "../types/types";
 import {v4 as uuidv4} from 'uuid';
 
 export class Account {
-    _id: ObjectId;
-    accountData: UserType;
-    emailConfirmation: {
-        confirmationCode: string,
-        expirationDate: Date,
-        isConfirmed: boolean
-    };
-    codeRecoveryInfo: {
-        recoveryCode: string,
-        expirationDate: Date,
-        isConfirmed: boolean
-    };
+    id:string
+    createdAt:string
+    confirmationCode?: string
+    confCodeExpDate?: string
+    confCodeConfirmed?: boolean
+    recoveryCode?: string
+    recCodeExpDate?: string
+    recCodeConfirmed?: boolean
     
     constructor(
-        login: string,
-        email: string,
-        passwordHash: string,
-        passwordSalt: string,
+        public login: string,
+        public email: string,
+        public passwordHash: string,
+        public passwordSalt: string,
     ) {
-        this._id = new ObjectId(),
-        this.accountData = {
-            id: (+new Date()).toString(),
-            login,
-            email,
-            passwordHash,
-            passwordSalt,
-            createdAt: new Date().toISOString(),
-        },
-        this.emailConfirmation = {
-            confirmationCode: uuidv4(),
-            expirationDate: add (new Date(), {
+        this.id = uuidv4();
+        this.createdAt = new Date().toISOString();    
+        this.confirmationCode = uuidv4();
+        this.confCodeExpDate = add (new Date(), {
                             hours:1,
                             minutes: 3
-                        }),
-            isConfirmed: false,
-        }
-        this.codeRecoveryInfo = {
-            recoveryCode: uuidv4(),
-            expirationDate: add (new Date(), {
+        }).toISOString();
+        this.confCodeConfirmed = false;
+        this.recoveryCode = uuidv4();
+        this.recCodeExpDate = add (new Date(), {
                 hours:1,
                 minutes: 3
-            }),
-            isConfirmed: false
+            }).toISOString(),
+        this.recCodeConfirmed = false;
         }
     }; 
-}

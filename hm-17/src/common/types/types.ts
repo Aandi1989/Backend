@@ -59,20 +59,20 @@ export class CommentSQL {
     createdAt: string
 }
 
-export class UserSQL {
-    id:string
-    login:string
-    email:string
-    createdAt:string
-    passwordHash:string
-    passwordSalt:string
-    confirmationCode?: string
-    confCodeExpDate?: Date
-    confCodeConfirmed?: boolean
-    recoveryCode?: string
-    recCodeExpDate?: Date
-    recCodeConfirmed?: boolean
-}
+// export class UserSQL {
+//     id:string
+//     login:string
+//     email:string
+//     createdAt:string
+//     passwordHash:string
+//     passwordSalt:string
+//     confirmationCode?: string
+//     confCodeExpDate?: Date
+//     confCodeConfirmed?: boolean
+//     recoveryCode?: string
+//     recCodeExpDate?: Date
+//     recCodeConfirmed?: boolean
+// }
 
 export class LikeSQL {
     id: string
@@ -95,5 +95,5 @@ export class SessionSQL {
 export class ApiCallSQL {
     ip: string
     url: string
-    date: Date
+    date: string
 }

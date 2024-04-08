@@ -16,6 +16,21 @@ export type UserQueryOutputType = {
   pageSize: number;
 };
 
+export class UserSQL {
+  id:string
+  login:string
+  email:string
+  createdAt:string
+  passwordHash:string
+  passwordSalt:string
+  confirmationCode?: string
+  confCodeExpDate?: Date
+  confCodeConfirmed?: boolean
+  recoveryCode?: string
+  recCodeExpDate?: Date
+  recCodeConfirmed?: boolean
+}
+
 
 export type AccountData = {
   id: string;

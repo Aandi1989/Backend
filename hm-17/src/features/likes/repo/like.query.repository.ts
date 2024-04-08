@@ -13,7 +13,4 @@ export class LikesQueryRepo {
         const result = await this.LikeModel.findOne({parentId: postId, userId: userId})
         return result;
     }
-    async deleteAllData(){
-        await this.LikeModel.deleteMany({});
-      }
 }
