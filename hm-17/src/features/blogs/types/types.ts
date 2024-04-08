@@ -1,21 +1,9 @@
-import { ObjectId } from "mongodb";
-
 export class BlogType  {
     id: string
     name: string
     description: string
     websiteUrl: string
     createdAt: string
-    isMembership: boolean
-}
-
-export type DBBlogType = {
-    _id:ObjectId,
-    id: string,
-    name: string,
-    description: string,
-    websiteUrl: string,
-    createdAt: string,
     isMembership: boolean
 }
 

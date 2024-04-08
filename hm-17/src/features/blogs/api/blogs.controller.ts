@@ -72,5 +72,5 @@ export class BlogsController {
         const foundBlog = await this.blogsQueryRepo.findBlogById(blogId);
         if(!foundBlog) throw new NotFoundException('Blog not found');
         return await this.postsQueryRepo.getPostsByBlogId(blogId,postQueryParams(query), req.userId!);
-    } //
+    } 
 }
