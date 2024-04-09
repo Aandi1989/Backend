@@ -16,10 +16,18 @@ export class LikesQueryRepo {
     //     const result = await this.LikeModel.findOne({parentId: postId, userId: userId})
     //     return result;
     // }
-    async getLike(postId: string, userId: string){
+    async getLikePost(postId: string, userId: string){
         const query = `
-            SELECT * FROM public."Likes"
-            WHERE "postId" = ${postId} AND "userId" = ${userId}
+            SELECT * FROM public."LikesPosts"
+            WHERE "postId" = '${postId}' AND "userId" = '${userId}'
+        `;
+        const result = await this.dataSourse.query(query);
+        return result[0];
+    }
+    async getLikeComment(commentId: string, userId: string){
+        const query = `
+            SELECT * FROM public."LikesComments"
+            WHERE "commentId" = '${commentId}' AND "userId" = '${userId}'
         `;
         const result = await this.dataSourse.query(query);
         return result[0];

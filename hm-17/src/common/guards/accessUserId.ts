@@ -11,11 +11,18 @@ export class AccessUserId implements CanActivate {
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request: Request = context.switchToHttp().getRequest();
 
-        if (!request.headers.authorization) return true;
+        // if (!request.headers.authorization) return true;
 
-        const accessToken = request.headers.authorization.split(' ')[1];
-        const accessTokenData = await this.jwtService.getUserIdByToken(accessToken);
-        accessTokenData.userId ? request.userId = accessTokenData.userId : '';
-        return true
+        // const accessToken = request.headers.authorization.split(' ')[1];
+        // const accessTokenData = await this.jwtService.getUserIdByToken(accessToken);
+        // accessTokenData.userId ? request.userId = accessTokenData.userId : '';
+        // return true
+
+        const refreshToken = request.cookies.refreshToken;
+
+        if(!refreshToken) return true;
+        const refreshTokenData = await this.jwtService.getRefreshTokenData(refreshToken);
+        refreshTokenData.userId ? request.userId = refreshTokenData.userId : '';
+        return true;
     }
 }

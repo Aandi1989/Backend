@@ -1,13 +1,4 @@
-export type sessionType = {
-    userId: string
-    deviceId: string
-    iat: string
-    deviceName: string
-    ip: string
-    exp: string
-}
-
-export class SessionSQL {
+export class Session {
     id: string
     userId: string
     deviceId: string

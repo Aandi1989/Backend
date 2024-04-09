@@ -19,7 +19,7 @@ export class CreatePostModel  {
 
     @IsString()
     @IsNotEmpty()
-    @Length(6,30)
+    @Length(6,40) // in swager max lenth 30, we use 40 as uuid() dosn't pass validation
     blogId: string
 
     @IsOptional()

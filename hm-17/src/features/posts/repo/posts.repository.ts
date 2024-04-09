@@ -1,36 +1,49 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Post } from '../domain/posts.schema';
-import { DBPostType, myStatus, PostType } from '../types/types';
+import { myStatus, PostSQL, PostType } from '../types/types';
 import { CreatePostModel } from '../api/models/input/create-post.input.model';
-import { Like } from '../../likes/domain/likes.schema';
-import { LikeStatus } from 'src/features/likes/entities/like';
+import { DataSource } from 'typeorm';
+import { InjectDataSource } from '@nestjs/typeorm';
 
 @Injectable()
 export class PostsRepository {
-    constructor(
-        @InjectModel(Post.name)
-        private PostModel: Model<Post>
-    ) { }
+    constructor( @InjectDataSource() protected dataSourse: DataSource) { }
 
-    async createPost(newPost: PostType): Promise<PostType> {
-        const result = await this.PostModel.insertMany([newPost]);
-        // @ts-ignore
-        return this._mapDBPostToBlogOutputModel(newPost);
+    async createPost(newPost: PostSQL): Promise<PostType> {
+        const { id, title, shortDescription, content, blogId, blogName, createdAt } = newPost;
+        const query = `
+            INSERT INTO public."Posts"(
+                "id", "title", "shortDescription", "content", "blogId", "blogName", "createdAt")
+                VALUES ('${id}', '${title}', '${shortDescription}', '${content}', '${blogId}', '${blogName}', '${createdAt}')
+                RETURNING *;
+        `;
+        const result = await this.dataSourse.query(query);
+        return this._mapDBPostToBlogOutputModel(result[0]);
     }
     async updatePost(id: string, data: Partial<CreatePostModel>): Promise<boolean> {
-        const result = await this.PostModel.updateOne({ id: id }, { $set: { ...data } })
-        return result.matchedCount === 1
+        const { title, shortDescription, content, blogId } = data;
+        const query = 
+                `UPDATE public."Posts" 
+                SET ` +
+                (title ? `"title"='${title} '` : '') +
+                (shortDescription ? `, "shortDescription"='${shortDescription}'` : '') +
+                (content ? `, "content"='${content}'` : '') +
+                (blogId ? `, "blogId"='${blogId}'` : '') +
+                `WHERE "id" = $1`;
+        const result = await this.dataSourse.query(query, [id]);
+        return result[1] === 1;
     }
     async deletePost(id: string): Promise<boolean> {
-        const result = await this.PostModel.deleteOne({ id: id })
-        return result.deletedCount === 1
+        const query = 
+            `DELETE FROM public."Posts"
+            WHERE "id" = $1`;
+        const result = await this.dataSourse.query(query, [id]);
+        return result[1] === 1;
     }
     async deleteAllData(){
-        await this.PostModel.deleteMany({});
-      }
-    _mapDBPostToBlogOutputModel(post: DBPostType): PostType {
+        const query = `DELETE FROM public."Posts`;
+        const result = await this.dataSourse.query(query);
+    }
+    _mapDBPostToBlogOutputModel(post: PostSQL): PostType {
         return {
             id: post.id,
             title: post.title,

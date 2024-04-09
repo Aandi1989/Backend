@@ -1,5 +1,13 @@
 import { ObjectId } from "mongodb";
 
+export class Comment {
+    id: string
+    content: string
+    postId: string
+    userId: string
+    createdAt: string
+}
+
 
 export type DBCommentType = {
     id: string
@@ -10,8 +18,8 @@ export type DBCommentType = {
         userLogin: string
     },
     createdAt: string
-    likes: likeType[]
-    dislikes: likeType[]
+    likes: Like[]
+    dislikes: Like[]
     _id: ObjectId
 }
 
@@ -21,7 +29,7 @@ export enum myStatus {
     Dislike = "Dislike"
 }
 
-export type likeType = {
+export class Like  {
     id: string
     status: myStatus
     userId: string

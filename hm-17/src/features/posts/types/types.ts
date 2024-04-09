@@ -1,5 +1,15 @@
 import { ObjectId } from "mongodb";
 
+export class PostSQL {
+    id: string
+    title: string
+    shortDescription: string
+    content: string
+    blogId: string
+    blogName?: string
+    createdAt: string
+}
+
 export class PostType  {
     id: string
     title: string

@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { likeType } from '../types/types';
+import { Like } from '../types/types';
 
 @Schema({ collection: 'comments'})
 export class Comment extends Document {
@@ -26,10 +26,10 @@ export class Comment extends Document {
     createdAt: string;
 
     @Prop({ type: Object, required: true })
-    likes: likeType;
+    likes: Like;
 
     @Prop({ type: Object, required: true })
-    dislikes: likeType;
+    dislikes: Like;
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);

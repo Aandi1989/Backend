@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CommentsQueryRepo } from "../../repo/comments.query.repository";
 import { ResultCode } from "src/common/types/types";
 import { CommentsRepository } from "../../repo/comments.repository";
-import { likeType, myStatus } from "../../types/types";
+import { Like, myStatus } from "../../types/types";
 import { setStatus } from "src/common/helpers/getCommentStatus";
 
 
@@ -22,7 +22,7 @@ export class LikeCommentUseCase implements ICommandHandler<LikeCommentCommand> {
         if (!foundComment) return { code: ResultCode.NotFound };
         const statusObj = setStatus(foundComment, command.status, command.userId);
         if (!statusObj) return { code: ResultCode.Success };
-        const newStatus: likeType = {
+        const newStatus: Like = {
             id: (+new Date()).toString(),
             status: command.status,
             userId: command.userId,

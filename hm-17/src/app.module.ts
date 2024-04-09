@@ -86,7 +86,7 @@ const useCases = [CreateUserUseCase, DeleteUserUseCase, CreatePostUseCase, Delet
   CheckRefreshTokenUseCase, RevokeSessionUseCase, RefreshTokensUseCase, CreateAccountUseCase, ConfirmEmailUseCase,
   ResendEmailUseCase, RecoveryCodeUseCase, ChangeCodeUseCase, CreateCommentUseCase, LikePostUseCase, DeleteCommentUseCase,
   UpdateCommentUseCase, LikeCommentUseCase, CheckSecurityRefreshTokenUseCase, RevokeSessionsUseCase, AddRequestUseCase,
-  CreatePostForBlogUseCase]
+  CreatePostForBlogUseCase ]
 
 @Module({
   imports: [
