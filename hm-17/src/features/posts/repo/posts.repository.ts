@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { myStatus, PostSQL, PostType } from '../types/types';
+import { PostSQL, PostType } from '../types/types';
 import { CreatePostModel } from '../api/models/input/create-post.input.model';
 import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
+import { postsOutputModel } from 'src/common/helpers/postsOutputModel';
 
 @Injectable()
 export class PostsRepository {
@@ -17,7 +18,7 @@ export class PostsRepository {
                 RETURNING *;
         `;
         const result = await this.dataSourse.query(query);
-        return this._mapDBPostToBlogOutputModel(result[0]);
+        return postsOutputModel(result)[0];
     }
     async updatePost(id: string, data: Partial<CreatePostModel>): Promise<boolean> {
         const { title, shortDescription, content, blogId } = data;
@@ -42,22 +43,5 @@ export class PostsRepository {
     async deleteAllData(){
         const query = `DELETE FROM public."Posts`;
         const result = await this.dataSourse.query(query);
-    }
-    _mapDBPostToBlogOutputModel(post: PostSQL): PostType {
-        return {
-            id: post.id,
-            title: post.title,
-            shortDescription: post.shortDescription,
-            content: post.content,
-            blogId: post.blogId,
-            blogName: post.blogName ? post.blogName : '',
-            createdAt: post.createdAt,
-            extendedLikesInfo: {
-                likesCount: 0,
-                dislikesCount: 0,
-                myStatus: myStatus.None,
-                newestLikes: []
-            }
-        }
     }
 }

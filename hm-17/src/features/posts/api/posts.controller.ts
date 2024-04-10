@@ -37,7 +37,6 @@ export class PostsController{
     }
     @UseGuards(BasicAuthGuard)
     @Post()
-    // must be <PostType>
     async createPost(@Body() body: CreatePostModel): Promise<PostType> {
         return await this.commandBus.execute(new CreatePostCommand(body));
     }

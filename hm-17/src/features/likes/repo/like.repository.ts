@@ -1,7 +1,4 @@
 import { Injectable } from '@nestjs/common';
-// import { InjectModel } from '@nestjs/mongoose';
-// import { Model } from 'mongoose';
-// import { Like } from '../domain/likes.schema';
 import { LikeStatus } from 'src/features/likes/entities/like';
 import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';

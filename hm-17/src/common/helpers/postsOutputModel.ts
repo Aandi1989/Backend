@@ -14,8 +14,8 @@ export function postsOutputModel(arr){
             blogName: post.blogName ? post.blogName : '',
             createdAt: post.createdAt,
             extendedLikesInfo: {
-                likesCount: post.likesCount,
-                dislikesCount: post.dislikesCount,
+                likesCount: post.likesCount ? post.likesCount : 0,
+                dislikesCount: post.dislikesCount ? post.dislikesCount : 0,
                 myStatus: post.myStatus ? post.myStatus : 'None',
                 newestLikes: []
             }
