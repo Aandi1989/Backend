@@ -21,49 +21,73 @@ export class PostsQueryRepo {
         @InjectModel(User.name) private UserModel: Model<User>,
 
     ) { }
+    
     async getPosts(query: PostQueryOutputType, userId: string = ''): Promise<PostsWithQueryOutputModel> {
         const { pageNumber, pageSize, sortBy, sortDirection } = query;
-        const sortDir = sortDirection == "asc" ? 1 : -1;
-        const skip = (pageNumber - 1) * pageSize;
-        const totalCount = await this.PostModel.countDocuments();
-        const dbPosts = await this.PostModel
-            .find()
-            .sort({ [sortBy]: sortDir, id: 1 })
-            .skip(skip)
-            .limit(pageSize)
-            .lean();
-        const pagesCount = Math.ceil(totalCount / pageSize);
+        const sortDir = sortDirection === "asc" ? "ASC" : "DESC";
+        const offset = (pageNumber - 1) * pageSize;
 
-        const itemsPromises = dbPosts.map(dbPost => {
-            return this._mapDBPostToBlogOutputModel(dbPost, userId);
-        });
-        const items = await Promise.all(itemsPromises);
-
-        return {
-            pagesCount: pagesCount,
-            page: pageNumber,
-            pageSize: pageSize,
-            totalCount: totalCount,
-            items: items
-        }
+        const totalCountQuery = `
+            SELECT COUNT(*)
+            FROM public."Posts"
+        `;
+        const totalCountResult = await this.dataSourse.query(totalCountQuery);
+        const totalCount = totalCountResult[0].count;
+        
+        const mainQuery = `
+        SELECT 
+            posts.*, 
+            likes."userId",
+            users."login",
+            likes."createdAt" as "addedAt",
+            (SELECT COUNT(*) 
+            FROM public."LikesPosts" 
+            WHERE "postId" = posts."id" AND "status" = 'Like') as "likesCount",
+            (SELECT COUNT(*) 
+            FROM public."LikesPosts" 
+            WHERE "postId" = posts."id" AND "status" = 'Dislike') as "dislikesCount",
+            ` +(userId ? `(SELECT likes."status"
+                            FROM public."LikesPosts" as likes
+                            WHERE likes."userId" = '${userId}' AND posts."id" = likes."postId") as "myStatus"` 
+                        : ` 'None' as "myStatus" `) +
+           ` FROM public."Posts" as posts
+        LEFT JOIN 
+            (SELECT *
+            FROM public."LikesPosts"
+            LIMIT 3) as likes
+        ON posts."id" = likes."postId"
+        LEFT JOIN 
+        public."Users" as users
+        ON likes."userId" = users."id"
+        WHERE posts."id" IN (
+            SELECT id FROM public."Posts"
+            LIMIT $1
+            OFFSET $2
+        )
+        ORDER BY posts."${sortBy}" ${sortDir}, likes."createdAt" ASC`
+        
+        const result = await this.dataSourse.query(mainQuery, [pageSize, offset]);
+        const outputPost = postsOutputModel(result);
+        return outputPost;
+        
     }
     async getPostById(id: string, userId: string = ''): Promise<PostType | null> {
         const query =
-            `SELECT posts.*, "likeCount", "dislikeCount", "myStatus", likes."createdAt" as "addedAt", likes."userId", users."login"
+            `SELECT posts.*, "likesCount", "dislikesCount", "myStatus", likes."createdAt" as "addedAt", likes."userId", users."login"
                 FROM
                     (SELECT *, 
                     
                     (SELECT COUNT(*)
                                 FROM public."LikesPosts"
-                                WHERE "status" = 'Like') as "likeCount",
+                                WHERE "status" = 'Like') as "likesCount",
                     
                     (SELECT COUNT(*)
                                 FROM public."LikesPosts"
-                                WHERE "status" = 'Dislike') as "dislikeCount", ` +
+                                WHERE "status" = 'Dislike') as "dislikesCount", ` +
 
                                 (userId ? `(SELECT likes."status"
                                             FROM public."LikesPosts" as likes
-                                            WHERE likes."userId" = '${userId}') as "myStatus"` 
+                                            WHERE likes."userId" = '${userId}' AND '${id}' = likes."postId") as "myStatus"` 
                                         : ` 'None' as "myStatus" `) +
                     
                     ` FROM public."LikesPosts" as l
@@ -72,10 +96,12 @@ export class PostsQueryRepo {
                 ON likes."postId" = posts."id"
                 LEFT JOIN public."Users" as users
                 ON likes."userId" = users."id"
+                WHERE likes."status" = 'Like' 
                 ORDER BY likes."createdAt" ASC
                 LIMIT 3`
         const result = await this.dataSourse.query(query, [id]);
-        return postsOutputModel(result)[0];
+        const outputPost = postsOutputModel(result)[0];
+        return outputPost;
     }
     async getPostsByBlogId(blogId: string, query: PostQueryOutputType, userId: string = ''): Promise<PostsWithQueryOutputModel> {
         const { pageNumber, pageSize, sortBy, sortDirection } = query;
@@ -134,3 +160,35 @@ export class PostsQueryRepo {
         }
     }
 }
+
+// `SELECT 
+//             posts.*, 
+//             likes."userId",
+//             users."login",
+//             likes."createdAt" as "addedAt",
+//             (SELECT COUNT(*) 
+//             FROM public."LikesPosts" 
+//             WHERE "postId" = posts."id" AND "status" = 'Like') as "likesCount",
+//             (SELECT COUNT(*) 
+//             FROM public."LikesPosts" 
+//             WHERE "postId" = posts."id" AND "status" = 'Dislike') as "dislikesCount",
+//             ` +(userId ? `(SELECT likes."status"
+//                             FROM public."LikesPosts" as likes
+//                             WHERE likes."userId" = '${userId}' AND posts."id" = likes."postId") as "myStatus"` 
+//                         : ` 'None' as "myStatus" `) +
+//            ` FROM public."Posts" as posts
+//         LEFT JOIN 
+//             (SELECT *
+//             FROM public."LikesPosts"
+//             ORDER BY "createdAt" ASC
+//             LIMIT 3) as likes
+//         ON posts."id" = likes."postId"
+//         LEFT JOIN 
+//         public."Users" as users
+//         ON likes."userId" = users."id"
+//         WHERE posts."id" IN (
+//             SELECT id FROM public."Posts"
+//             LIMIT $1
+//             OFFSET $2
+//         )
+//         ORDER BY posts."${sortBy}" ${sortDir}`

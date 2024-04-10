@@ -49,3 +49,34 @@ export class BlogsQueryRepo {
         return result[0];
     }
 }
+
+// SELECT 
+// 	posts.*, 
+// 	likes."userId",
+// 	users."login",
+// 	likes."createdAt" as "addedAt",
+// 	(SELECT COUNT(*) 
+//  	FROM public."LikesPosts" 
+//  	WHERE "postId" = posts."id" AND "status" = 'Like') as "likesCount",
+//  	(SELECT COUNT(*) 
+//  	FROM public."LikesPosts" 
+//  	WHERE "postId" = posts."id" AND "status" = 'Dislike') as "dislikesCount"
+// 	FROM public."Posts" as posts
+// LEFT JOIN 
+// 	(SELECT *
+// 	FROM public."LikesPosts"
+// 	ORDER BY "createdAt" ASC
+// 	LIMIT 3) as likes
+// ON posts."id" = likes."postId"
+// LEFT JOIN 
+// public."Users" as users
+// ON likes."userId" = users."id"
+// WHERE posts."id" IN (
+//     SELECT id FROM public."Posts"
+//     LIMIT 3
+//     OFFSET 0
+// )
+// ORDER BY posts."createdAt" ASC
+
+
+

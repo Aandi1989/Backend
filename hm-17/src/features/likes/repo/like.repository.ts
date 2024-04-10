@@ -26,7 +26,6 @@ export class LikesRepository {
                 `UPDATE public."LikesPosts" 
                 SET "status" = '${newStatus}' 
                 WHERE "id" = '${id}'`;
-        console.log(query);
         const result = await this.dataSourse.query(query);
         return result[1] === 1;
     }

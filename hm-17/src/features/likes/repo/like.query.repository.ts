@@ -7,15 +7,8 @@ import { InjectDataSource } from "@nestjs/typeorm";
 
 @Injectable()
 export class LikesQueryRepo {
-    constructor(
-        @InjectDataSource() protected dataSourse: DataSource,
-        // @InjectModel(Like.name)
-        // private LikeModel: Model<Like>
-    ) { }
-    // async getLike(postId: string, userId: string){
-    //     const result = await this.LikeModel.findOne({parentId: postId, userId: userId})
-    //     return result;
-    // }
+    constructor(@InjectDataSource() protected dataSourse: DataSource) { }
+    
     async getLikePost(postId: string, userId: string){
         const query = `
             SELECT * FROM public."LikesPosts"
