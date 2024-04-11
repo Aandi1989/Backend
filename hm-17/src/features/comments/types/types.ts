@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 
-export class Comment {
+export class CommentSQL {
     id: string
     content: string
     postId: string

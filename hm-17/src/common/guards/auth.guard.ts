@@ -17,6 +17,8 @@ export class AuthGuard implements CanActivate {
         const accessTokenData = await this.jwtService.getUserIdByToken(accessToken);
 
         if (accessTokenData) {
+            if(!accessTokenData.userId) throw new UnauthorizedException();
+            
             const user = await this.usersQueryRepo.getUserById(accessTokenData.userId)
 
             if (!user) throw new UnauthorizedException();

@@ -98,9 +98,10 @@ export class PostsQueryRepo {
 
         const totalCountQuery = `
             SELECT COUNT(*)
-            FROM public."Posts"
+            FROM public."Posts" as posts
+            WHERE posts."blogId" = $1
         `;
-        const totalCountResult = await this.dataSourse.query(totalCountQuery);
+        const totalCountResult = await this.dataSourse.query(totalCountQuery, [blogId]);
         const totalCount = totalCountResult[0].count;
 
         const mainQuery = `
@@ -132,10 +133,10 @@ export class PostsQueryRepo {
             SELECT id FROM public."Posts"
             LIMIT $1
             OFFSET $2
-        ) AND posts."blogId" = '${blogId}'
+        ) AND posts."blogId" = $3
         ORDER BY posts."${sortBy}" ${sortDir}, likes."createdAt" ASC`
         
-        const result = await this.dataSourse.query(mainQuery, [pageSize, offset]);
+        const result = await this.dataSourse.query(mainQuery, [pageSize, offset, blogId]);
         const outputPost = postsOutputModel(result);
         return outputPost;
        

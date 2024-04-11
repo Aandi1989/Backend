@@ -1,59 +1,66 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Comment } from '../domain/comments.schema';
-import { DBCommentType, myStatus } from '../types/types';
-import { CommentOutputModel } from '../api/models/output/comment.output.model';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { commentsOutputModel } from 'src/common/helpers/commentsOutoutModel';
 import { Result, ResultCode } from 'src/common/types/types';
+import { DataSource } from 'typeorm';
+import { CommentOutputModel } from '../api/models/output/comment.output.model';
+import { CommentSQL, DBCommentType, myStatus } from '../types/types';
 
 @Injectable()
 export class CommentsRepository {
-  constructor(
-    @InjectModel(Comment.name)
-    private CommentModel: Model<Comment>,
-  ) { }
-  async createComment(newComment: DBCommentType): Promise<CommentOutputModel> {
-    const result = await this.CommentModel.insertMany([newComment])
-    return this._mapDBCommentTypeToCommentTypeAfterCreating(newComment)
-  }
-  async deleteAllData() {
-    await this.CommentModel.deleteMany({});
+  constructor(@InjectDataSource() protected dataSourse: DataSource) { }
+
+  async createComment(newComment: CommentSQL): Promise<CommentOutputModel> {
+    const { id, content, userId, postId, createdAt } = newComment;
+    const query = `
+            INSERT INTO public."Comments"(
+                "id", "content", "userId", "postId", "createdAt")
+                VALUES ('${id}', '${content}', '${userId}', '${postId}', '${createdAt}')
+                RETURNING "id";
+        `;
+    const result = await this.dataSourse.query(query);
+    const commentId = result[0].id;
+
+    const mainQuery = `
+          SELECT comments.*, users."login" as "userLogin"
+          FROM  public."Comments" as comments
+          LEFT JOIN public."Users" as users
+          ON comments."userId" = users."id"
+          WHERE comments."id" = '${commentId}'
+    `;
+    const mainResult = await this.dataSourse.query(mainQuery);
+    const outputComment = commentsOutputModel(mainResult)[0]
+
+    return outputComment;
   }
   async deleteComment(id: string): Promise<Result> {
-    const result = await this.CommentModel.deleteOne({ id: id })
-    if (result.deletedCount === 1) return {
+    const query =
+      `DELETE FROM public."Comments"
+            WHERE "id" = $1`;
+    const result = await this.dataSourse.query(query, [id]);
+    if (result[1] === 1) return {
       code: ResultCode.Success
     }
     return {
       code: ResultCode.NotFound
     }
   }
-  async updateComment(id: string, content: string): Promise<Result>{
-    const result = await this.CommentModel.updateOne(
-        {id: id},
-        { $set: {content: content}}
-    );
-    if(result.modifiedCount === 1) return {
-        code: ResultCode.Success
+  async updateComment(id: string, content: string): Promise<Result> {
+    const query = `
+      UPDATE public."Comments"
+      SET "content" = '${content}'
+      WHERE "id" = $1`;
+    const result = await this.dataSourse.query(query, [id]);
+    if (result[1] === 1) return {
+      code: ResultCode.Success
     }
     return {
-        code: ResultCode.NotFound
-    }
-}
-  _mapDBCommentTypeToCommentTypeAfterCreating(comment: DBCommentType): CommentOutputModel {
-    return {
-      id: comment.id,
-      content: comment.content,
-      commentatorInfo: {
-        userId: comment.commentatorInfo.userId,
-        userLogin: comment.commentatorInfo.userLogin
-      },
-      createdAt: comment.createdAt,
-      likesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: myStatus.None
-      }
+      code: ResultCode.NotFound
     }
   }
+  async deleteAllData() {
+    const query = `DELETE FROM public."Comments`;
+    const result = await this.dataSourse.query(query);
+  }
 }
+
