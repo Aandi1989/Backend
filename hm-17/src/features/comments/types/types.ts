@@ -1,5 +1,3 @@
-import { ObjectId } from "mongodb";
-
 export class CommentSQL {
     id: string
     content: string
@@ -8,20 +6,6 @@ export class CommentSQL {
     createdAt: string
 }
 
-
-export type DBCommentType = {
-    id: string
-    content: string
-    postId: string
-    commentatorInfo: {
-        userId: string
-        userLogin: string
-    },
-    createdAt: string
-    likes: Like[]
-    dislikes: Like[]
-    _id: ObjectId
-}
 
 export enum myStatus {
     None = "None",

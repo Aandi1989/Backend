@@ -4,7 +4,7 @@ import { commentsOutputModel } from 'src/common/helpers/commentsOutoutModel';
 import { Result, ResultCode } from 'src/common/types/types';
 import { DataSource } from 'typeorm';
 import { CommentOutputModel } from '../api/models/output/comment.output.model';
-import { CommentSQL, DBCommentType, myStatus } from '../types/types';
+import { CommentSQL } from '../types/types';
 
 @Injectable()
 export class CommentsRepository {

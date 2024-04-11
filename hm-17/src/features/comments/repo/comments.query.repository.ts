@@ -1,47 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Comment } from '../domain/comments.schema';
-import { CommentQueryOutputType, DBCommentType, myStatus } from '../types/types';
-import { CommentOutputModel, CommentsWithQueryOutputModel } from '../api/models/output/comment.output.model';
-import { defineStatus } from 'src/common/helpers/getCommentStatus';
-import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { commentsOutputModel } from 'src/common/helpers/commentsOutoutModel';
+import { DataSource } from 'typeorm';
+import { CommentOutputModel, CommentsWithQueryOutputModel } from '../api/models/output/comment.output.model';
+import { CommentQueryOutputType } from '../types/types';
 
 @Injectable()
 export class CommentsQueryRepo {
-    constructor(@InjectDataSource() protected dataSourse: DataSource,
-        @InjectModel(Comment.name)
-        private CommentModel: Model<Comment>,
-    ) { }
-    // async getCommentsByPostId(postId: string, query: CommentQueryOutputType,
-    //     userId: string = ''): Promise<CommentsWithQueryOutputModel> {
-    //     const { pageNumber, pageSize, sortBy, sortDirection } = query;
-    //     const sortDir = sortDirection == "asc" ? 1 : -1;
-    //     const skip = (pageNumber - 1) * pageSize;
-    //     const totalCount = await this.CommentModel.countDocuments({ postId: postId });
-    //     const dbComments = await this.CommentModel
-    //         .find({ postId: postId })
-    //         .sort({ [sortBy]: sortDir })
-    //         .skip(skip)
-    //         .limit(pageSize)
-    //         .lean() as DBCommentType[];
-    //     const pagesCount = Math.ceil(totalCount / pageSize);
-    //     return {
-    //         pagesCount: pagesCount,
-    //         page: pageNumber,
-    //         pageSize: pageSize,
-    //         totalCount: totalCount,
-    //         items: dbComments.map(dbComment => {
-    //             return this._mapDBCommentTypeToCommentType(dbComment, userId)
-    //         })
-    //     }
-    // }
+    constructor(@InjectDataSource() protected dataSourse: DataSource) { }
 
     async getCommentsByPostId(postId: string, query: CommentQueryOutputType,
-        //                            CommentsWithQueryOutputModel
-        userId: string = ''): Promise<any> {
+        userId: string = ''): Promise<CommentsWithQueryOutputModel> {
         const { pageNumber, pageSize, sortBy, sortDirection } = query;
         const sortDir = sortDirection === "asc" ? "ASC" : "DESC";
         const offset = (pageNumber - 1) * pageSize;
@@ -70,12 +39,13 @@ export class CommentsQueryRepo {
             ` FROM public."Comments" as comments
             LEFT JOIN public."Users" as users
             ON comments."userId" = users."id"
+            WHERE comments."postId" = $1
             ORDER BY "${sortBy}" ${sortDir}
-            LIMIT $1
-            OFFSET $2
+            LIMIT $2
+            OFFSET $3
         `;
         
-        const comments = await this.dataSourse.query(mainQuery, [pageSize, offset]);
+        const comments = await this.dataSourse.query(mainQuery, [postId, pageSize, offset]);
         const pagesCount = Math.ceil(totalCount / pageSize);
         return {
             pagesCount: pagesCount,
@@ -108,21 +78,5 @@ export class CommentsQueryRepo {
         const outputComment = commentsOutputModel(result)[0]
 
         return outputComment;
-    }
-    _mapDBCommentTypeToCommentType(comment: DBCommentType, userId: string = ''): CommentOutputModel {
-        return {
-            id: comment.id,
-            content: comment.content,
-            commentatorInfo: {
-                userId: comment.commentatorInfo.userId,
-                userLogin: comment.commentatorInfo.userLogin
-            },
-            createdAt: comment.createdAt,
-            likesInfo: {
-                likesCount: comment.likes.length,
-                dislikesCount: comment.dislikes.length,
-                myStatus: defineStatus(comment, userId)
-            }
-        }
     }
 }

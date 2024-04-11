@@ -47,7 +47,6 @@ export class SecurityRepository {
             WHERE "userId" = '${userId}'
             AND "deviceId" != '${deviceId}'
        `;
-       console.log(query)
        const result = await this.dataSourse.query(query);
        return result;
     }
