@@ -41,7 +41,9 @@ export class PostsQueryRepo {
            ` FROM public."Posts" as posts
         LEFT JOIN 
             (SELECT *
-            FROM public."LikesPosts"
+            FROM public."LikesPosts" as likes
+            WHERE likes."status" = 'Like'
+            ORDER BY likes."createdAt" ASC
             LIMIT 3) as likes
         ON posts."id" = likes."postId"
         LEFT JOIN 
@@ -52,6 +54,7 @@ export class PostsQueryRepo {
         `
         
         const posts = await this.dataSourse.query(mainQuery, [pageSize, offset]);
+        console.log(mainQuery)
         const outputPosts = postsOutputModel(posts);
         const pagesCount = Math.ceil(totalCount / pageSize);
         
@@ -70,31 +73,33 @@ export class PostsQueryRepo {
                     users."login",
                     likes."createdAt" as "addedAt",
                     (SELECT COUNT(*)
-                                FROM public."LikesPosts"
+                                FROM public."LikesPosts" as likes
                                 WHERE likes."postId" = $1 AND "status" = 'Like') 
                                 as "likesCount",
                     
                     (SELECT COUNT(*)
-                                FROM public."LikesPosts"
+                                FROM public."LikesPosts" as likes
                                 WHERE likes."postId" = $1 AND "status" = 'Dislike') 
                                 as "dislikesCount", ` +
                                 
                     (userId ? `(SELECT likes."status"
                                     FROM public."LikesPosts" as likes
-                                    WHERE likes."userId" = '${userId}' AND '${id}' = likes."postId") as "myStatus"` 
+                                    WHERE likes."userId" = '${userId}' AND likes."postId" = '${id}') as "myStatus"` 
                                 : ` 'None' as "myStatus" `) +
                         
                                 `FROM public."Posts" as posts
                     LEFT JOIN 
                         (SELECT *
-                            FROM public."LikesPosts"
+                            FROM public."LikesPosts" as likes
+                            WHERE likes."status" = 'Like'
+                            ORDER BY likes."createdAt" DESC
                             LIMIT 3) as likes
                     ON posts."id" = likes."postId"
                     LEFT JOIN 
                     public."Users" as users
                     ON likes."userId" = users."id"
                     WHERE posts."id" = $1
-                    ORDER BY likes."createdAt" ASC
+                   
         `;
            
         const result = await this.dataSourse.query(query, [id]);
@@ -134,7 +139,9 @@ export class PostsQueryRepo {
            ` FROM public."Posts" as posts
         LEFT JOIN 
             (SELECT *
-            FROM public."LikesPosts"
+            FROM public."LikesPosts" as likes
+            WHERE likes."status" = 'Like'
+            ORDER BY likes."createdAt" ASC
             LIMIT 3) as likes
         ON posts."id" = likes."postId"
         LEFT JOIN 

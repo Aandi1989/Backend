@@ -43,8 +43,8 @@ export class BlogsQueryRepo {
     async findBlogById(id: string): Promise<BlogType> {
         const query =
             `SELECT * 
-            FROM public."Blogs"
-            WHERE "id" = $1`;
+            FROM public."Blogs" as blogs
+            WHERE blogs."id" = $1`;
         const result = await this.dataSourse.query(query, [id]);
         return result[0];
     }

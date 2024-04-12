@@ -14,8 +14,8 @@ export function commentsOutputModel(arr){
             },
             createdAt: comment.createdAt,
             likesInfo: {
-                likesCount: comment.likesCount ? comment.likesCount : 0,
-                dislikesCount: comment.dislikesCount ? comment.dislikesCount : 0,
+                likesCount: comment.likesCount ? parseInt(comment.likesCount) : 0,
+                dislikesCount: comment.dislikesCount ? parseInt(comment.dislikesCount) : 0,
                 myStatus: comment.myStatus ? comment.myStatus : 'None',
             }
         }

@@ -20,10 +20,10 @@ export class DeleteAllDataController {
     @Delete()
     async deleteAllData(@Res() res: Response){
         await this.securityRepository.deleteAllData();
+        await this.likesRepository.deleteAllData();
+        await this.commentsRepository.deleteAllData();
         await this.postsRepository.deleteAllData();
         await this.blogsRepository.deleteAllData();
-        await this.commentsRepository.deleteAllData();
-        await this.likesRepository.deleteAllData();
         await this.usersRepository.deleteAllData();
         return res.send(HTTP_STATUSES.NO_CONTENT_204);
     }
