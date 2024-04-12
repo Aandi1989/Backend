@@ -181,3 +181,28 @@ John: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyMWFlNGUzNy1jN2I3LTQ1M
 Anna: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ZWYyZDVmYy1kODExLTRhYzAtOWEwZS03YzljZGEwODEyMmMiLCJpYXQiOjE3MTI5MzE4MzksImV4cCI6MTcxNTYxMDIzOX0.j50dDufNNN_O5_VyWd12MHFUf3KRukYmW_-CRy2Nnwc
 Fabi: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0MDg4Y2UxOS0wZDlhLTRlMzEtOTY0NS1lYTk3OWFjMTE2ZWYiLCJpYXQiOjE3MTI5MzE4ODUsImV4cCI6MTcxNTYxMDI4NX0.W5HgISir--rHNfGR0N-retp6xzQq_S6jaeEYpC90j30
 */
+
+/*
+Рабочий вариант
+WITH DistinctPosts AS (
+    SELECT posts.*, 
+           (SELECT COUNT(*) FROM public."LikesPosts" WHERE "postId" = posts."id" AND "status" = 'Like') as "likesCount",
+           (SELECT COUNT(*) FROM public."LikesPosts" WHERE "postId" = posts."id" AND "status" = 'Dislike') as "dislikesCount"
+    FROM public."Posts" as posts
+    LIMIT 6 OFFSET 0
+)
+SELECT DistinctPosts.*,
+		likes."userId",
+       	users."login",
+       	likes."createdAt" as "addedAt" 
+FROM DistinctPosts 
+LEFT JOIN (
+    SELECT *, ROW_NUMBER() OVER (PARTITION BY "postId" ORDER BY "createdAt" DESC) as row_num
+    FROM public."LikesPosts"
+    WHERE "status" = 'Like'
+) as likes 
+ON DistinctPosts."id" = likes."postId" AND likes.row_num <= 3
+LEFT JOIN public."Users" as users 
+ON likes."userId" = users."id"
+ORDER BY DistinctPosts."createdAt" ASC, likes."createdAt" DESC
+*/ 
