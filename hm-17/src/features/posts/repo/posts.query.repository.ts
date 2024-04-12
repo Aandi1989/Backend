@@ -22,41 +22,6 @@ export class PostsQueryRepo {
         const totalCountResult = await this.dataSourse.query(totalCountQuery);
         const totalCount = parseInt(totalCountResult[0].count);
         
-        // const mainQuery = `
-        // SELECT 
-        //     posts.*, 
-        //     likes."userId",
-        //     users."login",
-        //     likes."createdAt" as "addedAt",
-        //     (SELECT COUNT(*) 
-        //     FROM public."LikesPosts" 
-        //     WHERE "postId" = posts."id" AND "status" = 'Like') as "likesCount",
-        //     (SELECT COUNT(*) 
-        //     FROM public."LikesPosts" 
-        //     WHERE "postId" = posts."id" AND "status" = 'Dislike') as "dislikesCount",
-        //     ` +(userId ? `(SELECT likes."status"
-        //                     FROM public."LikesPosts" as likes
-        //                     WHERE likes."userId" = '${userId}' AND posts."id" = likes."postId") as "myStatus"` 
-        //                 : ` 'None' as "myStatus" `) +
-        //    ` FROM public."Posts" as posts
-        // LEFT JOIN 
-        //     (SELECT *
-        //     FROM public."LikesPosts" as likes
-        //     WHERE likes."status" = 'Like'
-        //     ORDER BY likes."createdAt" ASC
-        //     LIMIT 3) as likes
-        // ON posts."id" = likes."postId"
-        // LEFT JOIN 
-        // public."Users" as users
-        // ON likes."userId" = users."id"
-        // WHERE posts."id" IN (
-        //     SELECT id FROM public."Posts"
-        //     LIMIT $1
-        //     OFFSET $2
-        // )
-        // ORDER BY posts."${sortBy}" ${sortDir}
-        // `
-
         const mainQuery = `
             WITH DistinctPosts AS (
                 SELECT posts.*, 
@@ -67,6 +32,7 @@ export class PostsQueryRepo {
                                          WHERE likes."userId" = '${userId}' AND posts."id" = likes."postId") as "myStatus"` 
                                      : ` 'None' as "myStatus" `) +
                 ` FROM public."Posts" as posts
+                ORDER BY posts."${sortBy}" ${sortDir}
                 LIMIT $1 OFFSET $2
             )
             SELECT DistinctPosts.*,
@@ -151,37 +117,6 @@ export class PostsQueryRepo {
         const totalCountResult = await this.dataSourse.query(totalCountQuery, [blogId]);
         const totalCount = parseInt(totalCountResult[0].count);
 
-        // const mainQuery = `
-        // SELECT 
-        //     posts.*, 
-        //     likes."userId",
-        //     users."login",
-        //     likes."createdAt" as "addedAt",
-        //     (SELECT COUNT(*) 
-        //     FROM public."LikesPosts" 
-        //     WHERE "postId" = posts."id" AND "status" = 'Like') as "likesCount",
-        //     (SELECT COUNT(*) 
-        //     FROM public."LikesPosts" 
-        //     WHERE "postId" = posts."id" AND "status" = 'Dislike') as "dislikesCount",
-        //     ` +(userId ? `(SELECT likes."status"
-        //                     FROM public."LikesPosts" as likes
-        //                     WHERE likes."userId" = '${userId}' AND posts."id" = likes."postId") as "myStatus"` 
-        //                 : ` 'None' as "myStatus" `) +
-        //    ` FROM public."Posts" as posts
-        // LEFT JOIN 
-        //     (SELECT *
-        //     FROM public."LikesPosts" as likes
-        //     WHERE likes."status" = 'Like'
-        //     ORDER BY likes."createdAt" ASC
-        //     LIMIT 3) as likes
-        // ON posts."id" = likes."postId"
-        // LEFT JOIN 
-        // public."Users" as users
-        // ON likes."userId" = users."id"
-        // WHERE  posts."blogId" = $3
-        // ORDER BY posts."${sortBy}" ${sortDir}
-        // LIMIT $1 OFFSET $2`
-
         const mainQuery = `
             WITH DistinctPosts AS (
                 SELECT posts.*, 
@@ -193,6 +128,7 @@ export class PostsQueryRepo {
                                      : ` 'None' as "myStatus" `) +
                 ` FROM public."Posts" as posts
                 WHERE posts."blogId" = $3
+                ORDER BY posts."${sortBy}" ${sortDir}
                 LIMIT $1 OFFSET $2
             )
             SELECT DistinctPosts.*,
@@ -211,8 +147,6 @@ export class PostsQueryRepo {
             ORDER BY DistinctPosts."${sortBy}" ${sortDir}, likes."createdAt" DESC
         `;
 
-        
-        console.log(mainQuery)
         const posts = await this.dataSourse.query(mainQuery, [pageSize, offset, blogId]);
         const outputPosts = postsOutputModel(posts);
         const pagesCount = Math.ceil(totalCount / pageSize);

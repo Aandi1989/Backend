@@ -22,82 +22,8 @@ export class CommentsQueryRepo {
         `;
         const totalCountResult = await this.dataSourse.query(totalCountQuery, [postId]);
         const totalCount = parseInt(totalCountResult[0].count);
-        
-        // const mainQuery = `
-        //     SELECT 
-        //     comments.*,
-        //     users."login" as "userLogin",
-        //     (SELECT COUNT(*) 
-        //     FROM public."LikesComments" 
-        //     WHERE "commentId" = comments."id" AND "status" = 'Like') as "likesCount",
-        //     (SELECT COUNT(*) 
-        //     FROM public."LikesComments" 
-        //     WHERE "commentId" = comments."id" AND "status" = 'Dislike') as "dislikesCount",
-        //     ` +(userId ? `(SELECT likes."status"
-        //                 FROM public."LikesComments" as likes
-        //                 WHERE likes."userId" = '${userId}' AND comments."id" = likes."commentId") as "myStatus"` 
-        //             : ` 'None' as "myStatus" `) +
-        //     ` FROM public."Comments" as comments
-        //     LEFT JOIN public."Users" as users
-        //     ON comments."userId" = users."id"
-        //     WHERE comments."postId" = $1
-        //     ORDER BY "${sortBy}" ${sortDir}
-        //     LIMIT $2
-        //     OFFSET $3
-        // `;
 
-        // const mainQuery = `
-        //     WITH DistinctComments AS (
-        //         SELECT comments.*, 
-        //             (SELECT COUNT(*) FROM public."LikesComments" WHERE "commentId" = comments."id" AND "status" = 'Like') as "likesCount",
-        //             (SELECT COUNT(*) FROM public."LikesComments" WHERE "commentId" = comments."id" AND "status" = 'Dislike') as "dislikesCount", `
-        //             +(userId ? `(SELECT likes."status"
-        //                                 FROM public."LikesComments" as likes
-        //                                  WHERE likes."userId" = '${userId}' AND comments."id" = likes."commentId") as "myStatus"` 
-        //                              : ` 'None' as "myStatus" `) +
-        //         ` FROM public."Comments" as comments
-        //         WHERE comments."postId" = $3
-        //         LIMIT $1 OFFSET $2
-        //     )
-        //     SELECT DistinctComments.*,
-        //             users."login" as "userLogin"
-        //     FROM DistinctComments 
-        //     LEFT JOIN (
-        //         SELECT *, ROW_NUMBER() OVER (PARTITION BY "commentId" ORDER BY "createdAt" DESC) as row_num
-        //         FROM public."LikesComments"
-        //         WHERE "status" = 'Like'
-        //     ) as likes 
-        //     ON DistinctComments."id" = likes."commentId" AND likes.row_num <= 3
-        //     LEFT JOIN public."Users" as users 
-        //     ON DistinctComments."userId" = users."id"
-        //     ORDER BY DistinctComments."${sortBy}" ${sortDir}, likes."createdAt" DESC
-        // `;
-
-        // const superRequest =`
-        // WITH DistinctComments AS (
-        //     SELECT comments.*, 
-        //         (SELECT COUNT(*) FROM public."LikesComments" WHERE "commentId" = comments."id" AND "status" = 'Like') as "likesCount",
-        //         (SELECT COUNT(*) FROM public."LikesComments" WHERE "commentId" = comments."id" AND "status" = 'Dislike') as "dislikesCount", `
-                
-        //         + (userId ? `(SELECT likes."status"
-        //         FROM public."LikesComments" as likes
-        //          WHERE likes."userId" = '${userId}' AND comments."id" = likes."commentId") as "myStatus"` 
-        //      : ` 'None' as "myStatus" `) +  
-
-        //     ` FROM public."Comments" as comments
-        //     WHERE comments."postId" = $3
-        //     LIMIT $1 OFFSET $2
-        // )
-        // SELECT 
-        //     DistinctComments.*,
-        //     users."login" as "userLogin"
-        // FROM DistinctComments
-        // LEFT JOIN public."Users" as users 
-        // ON users."id" = DistinctComments."userId"
-        // ORDER BY DistinctComments."${sortBy}" ${sortDir}
-        // `;
-
-        const forthRequest = `
+        const mainRequest = `
                 SELECT 
                 comments.*,
                 users."login" as "userLogin",
@@ -119,7 +45,7 @@ export class CommentsQueryRepo {
             LIMIT $1 OFFSET $2
         `;
             
-        const comments = await this.dataSourse.query(forthRequest, [ pageSize, offset, postId]);
+        const comments = await this.dataSourse.query(mainRequest, [ pageSize, offset, postId]);
         const pagesCount = Math.ceil(totalCount / pageSize);
         return {
             pagesCount: pagesCount,
