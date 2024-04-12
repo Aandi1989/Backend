@@ -26,7 +26,7 @@ export class ResendEmailUseCase implements ICommandHandler<ResendEmailCommand>{
         const updatedAccountData = await this.authRepository.updateConfirmationCode(account.id, newConfirmationCode);
         try {
             // comented to avoid annoying messages during testing
-            // await emailManager.resendConfirmationalEmail(command.email, newConfirmationCode)
+            await emailManager.resendConfirmationalEmail(command.email, newConfirmationCode)
         } catch (error) {
             console.log(error)
             return {code: ResultCode.Failed};

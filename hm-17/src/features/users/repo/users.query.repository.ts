@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserQueryOutputType, UserSQL } from '../types/types';
-import { UserAuthOutputModel, UserOutputModel } from '../api/models/output/user.output.model';
+import { UserAuthOutputModel, UserOutputModel, UsersWithQueryOutputModel } from '../api/models/output/user.output.model';
 import { MeOutputModel } from 'src/features/auth/api/models/output/me.output.model';
 import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -10,7 +10,7 @@ import { Account } from '../entities/account';
 export class UsersQueryRepo {
   constructor(@InjectDataSource() protected dataSourse: DataSource) { }
 
-  async getUsers(query: UserQueryOutputType): Promise<any> {
+  async getUsers(query: UserQueryOutputType): Promise<UsersWithQueryOutputModel> {
     const { pageNumber, pageSize, searchLoginTerm, searchEmailTerm, sortBy, sortDirection } = query;
     const sortDir = sortDirection === "asc" ? "ASC" : "DESC";
     const offset = (pageNumber - 1) * pageSize;
@@ -20,16 +20,17 @@ export class UsersQueryRepo {
     const totalCountQuery = `
               SELECT COUNT(*)
               FROM public."Users"
-              WHERE login ILIKE $1 AND email ILIKE $2
+              WHERE login ILIKE $1 OR email ILIKE $2
           `;
 
     const totalCountResult = await this.dataSourse.query(totalCountQuery, [searchLoginParam, searchEmailParam]);
-    const totalCount = totalCountResult[0].count;
+    const totalCount = parseInt(totalCountResult[0].count);
+
 
     // postgres doesnt allow use as params names of columns that is why we validate sortBy in function blogQueryParams
     const mainQuery = `
       SELECT * FROM public."Users"
-      WHERE login ILIKE $1 AND email ILIKE $2
+      WHERE login ILIKE $1 OR email ILIKE $2
       ORDER BY "${sortBy}" ${sortDir}
       LIMIT $3
       OFFSET $4

@@ -40,7 +40,7 @@ import { PostsService } from './features/posts/application/posts.service';
 import { CreatePostForBlogUseCase } from './features/posts/application/use-cases/create-post-for-blog.use-case';
 import { CreatePostUseCase } from './features/posts/application/use-cases/create-post.use-case';
 import { DeletePostUseCase } from './features/posts/application/use-cases/delete-post.use-case';
-import { UpdatePostUseCase } from './features/posts/application/use-cases/update-post.use-case';
+import { CheckPostUseCase } from './features/posts/application/use-cases/change-post.use-case';
 import { PostsQueryRepo } from './features/posts/repo/posts.query.repository';
 import { PostsRepository } from './features/posts/repo/posts.repository';
 import { SecurytyController } from './features/security/api/security.controller';
@@ -58,22 +58,24 @@ import { DeleteUserUseCase } from './features/users/application/use-cases/delete
 import { UsersService } from './features/users/application/users.service';
 import { UsersQueryRepo } from './features/users/repo/users.query.repository';
 import { UsersRepository } from './features/users/repo/users.repository';
+import { BlogsSAController } from './features/blogs/api/blogs.sa.controller';
+import { UpdatePostUseCase } from './features/posts/application/use-cases/update-post.use-case';
 
 
 
 const controllers = [AppController, UsersController, BlogsController, PostsController,
-  CommentsController, DeleteAllDataController, AuthController, SecurytyController];
+  CommentsController, DeleteAllDataController, AuthController, SecurytyController, BlogsSAController];
 
 const providers = [AppService, UsersService, UsersRepository, UsersQueryRepo, BlogsService, BlogsQueryRepo,
   BlogsRepository, PostsQueryRepo, PostsRepository, PostsService, CommentsQueryRepo, CommentsRepository, JwtService,
   AuthService, SecurityRepository, SecurityQueryRepo, AuthQueryRepo, AuthRepository, LikesQueryRepo, LikesRepository];
 
-const useCases = [CreateUserUseCase, DeleteUserUseCase, CreatePostUseCase, DeletePostUseCase, UpdatePostUseCase,
+const useCases = [CreateUserUseCase, DeleteUserUseCase, CreatePostUseCase, DeletePostUseCase, CheckPostUseCase,
   CreateblogUseCase, DeleteBlogUseCase, UpdateBlogUseCase, CheckCredentialsUseCase, CreateSessionUseCase,
   CheckRefreshTokenUseCase, RevokeSessionUseCase, RefreshTokensUseCase, CreateAccountUseCase, ConfirmEmailUseCase,
   ResendEmailUseCase, RecoveryCodeUseCase, ChangeCodeUseCase, CreateCommentUseCase, LikePostUseCase, DeleteCommentUseCase,
   UpdateCommentUseCase, LikeCommentUseCase, CheckSecurityRefreshTokenUseCase, RevokeSessionsUseCase, AddRequestUseCase,
-  CreatePostForBlogUseCase ]
+  CreatePostForBlogUseCase, UpdatePostUseCase, CheckPostUseCase ]
 
 @Module({
   imports: [

@@ -4,6 +4,7 @@ import { CreatePostModel } from '../api/models/input/create-post.input.model';
 import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { postsOutputModel } from 'src/common/helpers/postsOutputModel';
+import { UpdatePostForBlogModel } from 'src/features/blogs/api/models/input/update-post.input';
 
 @Injectable()
 export class PostsRepository {
@@ -20,15 +21,14 @@ export class PostsRepository {
         const result = await this.dataSourse.query(query);
         return postsOutputModel(result)[0];
     }
-    async updatePost(id: string, data: Partial<CreatePostModel>): Promise<boolean> {
-        const { title, shortDescription, content, blogId } = data;
+    async updatePost(id: string, data: UpdatePostForBlogModel): Promise<boolean> {
+        const { title, shortDescription, content } = data;
         const query = 
                 `UPDATE public."Posts" 
                 SET ` +
-                (title ? `"title"='${title} '` : '') +
+                (title ? `"title"='${title}'` : '') +
                 (shortDescription ? `, "shortDescription"='${shortDescription}'` : '') +
                 (content ? `, "content"='${content}'` : '') +
-                (blogId ? `, "blogId"='${blogId}'` : '') +
                 `WHERE "id" = $1`;
         const result = await this.dataSourse.query(query, [id]);
         return result[1] === 1;
@@ -41,7 +41,7 @@ export class PostsRepository {
         return result[1] === 1;
     }
     async deleteAllData(){
-        const query = `DELETE FROM public."Posts`;
+        const query = `DELETE FROM public."Posts"`;
         const result = await this.dataSourse.query(query);
     }
 }

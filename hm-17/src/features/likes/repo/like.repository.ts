@@ -45,9 +45,9 @@ export class LikesRepository {
         return result[1] === 1;
     }
     async deleteAllData(){
-        const queryPosts = `DELETE FROM public."LikesPosts`;
+        const queryPosts = `DELETE FROM public."LikesPosts"`;
         const resultPosts = await this.dataSourse.query(queryPosts);
-        const queryComments = `DELETE FROM public."LikesComments`;
+        const queryComments = `DELETE FROM public."LikesComments"`;
         const resultComments = await this.dataSourse.query(queryComments);
       }
 }

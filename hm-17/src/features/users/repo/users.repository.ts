@@ -34,7 +34,7 @@ export class UsersRepository {
     return result[1] === 1;
   }
   async deleteAllData() {
-    const query = `DELETE FROM public."Users`;
+    const query = `DELETE FROM public."Users"`;
     const result = await this.dataSourse.query(query);
   }
   _mapDBAccountToUserOutputType(user: Account): UserOutputModel {

@@ -2,10 +2,11 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CreatePostModel } from "../../api/models/input/create-post.input.model";
 import { PostsRepository } from "../../repo/posts.repository";
 import { myStatus, PostType } from "../../types/types";
+import { UpdatePostForBlogModel } from "src/features/blogs/api/models/input/update-post.input";
 
 export class UpdatePostCommand {
     constructor(public id: string,
-                public data: CreatePostModel){}
+                public data: UpdatePostForBlogModel){}
 }
 
 @CommandHandler(UpdatePostCommand)

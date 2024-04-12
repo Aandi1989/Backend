@@ -1,4 +1,4 @@
-import { Length, IsString, IsNotEmpty, IsOptional } from "class-validator"
+import { Length, IsString, IsNotEmpty, IsOptional, Matches } from "class-validator"
 import { Trim } from "src/common/pipes/trim-pipe"
 
 export class CreatePostModel  {

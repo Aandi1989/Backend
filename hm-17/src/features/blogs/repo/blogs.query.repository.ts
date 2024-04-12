@@ -20,7 +20,7 @@ export class BlogsQueryRepo {
         `;
         
         const totalCountResult = await this.dataSourse.query(totalCountQuery, [searchTermParam]);
-        const totalCount = totalCountResult[0].count;
+        const totalCount = parseInt(totalCountResult[0].count);
         // postgres doesnt allow use as params names of columns that is why we validate sortBy in function blogQueryParams
         const mainQuery = `
             SELECT * FROM public."Blogs"

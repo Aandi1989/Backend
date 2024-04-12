@@ -11,9 +11,10 @@ export enum HTTP_STATUSES {
 }
 
 export const RouterPaths = {
+  blogsSA:'sa/blogs',
   posts: 'posts',
   blogs: 'blogs',
-  users: 'users',
+  users: 'sa/users',
   comments: 'comments',
   auth: 'auth',
   security: 'security',
@@ -23,4 +24,6 @@ export const RouterPaths = {
 };
 
 export type DBType = "postgres" | "mysql" | "mariadb" | "cockroachdb" | "aurora-mysql"
+
+// ngrok http http://localhost:8080
 

@@ -20,7 +20,7 @@ export class CommentsQueryRepo {
             FROM public."Comments"
         `;
         const totalCountResult = await this.dataSourse.query(totalCountQuery);
-        const totalCount = totalCountResult[0].count;
+        const totalCount = parseInt(totalCountResult[0].count);
         
         const mainQuery = `
             SELECT 

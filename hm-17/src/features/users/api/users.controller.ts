@@ -20,7 +20,7 @@ export class UsersController {
     protected usersQueryRepo: UsersQueryRepo,
     private commandBus: CommandBus) { }
  
-    @UseGuards(BasicAuthGuard)
+  @UseGuards(BasicAuthGuard)
   @Get()
   async getUsers(@Query() query: Partial<UserQueryType>): Promise<UsersWithQueryOutputModel> {
     return await this.usersQueryRepo.getUsers(userQueryParams(query));

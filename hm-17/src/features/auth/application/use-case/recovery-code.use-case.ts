@@ -31,7 +31,7 @@ export class RecoveryCodeUseCase implements ICommandHandler<RecoveryCodeCommand>
         const updatedUser = await this.authRepository.updateCodeRecovery(account.id, newCodeData);
         try {
             // comented to avoid annoying messages during testing
-            // await emailManager.sendRecoveryCode(command.email, newCodeData.recoveryCode)
+            await emailManager.sendRecoveryCode(command.email, newCodeData.recoveryCode)
         } catch (error) {
             console.log(error)
             return {code: ResultCode.Failed};

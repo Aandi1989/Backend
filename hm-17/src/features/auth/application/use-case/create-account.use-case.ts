@@ -40,7 +40,7 @@ export class CreateAccountUseCase implements ICommandHandler<CreateAccountComman
         const createdUser = await this.usersRepository.createUser(newAccount);
         try {
             // comented to avoid annoying messages during testing
-            // await emailManager.sendConfirmationEmail(newAccount);
+            await emailManager.sendConfirmationEmail(newAccount);
         } catch (error) {
             console.log(error)
             return {code: ResultCode.Failed};

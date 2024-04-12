@@ -31,9 +31,9 @@ enum Environments {
         POSTGRES_DB_HOST: environmentVariables.POSTGRES_DB_HOST,
         POSTGRES_DB_PORT: parseInt(environmentVariables.POSTGRES_DB_PORT!, 10),
         POSTGRES_DB_USER_NAME: environmentVariables.POSTGRES_DB_USER_NAME,
-        POSTGRESS_DB_PASSWORD: environmentVariables.POSTGRESS_DB_PASSWORD,
-        POSTGRES_DB_DATABASE_NAME: environmentVariables.POSTGRES_DB_DATABASE_NAME,                                              
-        
+        POSTGRESS_DB_PASSWORD: environmentVariables.POSTGRESS_DB_PASSWORD,                                        
+        POSTGRES_DB_DATABASE_NAME: environmentVariables.ENV === "DEVELOPMENT" ? environmentVariables.POSTGRES_DB_DATABASE_NAME
+                                                                              : environmentVariables.POSTGRES_DB_TEST_DATABASE_NAME,
       },
       emailSetting:{
         EMAIL_SENDER: environmentVariables.EMAIL_SENDER,

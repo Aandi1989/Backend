@@ -59,7 +59,7 @@ export class CommentsRepository {
     }
   }
   async deleteAllData() {
-    const query = `DELETE FROM public."Comments`;
+    const query = `DELETE FROM public."Comments"`;
     const result = await this.dataSourse.query(query);
   }
 }
