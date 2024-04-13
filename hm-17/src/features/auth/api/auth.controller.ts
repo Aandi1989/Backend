@@ -23,7 +23,7 @@ import { ResendEmailCommand } from "../application/use-case/resend-email.use-cas
 import { RecoveryCodeCommand } from "../application/use-case/recovery-code.use-case";
 import { ChangePasswordModel } from "./models/input/change.password.model";
 import { ChangeCodeCommand } from "../application/use-case/change-code.use-case";
-import { ApiCallsGuard } from "src/common/guards/apiCalls.guard";
+import { ThrottlerGuard } from "@nestjs/throttler";
 
 
 
@@ -33,8 +33,8 @@ export class AuthController {
                 protected usersQueryRepo: UsersQueryRepo,
                 private commandBus: CommandBus){}
 
+    @UseGuards(ThrottlerGuard)
     @UseGuards(AuthGuard)
-    // @UseGuards(ApiCallsGuard)
     @HttpCode(HTTP_STATUSES.OK_200)
     @Get('me')
     async me (@Req() req: Request): Promise<MeOutputModel | null>{
@@ -43,7 +43,7 @@ export class AuthController {
         return await this.usersQueryRepo.getAuthById(userId);
     }
      
-    // @UseGuards(ApiCallsGuard)
+    @UseGuards(ThrottlerGuard)
     @HttpCode(HTTP_STATUSES.OK_200)         
     @Post('login')
     async login (@Req() req: Request, @Body() body: AuthBodyModel, @Res() res: Response):Promise<LoginOutputModel>{
@@ -83,7 +83,7 @@ export class AuthController {
         return res.send(newAccessToken);
     }
 
-    // @UseGuards(ApiCallsGuard)
+    @UseGuards(ThrottlerGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204) 
     @Post('registration')
     async registration (@Body() body:CreateUserModel){
@@ -93,7 +93,7 @@ export class AuthController {
         return;
     }
 
-    // @UseGuards(ApiCallsGuard)
+    @UseGuards(ThrottlerGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204) 
     @Post('registration-confirmation')
     async confirmEmail (@Body() body: ConfirmCodeModel){
@@ -102,7 +102,7 @@ export class AuthController {
         return;
     }
 
-    // @UseGuards(ApiCallsGuard)
+    @UseGuards(ThrottlerGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204) 
     @Post('registration-email-resending')
     async registrationEmailResending (@Body() body: ResendEmailModel){
@@ -111,7 +111,7 @@ export class AuthController {
         return;
     }
 
-    // @UseGuards(ApiCallsGuard)
+    @UseGuards(ThrottlerGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204) 
     @Post('password-recovery')
     async passwordRecovery (@Body() body: ResendEmailModel){
@@ -120,7 +120,7 @@ export class AuthController {
         return;
     }
 
-    // @UseGuards(ApiCallsGuard)
+    @UseGuards(ThrottlerGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204) 
     @Post('new-password')
     async newPassword (@Body() body: ChangePasswordModel){

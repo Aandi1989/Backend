@@ -60,6 +60,7 @@ import { UsersQueryRepo } from './features/users/repo/users.query.repository';
 import { UsersRepository } from './features/users/repo/users.repository';
 import { BlogsSAController } from './features/blogs/api/blogs.sa.controller';
 import { UpdatePostUseCase } from './features/posts/application/use-cases/update-post.use-case';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 
 
@@ -79,6 +80,10 @@ const useCases = [CreateUserUseCase, DeleteUserUseCase, CreatePostUseCase, Delet
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot([{
+      ttl: 10000,
+      limit: 5,
+    }]),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [config],
@@ -96,7 +101,8 @@ const useCases = [CreateUserUseCase, DeleteUserUseCase, CreatePostUseCase, Delet
       autoLoadEntities: false,
       synchronize: false,
     }),
-    CqrsModule
+    CqrsModule,
+    
   ],
   controllers: [...controllers],
   providers: [...providers, ...useCases],

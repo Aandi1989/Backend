@@ -69,7 +69,6 @@ export class UsersQueryRepo {
             `SELECT * 
             FROM public."Users"
             WHERE "id" = '${id}'`;
-            console.log(query);
         const result = await this.dataSourse.query(query);
         return result ? this._mapAccountToUserAuthType(result[0]) : null;
   }

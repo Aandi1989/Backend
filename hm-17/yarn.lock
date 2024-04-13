@@ -756,7 +756,7 @@
     "webpack" "5.90.1"
     "webpack-node-externals" "3.0.0"
 
-"@nestjs/common@^10.0.0", "@nestjs/common@^8.0.0 || ^9.0.0 || ^10.0.0", "@nestjs/common@^9.0.0 || ^10.0.0":
+"@nestjs/common@^10.0.0", "@nestjs/common@^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0", "@nestjs/common@^8.0.0 || ^9.0.0 || ^10.0.0", "@nestjs/common@^9.0.0 || ^10.0.0":
   "integrity" "sha512-XWxbDf2ey/jAyEa3/XpckgfzJZ9j3I05ZkEFx7cAlebFuVKeq5UDDb5Sq9O7hMmbH9xdQj3pYT19SSj01hKeug=="
   "resolved" "https://registry.npmjs.org/@nestjs/common/-/common-10.3.5.tgz"
   "version" "10.3.5"
@@ -775,7 +775,7 @@
     "lodash" "4.17.21"
     "uuid" "9.0.1"
 
-"@nestjs/core@^10.0.0", "@nestjs/core@^8.0.0 || ^9.0.0 || ^10.0.0", "@nestjs/core@^9.0.0 || ^10.0.0":
+"@nestjs/core@^10.0.0", "@nestjs/core@^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0", "@nestjs/core@^8.0.0 || ^9.0.0 || ^10.0.0", "@nestjs/core@^9.0.0 || ^10.0.0":
   "integrity" "sha512-U7SrGD9/Mu4eUtxfZYiGdY38FcksEyJegs4dQZ8B19nnusw0aTocPEy4HVsmx0LLO4sG+fBLLYzCDDr9kFwXAQ=="
   "resolved" "https://registry.npmjs.org/@nestjs/core/-/core-10.3.5.tgz"
   "version" "10.3.5"
@@ -827,6 +827,11 @@
   "version" "10.3.5"
   dependencies:
     "tslib" "2.6.2"
+
+"@nestjs/throttler@^5.1.2":
+  "integrity" "sha512-60MqhSLYUqWOgc38P6C6f76JIpf6mVjly7gpuPBCKtVd0p5e8Fq855j7bJuO4/v25vgaOo1OdVs0U1qtgYioGw=="
+  "resolved" "https://registry.npmjs.org/@nestjs/throttler/-/throttler-5.1.2.tgz"
+  "version" "5.1.2"
 
 "@nestjs/typeorm@^10.0.2":
   "integrity" "sha512-H738bJyydK4SQkRCTeh1aFBxoO1E9xdL/HaLGThwrqN95os5mEyAtK7BLADOS+vldP4jDZ2VQPLj4epWwRqCeQ=="
