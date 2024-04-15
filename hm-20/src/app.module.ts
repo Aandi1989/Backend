@@ -98,8 +98,8 @@ const useCases = [CreateUserUseCase, DeleteUserUseCase, CreatePostUseCase, Delet
       ssl: {
         rejectUnauthorized: false, 
       },
-      autoLoadEntities: false,
-      synchronize: false,
+      autoLoadEntities: true,
+      synchronize: true,
     }),
     CqrsModule,
     
