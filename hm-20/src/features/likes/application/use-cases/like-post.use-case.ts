@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { myStatus, PostType } from "../../../posts/types/types";
 import { ResultCode } from "src/common/types/types";
-import { LikeStatus } from "src/features/likes/entities/like";
+import { LikeStatus } from "src/features/likes/entities/like.entity";
 import { LikesRepository } from "src/features/likes/repo/like.repository";
 import { LikesQueryRepo } from "src/features/likes/repo/like.query.repository";
 import { PostsQueryRepo } from "../../../posts/repo/posts.query.repository";

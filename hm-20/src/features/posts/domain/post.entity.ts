@@ -1,6 +1,6 @@
-import { Blog } from "src/features/blogs/domain/blog.entity";
-import { Comment } from "src/features/comments/domain/comment.entity";
-import { LikesPosts } from "src/features/likes/domain/likes.entities";
+import { Blog } from "../../blogs/domain/blog.entity";
+import { Comment } from "../../comments/domain/comment.entity";
+import { LikesPosts } from "../../likes/domain/likes.entity";
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from "typeorm";
 
 @Entity()

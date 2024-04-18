@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { LikeStatus } from 'src/features/likes/entities/like';
+import { LikeStatus } from 'src/features/likes/entities/like.entity';
 import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { myStatus } from 'src/features/posts/types/types';

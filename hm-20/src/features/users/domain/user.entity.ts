@@ -1,6 +1,6 @@
-import { Comment } from 'src/features/comments/domain/comment.entity';
-import { LikesComments, LikesPosts } from 'src/features/likes/domain/likes.entities';
-import { Session } from 'src/features/security/domain/entity';
+import { Comment } from '../../comments/domain/comment.entity';
+import { LikesComments, LikesPosts } from '../../likes/domain/likes.entity';
+import { Session } from '../../security/domain/session.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()

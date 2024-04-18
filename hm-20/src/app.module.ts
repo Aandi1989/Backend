@@ -61,12 +61,12 @@ import { UsersRepository } from './features/users/repo/users.repository';
 import { BlogsSAController } from './features/blogs/api/blogs.sa.controller';
 import { UpdatePostUseCase } from './features/posts/application/use-cases/update-post.use-case';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { User } from './features/users/domain/entity';
-import { Post } from './features/posts/domain/entity';
+import { User } from './features/users/domain/user.entity';
+import { Post } from './features/posts/domain/post.entity';
 import { Blog } from './features/blogs/domain/blog.entity';
-import { LikesComments, LikesPosts } from './features/likes/domain/likes.entities';
+import { LikesComments, LikesPosts } from './features/likes/domain/likes.entity';
 import { Comment } from './features/comments/domain/comment.entity';
-import { Session } from './features/security/domain/entity';
+import { Session } from './features/security/domain/session.entity';
 
 
 
@@ -105,7 +105,7 @@ const useCases = [CreateUserUseCase, DeleteUserUseCase, CreatePostUseCase, Delet
         rejectUnauthorized: false, 
       },
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
     }),
     TypeOrmModule.forFeature([User, Blog, Post, Comment, LikesPosts, LikesComments, Session]),
     CqrsModule,

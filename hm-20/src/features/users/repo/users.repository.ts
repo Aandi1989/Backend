@@ -5,7 +5,7 @@ import { UserOutputModel } from '../api/models/output/user.output.model';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { Repository } from "typeorm";
-import { User } from '../domain/entity';
+import { User } from '../domain/user.entity';
 
 
 @Injectable()
