@@ -1,43 +1,19 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { BlogType } from "../types/types";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 import { CreateBlogModel } from "../api/models/input/create-blog.input.model";
-import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
-import { DataSource, Repository } from "typeorm";
 import { Blog } from "../domain/blog.entity";
+import { BlogType } from "../types/types";
 
 
 @Injectable()
 export class BlogsRepository {
-    constructor(@InjectDataSource() protected dataSourse: DataSource,
-                @InjectRepository(Blog) private readonly blogsRepository: Repository<Blog>) { }
+    constructor(@InjectRepository(Blog) private readonly blogsRepository: Repository<Blog>) { }
 
-    // async createBlog(newBlog: BlogType): Promise<BlogType> {
-    //     const { id, name, description, websiteUrl, createdAt, isMembership } = newBlog;
-    //     const query = `
-    //         INSERT INTO public."Blogs"(
-    //             "id", "name", "description", "websiteUrl", "createdAt", "isMembership")
-    //             VALUES ('${id}', '${name}', '${description}', '${websiteUrl}', '${createdAt}', '${isMembership}')
-    //             RETURNING *;
-    //     `;
-    //     const result = await this.dataSourse.query(query);
-    //     return result[0];
-    // }
     async createBlog(newBlog: BlogType): Promise<BlogType> {
        const result = await this.blogsRepository.save(newBlog);
        return result;
     }
-    // async updateBlog(id: string, data: CreateBlogModel): Promise<boolean> {
-    //     const {name, description, websiteUrl} = data;
-    //     const query = 
-    //             `UPDATE public."Blogs" 
-    //             SET ` +
-    //             (name ? `"name"='${name}' ` : '') +
-    //             (description ? `, "description"='${description}'` : '') +
-    //             (websiteUrl ? `, "websiteUrl"='${websiteUrl}' ` : '') +
-    //             `WHERE "id" = $1`;
-    //     const result = await this.dataSourse.query(query, [id]);
-    //     return result[1] === 1;
-    // }
     async updateBlog(id: string, data: CreateBlogModel): Promise<boolean> {
         const blogToUpdate = await this.blogsRepository.findOneBy({id: id});
         if(!blogToUpdate) throw new NotFoundException();
@@ -48,20 +24,12 @@ export class BlogsRepository {
         const result = await this.blogsRepository.save(updatedBlogData);
         return result ? true : false;
     }
-    // async deleteBlog(id: string): Promise<boolean> {
-    //     const query = 
-    //         `DELETE FROM public."Blogs"
-    //         WHERE "id" = $1`;
-    //     const result = await this.dataSourse.query(query, [id]);
-    //     return result[1] === 1;
-    // }
     async deleteBlog(id: string): Promise<boolean> {
         const result = await this.blogsRepository.delete(id);
         return result.affected === 1;
     }
     async deleteAllData() {
-        const query = `DELETE FROM public."Blogs"`;
-        const result = await this.dataSourse.query(query);
+        const result = await this.blogsRepository.clear();
     }
 }
 

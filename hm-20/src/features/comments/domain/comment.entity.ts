@@ -12,12 +12,16 @@ export class Comment {
     content: string; 
 
     @ManyToOne(() => Post, post => post.comment)
-    @JoinColumn({ name: "postId" })
+    @JoinColumn()
     post: Post; 
+    @Column()
+    postId: string;
 
     @ManyToOne(() => User, user => user.comment)
-    @JoinColumn({ name: "userId" })
+    @JoinColumn()
     user: User; 
+    @Column()
+    userId: string;
 
     @Column()
     createdAt: string; 

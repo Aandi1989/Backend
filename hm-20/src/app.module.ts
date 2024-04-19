@@ -38,7 +38,6 @@ import { LikesRepository } from './features/likes/repo/like.repository';
 import { PostsController } from './features/posts/api/posts.controller';
 import { PostsService } from './features/posts/application/posts.service';
 import { CreatePostForBlogUseCase } from './features/posts/application/use-cases/create-post-for-blog.use-case';
-import { CreatePostUseCase } from './features/posts/application/use-cases/create-post.use-case';
 import { DeletePostUseCase } from './features/posts/application/use-cases/delete-post.use-case';
 import { CheckPostUseCase } from './features/posts/application/use-cases/change-post.use-case';
 import { PostsQueryRepo } from './features/posts/repo/posts.query.repository';
@@ -77,7 +76,7 @@ const providers = [AppService, UsersService, UsersRepository, UsersQueryRepo, Bl
   BlogsRepository, PostsQueryRepo, PostsRepository, PostsService, CommentsQueryRepo, CommentsRepository, JwtService,
   AuthService, SecurityRepository, SecurityQueryRepo, AuthQueryRepo, AuthRepository, LikesQueryRepo, LikesRepository];
 
-const useCases = [CreateUserUseCase, DeleteUserUseCase, CreatePostUseCase, DeletePostUseCase, CheckPostUseCase,
+const useCases = [CreateUserUseCase, DeleteUserUseCase, DeletePostUseCase, CheckPostUseCase,
   CreateblogUseCase, DeleteBlogUseCase, UpdateBlogUseCase, CheckCredentialsUseCase, CreateSessionUseCase,
   CheckRefreshTokenUseCase, RevokeSessionUseCase, RefreshTokensUseCase, CreateAccountUseCase, ConfirmEmailUseCase,
   ResendEmailUseCase, RecoveryCodeUseCase, ChangeCodeUseCase, CreateCommentUseCase, LikePostUseCase, DeleteCommentUseCase,

@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { BlogQueryOutputType, BlogType } from '../types/types';
 import { BlogsWithQueryOutputModel } from '../api/models/output/blog.output.model';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { Blog } from '../domain/blog.entity';
 
 @Injectable()
 export class BlogsQueryRepo {
-    constructor(@InjectDataSource() protected dataSourse: DataSource) { }
+    constructor(@InjectDataSource() protected dataSourse: DataSource,
+                @InjectRepository(Blog) private readonly blogsRepository: Repository<Blog>) { }
     async getBlogs(query: BlogQueryOutputType): Promise<BlogsWithQueryOutputModel> {
         const { pageNumber, pageSize, searchNameTerm, sortBy, sortDirection } = query;
         const sortDir = sortDirection === "asc" ? "ASC" : "DESC";
@@ -40,12 +42,8 @@ export class BlogsQueryRepo {
             items: blogs
         };
     }
-    async findBlogById(id: string): Promise<BlogType> {
-        const query =
-            `SELECT * 
-            FROM public."Blogs" as blogs
-            WHERE blogs."id" = $1`;
-        const result = await this.dataSourse.query(query, [id]);
-        return result[0];
+    async findBlogById(id: string): Promise<any> {
+        const result = await this.blogsRepository.findOneBy({id: id});
+        return result;
     }
 }

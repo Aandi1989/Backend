@@ -12,12 +12,16 @@ export class LikesPosts {
     status: string; 
 
     @ManyToOne(() => Post, post => post.likesPosts)
-    @JoinColumn({name: "postId"})
+    @JoinColumn()
     post: Post;
+    @Column()
+    postId: string;
 
     @ManyToOne(() => User, user => user.likesPosts)
-    @JoinColumn({name: "userId"})
-    user: User 
+    @JoinColumn()
+    user: User;
+    @Column()
+    userId: string; 
 
     @Column()
     createdAt: string; 
@@ -32,12 +36,16 @@ export class LikesComments {
     status: string; 
 
     @ManyToOne(() => Comment, comment => comment.likesComments)
-    @JoinColumn({name: "commentId"})
+    @JoinColumn()
     comment:Comment;
+    @Column()
+    commentId: string
 
     @ManyToOne(() => User, user => user.likesComments)
-    @JoinColumn({name: "userId"})
+    @JoinColumn()
     user: User;
+    @Column()
+    userId: string;
 
     @Column()
     createdAt: string; 

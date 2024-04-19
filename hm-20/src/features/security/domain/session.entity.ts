@@ -7,8 +7,10 @@ export class Session {
     id:string;
 
     @ManyToOne(() => User, user => user.sessions)
-    @JoinColumn({name: "userId"})
+    @JoinColumn()
     user: User;
+    @Column()
+    userId: string;
 
     @Column()
     iat: string; 

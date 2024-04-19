@@ -23,12 +23,12 @@ export class CreatePostForBlogUseCase implements ICommandHandler<CreatePostForBl
                 blogId: command.blogId,
                 blogName: command.data.blogName ? command.data.blogName : '',
                 createdAt: new Date().toISOString(),
-                extendedLikesInfo: {
-                    likesCount: 0,
-                    dislikesCount: 0,
-                    myStatus: myStatus.None,
-                    newestLikes: []
-                }
+                // extendedLikesInfo: {
+                //     likesCount: 0,
+                //     dislikesCount: 0,
+                //     myStatus: myStatus.None,
+                //     newestLikes: []
+                // }
             }
             const createPost = await this.postsRepository.createPost(newPost)
             return createPost;

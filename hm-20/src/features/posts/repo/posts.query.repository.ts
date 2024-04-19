@@ -1,14 +1,16 @@
 import { Injectable } from "@nestjs/common";
-import { InjectDataSource } from "@nestjs/typeorm";
+import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
 import { postsOutputModel } from "src/common/helpers/postsOutputModel";
-import { DataSource } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 import { PostsWithQueryOutputModel } from "../api/models/output/post.output.model";
 import { PostQueryOutputType, PostType } from "../types/types";
+import { Post } from "../domain/post.entity";
 
 
 @Injectable()
 export class PostsQueryRepo {
-    constructor(@InjectDataSource() protected dataSourse: DataSource) { }
+    constructor(@InjectDataSource() protected dataSourse: DataSource,
+                @InjectRepository(Post) private readonly postRepository: Repository<Post>) { }
     
     async getPosts(query: PostQueryOutputType, userId: string = ''): Promise<PostsWithQueryOutputModel> {
         const { pageNumber, pageSize, sortBy, sortDirection } = query;
@@ -160,15 +162,7 @@ export class PostsQueryRepo {
         }; 
     }
     async getPostForChange(blogId: string, postId: string){
-        const query = `
-            SELECT posts.*
-            FROM public."Posts" as posts
-            LEFT JOIN public."Blogs" as blogs
-            ON posts."blogId" = blogs."id"
-            WHERE posts."id" = $1 AND posts."blogId" = $2
-        `;
-
-        const result = await this.dataSourse.query(query, [postId, blogId]);
-        return result[0];
+        const result = await this.postRepository.findOneBy({id: postId, blogId: blogId});
+        return result;
     }
 }

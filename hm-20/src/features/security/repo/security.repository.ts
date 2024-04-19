@@ -50,16 +50,17 @@ export class SecurityRepository {
        const result = await this.dataSourse.query(query);
        return result;
     }
-    async addRequest(request: ApiCallModel){
-        const { ip, url, date } = request;
-        const query = `
-            INSERT INTO public."ApiCalls"(
-                "ip", "url", "date" )
-                VALUES ('${ip}', '${url}', '${date}');
-        `;
-        const result = await this.dataSourse.query(query);
-        return result;
-    }
+    // we dont need this method any more as we use trotling
+    // async addRequest(request: ApiCallModel){
+    //     const { ip, url, date } = request;
+    //     const query = `
+    //         INSERT INTO public."ApiCalls"(
+    //             "ip", "url", "date" )
+    //             VALUES ('${ip}', '${url}', '${date}');
+    //     `;
+    //     const result = await this.dataSourse.query(query);
+    //     return result;
+    // }
     async deleteAllData() {
         const sessionQuery = `DELETE FROM public."Sessions"`;
         const result = await this.dataSourse.query(sessionQuery);

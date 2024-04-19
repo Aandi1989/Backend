@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { commentsOutputModel } from 'src/common/helpers/commentsOutoutModel';
 import { Result, ResultCode } from 'src/common/types/types';
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { CommentOutputModel } from '../api/models/output/comment.output.model';
 import { CommentSQL } from '../types/types';
+import { Comment } from '../domain/comment.entity';
 
 @Injectable()
 export class CommentsRepository {
-  constructor(@InjectDataSource() protected dataSourse: DataSource) { }
+  constructor(@InjectDataSource() protected dataSourse: DataSource,
+              @InjectRepository(Comment) private readonly commentRepository: Repository<Comment>) { }
 
   async createComment(newComment: CommentSQL): Promise<CommentOutputModel> {
     const { id, content, userId, postId, createdAt } = newComment;

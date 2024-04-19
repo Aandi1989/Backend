@@ -18,8 +18,10 @@ export class Post {
     content: string; 
 
     @ManyToOne(() => Blog, blog => blog.post)
-    @JoinColumn({ name: "blogId" })
+    @JoinColumn()
     blog: Blog[]; 
+    @Column()
+    blogId: string;
 
     @Column()
     blogName: string; 

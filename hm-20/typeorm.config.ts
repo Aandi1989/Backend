@@ -13,5 +13,5 @@ export default new DataSource({
 });
 
 
-//  yarn migration:generate migrations/test   create migration
-// yarn migration:run    apply migration
+//  yarn migration:generate migrations/test ---  create migration
+// yarn migration:run                       ---  apply migration
