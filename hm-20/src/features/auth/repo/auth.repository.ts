@@ -1,49 +1,30 @@
 import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
 import { Result, ResultCode } from "src/common/types/types";
+import { User } from "src/features/users/domain/user.entity";
+import { Repository } from "typeorm";
 import { CodeRecoveryModel } from "../api/models/input/recovery.code.model";
-import { DataSource } from "typeorm";
-import { InjectDataSource } from "@nestjs/typeorm";
 
 
 @Injectable()
 export class AuthRepository {
-    constructor(@InjectDataSource() protected dataSourse: DataSource) { }
+    constructor(@InjectRepository(User) private readonly usersRepository: Repository<User>) { }
     
     async confirmEmail(id: string): Promise<Result>{
-       const query = `
-        UPDATE public."Users"
-        SET "confCodeConfirmed" = 'true'
-        WHERE "id" = '${id}'
-       `;
-       const result = await this.dataSourse.query(query);
-       return result[1] === 1 ? {code: ResultCode.Success} : {code: ResultCode.Failed};
-    }
+        const result = await this.usersRepository.update(id, {confCodeConfirmed : true});
+        return result.affected === 1 ? {code: ResultCode.Success} : {code: ResultCode.Failed};
+     }
     async updateConfirmationCode(id: string, newCode: string): Promise<Result>{
-        const query = `
-        UPDATE public."Users"
-        SET "confirmationCode" = '${newCode}'
-        WHERE "id" = '${id}'
-       `;
-       const result = await this.dataSourse.query(query);
-       return result[1] === 1 ? {code: ResultCode.Success} : {code: ResultCode.Failed};
+       const result = await this.usersRepository.update(id, {confirmationCode: newCode});
+       return result.affected === 1 ? {code: ResultCode.Success} : {code: ResultCode.Failed};
     }
     async updateCodeRecovery( id: string, codeDate: CodeRecoveryModel){
-        const { recoveryCode, recCodeExpDate, recCodeConfirmed } = codeDate;
-        const query = `
-            UPDATE public."Users"
-            SET "recoveryCode" = '${recoveryCode}', "recCodeExpDate" = '${recCodeExpDate}', "recCodeConfirmed" = '${recCodeConfirmed}'
-            WHERE "id" = '${id}'
-        `;
-        const result = await this.dataSourse.query(query);
-        return result[1] === 1;
+        const {recCodeConfirmed, recCodeExpDate, recoveryCode} = codeDate;
+        const result = await this.usersRepository.update(id, {recoveryCode, recCodeExpDate, recCodeConfirmed});
+       return result.affected === 1 ? {code: ResultCode.Success} : {code: ResultCode.Failed};
     }
     async changePassword(id: string, passwordSalt: string, passwordHash: string){
-        const query = `
-            UPDATE public."Users"
-            SET "passwordSalt" = '${passwordSalt}', "passwordHash" = '${passwordHash}'
-            WHERE "id" = '${id}'
-        `;
-        const result = await this.dataSourse.query(query);
-        return result[1] === 1;
+        const result = await this.usersRepository.update(id, {passwordHash, passwordSalt});
+        return result.affected === 1;
     }
 }

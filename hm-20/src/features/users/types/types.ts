@@ -24,10 +24,10 @@ export class UserSQL {
   passwordHash:string
   passwordSalt:string
   confirmationCode?: string
-  confCodeExpDate?: Date
+  confCodeExpDate?: string
   confCodeConfirmed?: boolean
   recoveryCode?: string
-  recCodeExpDate?: Date
+  recCodeExpDate?: string
   recCodeConfirmed?: boolean
 }
 

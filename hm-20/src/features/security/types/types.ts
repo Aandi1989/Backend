@@ -1,4 +1,4 @@
-export class Session {
+export class SessionType {
     id: string
     userId: string
     deviceId: string

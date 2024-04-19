@@ -1,21 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { SessionOutputModel } from '../api/models/output/security.output.model';
 import { ApiCallModel } from '../api/models/input/api-call.input.model';
-import { DataSource } from 'typeorm';
-import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { Session } from '../domain/session.entity';
 
 
 @Injectable()
 export class SecurityQueryRepo {
-    constructor(@InjectDataSource() protected dataSourse: DataSource) { }
+    constructor(@InjectDataSource() protected dataSourse: DataSource,
+                @InjectRepository(Session) private readonly sessionsRepository: Repository<Session>) { }
 
     async getSession(userId: string, deviceId: string, iat: string) {
-        const query =
-            `SELECT * 
-                FROM public."Sessions"
-                WHERE "userId" = '${userId}' AND "deviceId" = '${deviceId}' AND "iat" = '${iat}'`;
-        const result = await this.dataSourse.query(query);
-        return result[0];
+        const result = await this.sessionsRepository.findOneBy({userId, deviceId, iat})
+        return result;
     }
     async getSessionByDeviceId(deviceId: string) {
         const query =

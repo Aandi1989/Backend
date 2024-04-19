@@ -1,37 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/features/users/domain/user.entity';
 import { Account } from 'src/features/users/entities/account';
-import { DataSource } from 'typeorm';
+import { Repository } from 'typeorm';
 
 
 
 @Injectable()
 export class AuthQueryRepo {
-    constructor(@InjectDataSource() protected dataSourse: DataSource) { }
+    constructor(@InjectRepository(User) private readonly usersRepository: Repository<User>) { }
 
     async findByLoginOrEmail(email: string, login?: string): Promise<Account | null>{
-        const query = `
-            SELECT * FROM public."Users"
-            WHERE "email" = '${email}' OR "login" = '${login}'
-        `;
-        const foundedAccount = await this.dataSourse.query(query);
-        return foundedAccount[0] as Account | null;
+        const foundedAccount = await this.usersRepository
+            .createQueryBuilder("user")
+            .where("user.email = :email OR user.login = :login", { email, login})
+            .getOne();
+        return foundedAccount;
     }
     async findByConfirmationCode(code: string): Promise<Account | null>{
-        const query = `
-        SELECT * FROM public."Users"
-        WHERE "confirmationCode" = '${code}'
-    `;
-    const foundedAccount = await this.dataSourse.query(query);
-    return foundedAccount[0] as Account | null;
+       const foundedAccount = await this.usersRepository
+        .createQueryBuilder("user")
+        .where("user.confirmationCode = :code", {code})
+        .getOne();
+        return foundedAccount;
     }
     async findByRecoveryCode(recoveryCode: string): Promise<Account | null>{
-        const query = `
-        SELECT * FROM public."Users"
-        WHERE "recoveryCode" = '${recoveryCode}'
-    `;
-    const foundedAccount = await this.dataSourse.query(query);
-    return foundedAccount[0] as Account | null;
+       const result = await this.usersRepository.findOneBy({recoveryCode});
+       return result;
     }
-
 }

@@ -1,44 +1,37 @@
 import { Injectable } from '@nestjs/common';
-import { UserQueryOutputType, UserSQL } from '../types/types';
-import { UserAuthOutputModel, UserOutputModel, UsersWithQueryOutputModel } from '../api/models/output/user.output.model';
+import { InjectRepository } from '@nestjs/typeorm';
 import { MeOutputModel } from 'src/features/auth/api/models/output/me.output.model';
-import { DataSource } from 'typeorm';
-import { InjectDataSource } from '@nestjs/typeorm';
+import { ILike, Repository } from 'typeorm';
+import { UserAuthOutputModel, UserOutputModel, UsersWithQueryOutputModel } from '../api/models/output/user.output.model';
+import { User } from '../domain/user.entity';
 import { Account } from '../entities/account';
+import { UserQueryOutputType, UserSQL } from '../types/types';
 
 @Injectable()
 export class UsersQueryRepo {
-  constructor(@InjectDataSource() protected dataSourse: DataSource) { }
+  constructor(@InjectRepository(User) private readonly usersRepository: Repository<User>) { }
 
   async getUsers(query: UserQueryOutputType): Promise<UsersWithQueryOutputModel> {
     const { pageNumber, pageSize, searchLoginTerm, searchEmailTerm, sortBy, sortDirection } = query;
     const sortDir = sortDirection === "asc" ? "ASC" : "DESC";
     const offset = (pageNumber - 1) * pageSize;
-    const searchLoginParam = searchLoginTerm ? `%${searchLoginTerm}%` : `%%`;
-    const searchEmailParam = searchEmailTerm ? `%${searchEmailTerm}%` : `%%`;
-
-    const totalCountQuery = `
-              SELECT COUNT(*)
-              FROM public."Users"
-              WHERE login ILIKE $1 OR email ILIKE $2
-          `;
-
-    const totalCountResult = await this.dataSourse.query(totalCountQuery, [searchLoginParam, searchEmailParam]);
-    const totalCount = parseInt(totalCountResult[0].count);
 
 
-    // postgres doesnt allow use as params names of columns that is why we validate sortBy in function blogQueryParams
-    const mainQuery = `
-      SELECT * FROM public."Users"
-      WHERE login ILIKE $1 OR email ILIKE $2
-      ORDER BY "${sortBy}" ${sortDir}
-      LIMIT $3
-      OFFSET $4
-  `;
+    const totalCount = await this.usersRepository
+        .createQueryBuilder("user")
+        .where([{login: ILike(`%${searchLoginTerm}%`)}, {email: ILike(`%${searchEmailTerm}%`)}])
+        .getCount();
 
-    const users = await this.dataSourse.query(mainQuery, [searchLoginParam, searchEmailParam, pageSize, offset]);
+    const users = await this.usersRepository
+      .createQueryBuilder("user")
+      .where([{login: ILike(`%${searchLoginTerm}%`)}, {email: ILike(`%${searchEmailTerm}%`)}])
+      .orderBy(`user.${sortBy}`, sortDir)
+      .limit(pageSize)
+      .offset(offset)
+      .getMany();
+    
     const pagesCount = Math.ceil(totalCount / pageSize);
-    return {
+      return {
       pagesCount: pagesCount,
       page: pageNumber,
       pageSize: pageSize,
@@ -49,28 +42,19 @@ export class UsersQueryRepo {
     };
   }
   async getUserById(id: string): Promise<UserOutputModel | null> {
-    const query =
-            `SELECT * 
-            FROM public."Users"
-            WHERE "id" = '${id}'`;
-        const result = await this.dataSourse.query(query);
-        return result ? this._mapAccountToUserOutputType(result[0]) : null;
+      const result = await this.usersRepository.findOneBy({id: id});
+      return result ? this._mapAccountToUserOutputType(result) : null;
   }
   async getByLoginOrEmail(loginOrEmail: string): Promise<Account | null> {
-    const query = `
-            SELECT * FROM public."Users"
-            WHERE "email" = '${loginOrEmail}' OR "login" = '${loginOrEmail}'
-        `;
-    const foundedAccount = await this.dataSourse.query(query);
-    return foundedAccount[0] as Account | null;
+    const foundedAccount = await this.usersRepository
+      .createQueryBuilder("user")
+      .where("user.email = :loginOrEmail OR user.login = :loginOrEmail", {loginOrEmail})
+      .getOne();
+    return foundedAccount;
   }
   async getAuthById(id: string): Promise<MeOutputModel | null> {
-    const query =
-            `SELECT * 
-            FROM public."Users"
-            WHERE "id" = '${id}'`;
-        const result = await this.dataSourse.query(query);
-        return result ? this._mapAccountToUserAuthType(result[0]) : null;
+      const result = await this.usersRepository.findOneBy({id: id});
+      return result ? this._mapAccountToUserAuthType(result) : null;
   }
   _mapAccountToUserAuthType(user: Account): UserAuthOutputModel {
     return {

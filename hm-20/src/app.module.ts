@@ -43,7 +43,6 @@ import { CheckPostUseCase } from './features/posts/application/use-cases/change-
 import { PostsQueryRepo } from './features/posts/repo/posts.query.repository';
 import { PostsRepository } from './features/posts/repo/posts.repository';
 import { SecurytyController } from './features/security/api/security.controller';
-import { AddRequestUseCase } from './features/security/application/use-case/add-request.use-case';
 import { CheckRefreshTokenUseCase } from './features/security/application/use-case/check-refreshToken.use-case';
 import { CheckSecurityRefreshTokenUseCase } from './features/security/application/use-case/check-security-refreshToken.use-case.';
 import { CreateSessionUseCase } from './features/security/application/use-case/create-session.use-case';
@@ -80,7 +79,7 @@ const useCases = [CreateUserUseCase, DeleteUserUseCase, DeletePostUseCase, Check
   CreateblogUseCase, DeleteBlogUseCase, UpdateBlogUseCase, CheckCredentialsUseCase, CreateSessionUseCase,
   CheckRefreshTokenUseCase, RevokeSessionUseCase, RefreshTokensUseCase, CreateAccountUseCase, ConfirmEmailUseCase,
   ResendEmailUseCase, RecoveryCodeUseCase, ChangeCodeUseCase, CreateCommentUseCase, LikePostUseCase, DeleteCommentUseCase,
-  UpdateCommentUseCase, LikeCommentUseCase, CheckSecurityRefreshTokenUseCase, RevokeSessionsUseCase, AddRequestUseCase,
+  UpdateCommentUseCase, LikeCommentUseCase, CheckSecurityRefreshTokenUseCase, RevokeSessionsUseCase,
   CreatePostForBlogUseCase, UpdatePostUseCase, CheckPostUseCase ]
 
 @Module({

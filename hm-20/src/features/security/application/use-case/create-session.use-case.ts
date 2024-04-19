@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { JwtService } from "src/common/services/jwt-service";
-import { Session } from "../../types/types";
+import { SessionType } from "../../types/types";
 import { SecurityRepository } from "../../repo/security.repository";
 import {v4 as uuidv4} from 'uuid';
 
@@ -17,7 +17,7 @@ export class CreateSessionUseCase implements ICommandHandler<CreateSessionComman
   
     async execute(command: any): Promise<any> {
         const {userId, deviceId, iat, exp } = await this.jwtService.getRefreshTokenData(command.data.refreshToken);
-        const newSession: Session = {
+        const newSession: SessionType = {
             id:  uuidv4(),
             userId,
             deviceId,
