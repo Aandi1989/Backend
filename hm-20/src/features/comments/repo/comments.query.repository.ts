@@ -17,37 +17,28 @@ export class CommentsQueryRepo {
         const sortDir = sortDirection === "asc" ? "ASC" : "DESC";
         const offset = (pageNumber - 1) * pageSize;
 
-        const totalCountQuery = `
-            SELECT COUNT(*)
-            FROM public."Comments" as comments
-            WHERE comments."postId" = $1
-        `;
-        const totalCountResult = await this.dataSourse.query(totalCountQuery, [postId]);
-        const totalCount = parseInt(totalCountResult[0].count);
+        const totalCount = await this.commentsRepository
+            .createQueryBuilder("comment")
+            .getCount();
 
-        const mainRequest = `
-                SELECT 
-                comments.*,
-                users."login" as "userLogin",
-                (SELECT COUNT(*) 
-                FROM public."LikesComments" 
-                WHERE "commentId" = comments."id" AND "status" = 'Like') as "likesCount",
-                (SELECT COUNT(*) 
-                FROM public."LikesComments" 
-                WHERE "commentId" = comments."id" AND "status" = 'Dislike') as "dislikesCount",
-                ` +(userId ? `(SELECT likes."status"
-                            FROM public."LikesComments" as likes
-                            WHERE likes."userId" = '${userId}' AND comments."id" = likes."commentId") as "myStatus"` 
-                        : ` 'None' as "myStatus" `) +
-            ` FROM public."Comments" as comments
-            LEFT JOIN public."Users" as users
-                ON comments."userId" = users."id"
-            WHERE comments."postId" = $3
-            ORDER BY comments."${sortBy}" ${sortDir}
-            LIMIT $1 OFFSET $2
-        `;
-            
-        const comments = await this.dataSourse.query(mainRequest, [ pageSize, offset, postId]);
+        const comments = await this.commentsRepository
+            .createQueryBuilder("comment")
+            .leftJoin("comment.user", "user")
+            .select([`comment.* , 
+                (select COUNT(*) from "likes_comments" where "likes_comments"."commentId" = comment."id" AND "status" = 'Like') AS "likesCount",
+                (select COUNT(*) from "likes_comments" where "likes_comments"."commentId" = comment."id" AND "status" = 'Dislike') AS "dislikesCount",
+                user.login as "userLogin"
+                `])
+            .addSelect(`${userId}`  ?  `(SELECT "likes_comments"."status" FROM "likes_comments" WHERE "likes_comments"."userId" = :userId 
+                                                                                AND "likes_comments"."commentId" = comment."id") "myStatus"`
+                                    : `'None' AS "myStatus"`)
+            .setParameter("userId", userId)
+            .where("comment.postId = :postId", {postId})
+            .orderBy(`comment.${sortBy}`, sortDir)
+            .limit(pageSize)
+            .offset(offset)
+            .getRawMany();
+        
         const pagesCount = Math.ceil(totalCount / pageSize);
         return {
             pagesCount: pagesCount,
@@ -57,34 +48,25 @@ export class CommentsQueryRepo {
             items: commentsOutputModel(comments)
         };
     }
-    // async getCommentById(id: string, userId: string = ''): Promise<CommentOutputModel | null> {
-    //     const query =
-    //         `SELECT 
-    //             comments.*,
-    //             users."login" as "userLogin",
-    //             (SELECT COUNT(*) 
-    //             FROM public."LikesComments" 
-    //             WHERE "commentId" = comments."id" AND "status" = 'Like') as "likesCount",
-    //             (SELECT COUNT(*) 
-    //             FROM public."LikesComments" 
-    //             WHERE "commentId" = comments."id" AND "status" = 'Dislike') as "dislikesCount",
-    //             ` +(userId ? `(SELECT likes."status"
-    //                         FROM public."LikesComments" as likes
-    //                         WHERE likes."userId" = '${userId}' AND comments."id" = likes."commentId") as "myStatus"` 
-    //                     : ` 'None' as "myStatus" `) +
-    //            ` FROM public."Comments" as comments
-    //            LEFT JOIN public."Users" as users
-    //             ON comments."userId" = users."id"
-    //         WHERE comments."id" = $1`;
-    //     const result = await this.dataSourse.query(query, [id]);
-    //     const outputComment = commentsOutputModel(result)[0]
+    async getCommentById(id: string, userId: string = ''): Promise<CommentOutputModel | null> {
+       
+        const result = await this.commentsRepository
+            .createQueryBuilder("comment")
+            .leftJoin("comment.user", "user")
+            .select([`comment.* , 
+                (select COUNT(*) from "likes_comments" where "likes_comments"."commentId" = comment.id AND "status" = 'Like') AS "likesCount",
+                (select COUNT(*) from "likes_comments" where "likes_comments"."commentId" = comment.id AND "status" = 'Dislike') AS "dislikesCount",
+                user.login as "userLogin"
+                `])
+            .addSelect(`${userId}`  ?  `(SELECT "likes_comments"."status" FROM "likes_comments" WHERE "likes_comments"."userId" = :userId 
+                                                                                AND "likes_comments"."commentId" = comment.id) "myStatus"`
+                                    : `'None' AS "myStatus"`)
+            .setParameter("userId", userId)
+            .where("comment.id = :id", { id })
+            .getRawOne();
 
-    //     return outputComment;
-    // }
-
-    //                         Not finished        CommentOutputModel | null
-    async getCommentById(id: string, userId: string = ''): Promise<any> {
-       const result = await this.commentsRepository.findOneBy({id: id})
-       return result; 
+        const outputComment = commentsOutputModel([result])
+        return outputComment;
     }
 }
+

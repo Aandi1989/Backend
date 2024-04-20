@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { commentsOutputModel } from 'src/common/helpers/commentsOutoutModel';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Result, ResultCode } from 'src/common/types/types';
-import { DataSource, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CommentOutputModel } from '../api/models/output/comment.output.model';
-import { CommentSQL, myStatus } from '../types/types';
 import { Comment } from '../domain/comment.entity';
+import { CommentSQL, myStatus } from '../types/types';
 
 @Injectable()
 export class CommentsRepository {
@@ -17,6 +16,7 @@ export class CommentsRepository {
     const mainData = await this.commentsRepository
       .createQueryBuilder("comment")
       .leftJoin("comment.user", "user")
+      .where("comment.id = :id", { id: createdComment.id })
       .select(["comment.*", `user.login as "userLogin"`])
       .getRawOne();
 

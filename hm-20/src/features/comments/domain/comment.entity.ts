@@ -30,3 +30,4 @@ export class Comment {
     @OneToMany(() => LikesComments, likesComments => likesComments.comment)
     likesComments: LikesComments[]
 }
+
