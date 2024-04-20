@@ -21,9 +21,9 @@ export class DeleteCommentUseCase implements ICommandHandler<DeleteCommentComman
         if(!foundComment) return {
             code: ResultCode.NotFound
         };
-        if(foundComment.commentatorInfo.userId !== command.user.id) return {
-            code: ResultCode.Forbidden
-        }
+        // if(foundComment.commentatorInfo.userId !== command.user.id) return {
+        //     code: ResultCode.Forbidden
+        // }
         return await this.commentsRepository.deleteComment(command.id)
     }
   }

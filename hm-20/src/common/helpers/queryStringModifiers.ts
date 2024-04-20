@@ -24,7 +24,7 @@ export const blogQueryParams = (query: Partial<BlogQueryType>): BlogQueryOutputT
   return {
       pageNumber: query.pageNumber ? +query.pageNumber : 1,
       pageSize: query.pageSize ? +query.pageSize : 10,
-      searchNameTerm: query.searchNameTerm ? query.searchNameTerm : null,
+      searchNameTerm: query.searchNameTerm ? query.searchNameTerm : '',
       // we use that method to avoid sql injection cause we cant use name of column as param $1 in postgres
       sortBy: query.sortBy && allowedSortByValues.includes(query.sortBy) ? query.sortBy : "createdAt",
       sortDirection: query.sortDirection ? query.sortDirection : "desc"

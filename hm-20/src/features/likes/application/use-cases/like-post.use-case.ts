@@ -1,10 +1,10 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { myStatus, PostType } from "../../../posts/types/types";
 import { ResultCode } from "src/common/types/types";
-import { LikeStatus } from "src/features/likes/entities/like.entity";
 import { LikesRepository } from "src/features/likes/repo/like.repository";
 import { LikesQueryRepo } from "src/features/likes/repo/like.query.repository";
 import { PostsQueryRepo } from "../../../posts/repo/posts.query.repository";
+import { LikePostStatus } from "../../entities/likePost.entity";
 
 export class LikePostCommand {
     constructor(public postId: string,
@@ -23,7 +23,7 @@ export class LikePostUseCase implements ICommandHandler<LikePostCommand>{
         if(!foundPost) return { code: ResultCode.NotFound };
         const foundStatus = await this.likesQueryRepo.getLikePost(command.postId, command.userId);
         if(!foundStatus){
-            const newStatus = new LikeStatus(command.userId, command.postId, command.status);
+            const newStatus = new LikePostStatus(command.userId, command.postId, command.status);
             const addedLike = await this.likesRepository.addLikePost(newStatus);
             return {code: ResultCode.Success}
         };

@@ -65,46 +65,51 @@ export class PostsQueryRepo {
             items: outputPosts
         }; 
     }
-    async getPostById(id: string, userId: string = ''): Promise<PostType | null> {
-        const query =`
-                    SELECT posts.*,
-                    likes."userId",
-                    users."login",
-                    likes."createdAt" as "addedAt",
-                    (SELECT COUNT(*)
-                                FROM public."LikesPosts" as likes
-                                WHERE likes."postId" = $1 AND "status" = 'Like') 
-                                as "likesCount",
+    // async getPostById(id: string, userId: string = ''): Promise<PostType | null> {
+    //     const query =`
+    //                 SELECT posts.*,
+    //                 likes."userId",
+    //                 users."login",
+    //                 likes."createdAt" as "addedAt",
+    //                 (SELECT COUNT(*)
+    //                             FROM public."LikesPosts" as likes
+    //                             WHERE likes."postId" = $1 AND "status" = 'Like') 
+    //                             as "likesCount",
                     
-                    (SELECT COUNT(*)
-                                FROM public."LikesPosts" as likes
-                                WHERE likes."postId" = $1 AND "status" = 'Dislike') 
-                                as "dislikesCount", ` +
+    //                 (SELECT COUNT(*)
+    //                             FROM public."LikesPosts" as likes
+    //                             WHERE likes."postId" = $1 AND "status" = 'Dislike') 
+    //                             as "dislikesCount", ` +
                                 
-                    (userId ? `(SELECT likes."status"
-                                    FROM public."LikesPosts" as likes
-                                    WHERE likes."userId" = '${userId}' AND likes."postId" = '${id}') as "myStatus"` 
-                                : ` 'None' as "myStatus" `) +
+    //                 (userId ? `(SELECT likes."status"
+    //                                 FROM public."LikesPosts" as likes
+    //                                 WHERE likes."userId" = '${userId}' AND likes."postId" = '${id}') as "myStatus"` 
+    //                             : ` 'None' as "myStatus" `) +
                         
-                                `FROM public."Posts" as posts
-                    LEFT JOIN 
-                        (SELECT *
-                            FROM public."LikesPosts" as likes
-                            WHERE likes."status" = 'Like'
-                            ORDER BY likes."createdAt" DESC
-                            LIMIT 3) as likes
-                    ON posts."id" = likes."postId"
-                    LEFT JOIN 
-                    public."Users" as users
-                    ON likes."userId" = users."id"
-                    WHERE posts."id" = $1
+    //                             `FROM public."Posts" as posts
+    //                 LEFT JOIN 
+    //                     (SELECT *
+    //                         FROM public."LikesPosts" as likes
+    //                         WHERE likes."status" = 'Like'
+    //                         ORDER BY likes."createdAt" DESC
+    //                         LIMIT 3) as likes
+    //                 ON posts."id" = likes."postId"
+    //                 LEFT JOIN 
+    //                 public."Users" as users
+    //                 ON likes."userId" = users."id"
+    //                 WHERE posts."id" = $1
                    
-        `;
+    //     `;
            
-        const result = await this.dataSourse.query(query, [id]);
-        const outputPost = postsOutputModel(result)[0];
-        return outputPost;
+    //     const result = await this.dataSourse.query(query, [id]);
+    //     const outputPost = postsOutputModel(result)[0];
+    //     return outputPost;
 
+    // }
+    //          Not finished                            PostType | null
+    async getPostById(id: string, userId: string = ''): Promise<any> {
+        const result = await this.postRepository.findOneBy({id: id});
+        return result;
     }
     async getPostsByBlogId(blogId: string, query: PostQueryOutputType, userId: string = ''): Promise<PostsWithQueryOutputModel> {
         const { pageNumber, pageSize, sortBy, sortDirection } = query;

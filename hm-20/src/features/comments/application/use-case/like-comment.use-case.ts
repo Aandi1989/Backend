@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { Result, ResultCode } from "src/common/types/types";
-import { LikeStatus } from "src/features/likes/entities/like.entity";
+import { LikeCommentStatus } from "src/features/likes/entities/likeComment.entity";
 import { LikesQueryRepo } from "src/features/likes/repo/like.query.repository";
 import { LikesRepository } from "src/features/likes/repo/like.repository";
 import { CommentsQueryRepo } from "../../repo/comments.query.repository";
@@ -30,7 +30,7 @@ export class LikeCommentUseCase implements ICommandHandler<LikeCommentCommand> {
             return { code: ResultCode.Success }
         }
         if(!foundStatus){
-            const newStatus = new LikeStatus(command.userId, command.id, command.status);
+            const newStatus = new LikeCommentStatus(command.userId, command.id, command.status);
             const addedLike = await this.likesRepository.addLikeComment(newStatus);
             return {code: ResultCode.Success}
         }

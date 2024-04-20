@@ -1,25 +1,19 @@
 import { Injectable } from "@nestjs/common";
-import { DataSource } from "typeorm";
-import { InjectDataSource } from "@nestjs/typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { LikesComments, LikesPosts } from "../domain/likes.entity";
 
 @Injectable()
 export class LikesQueryRepo {
-    constructor(@InjectDataSource() protected dataSourse: DataSource) { }
+    constructor(@InjectRepository(LikesComments) private readonly likesCommentsRepository: Repository<LikesComments>,
+                @InjectRepository(LikesPosts) private readonly likesPostsRepository: Repository<LikesPosts>) { }
     
     async getLikePost(postId: string, userId: string){
-        const query = `
-            SELECT * FROM public."LikesPosts"
-            WHERE "postId" = '${postId}' AND "userId" = '${userId}'
-        `;
-        const result = await this.dataSourse.query(query);
-        return result[0];
+        const result = await this.likesPostsRepository.findOneBy({postId, userId});
+        return result;
     }
     async getLikeComment(commentId: string, userId: string){
-        const query = `
-            SELECT * FROM public."LikesComments"
-            WHERE "commentId" = '${commentId}' AND "userId" = '${userId}'
-        `;
-        const result = await this.dataSourse.query(query);
-        return result[0];
+        const result = await this.likesCommentsRepository.findOneBy({commentId, userId})
+        return result;
     }
 }

@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { commentsOutputModel } from 'src/common/helpers/commentsOutoutModel';
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { CommentOutputModel, CommentsWithQueryOutputModel } from '../api/models/output/comment.output.model';
 import { CommentQueryOutputType } from '../types/types';
+import { Comment } from '../domain/comment.entity';
 
 @Injectable()
 export class CommentsQueryRepo {
-    constructor(@InjectDataSource() protected dataSourse: DataSource) { }
+    constructor(@InjectDataSource() protected dataSourse: DataSource,
+                @InjectRepository(Comment) private readonly commentsRepository: Repository<Comment>) { }
 
     async getCommentsByPostId(postId: string, query: CommentQueryOutputType,
         userId: string = ''): Promise<CommentsWithQueryOutputModel> {
@@ -55,28 +57,34 @@ export class CommentsQueryRepo {
             items: commentsOutputModel(comments)
         };
     }
-    async getCommentById(id: string, userId: string = ''): Promise<CommentOutputModel | null> {
-        const query =
-            `SELECT 
-                comments.*,
-                users."login" as "userLogin",
-                (SELECT COUNT(*) 
-                FROM public."LikesComments" 
-                WHERE "commentId" = comments."id" AND "status" = 'Like') as "likesCount",
-                (SELECT COUNT(*) 
-                FROM public."LikesComments" 
-                WHERE "commentId" = comments."id" AND "status" = 'Dislike') as "dislikesCount",
-                ` +(userId ? `(SELECT likes."status"
-                            FROM public."LikesComments" as likes
-                            WHERE likes."userId" = '${userId}' AND comments."id" = likes."commentId") as "myStatus"` 
-                        : ` 'None' as "myStatus" `) +
-               ` FROM public."Comments" as comments
-               LEFT JOIN public."Users" as users
-                ON comments."userId" = users."id"
-            WHERE comments."id" = $1`;
-        const result = await this.dataSourse.query(query, [id]);
-        const outputComment = commentsOutputModel(result)[0]
+    // async getCommentById(id: string, userId: string = ''): Promise<CommentOutputModel | null> {
+    //     const query =
+    //         `SELECT 
+    //             comments.*,
+    //             users."login" as "userLogin",
+    //             (SELECT COUNT(*) 
+    //             FROM public."LikesComments" 
+    //             WHERE "commentId" = comments."id" AND "status" = 'Like') as "likesCount",
+    //             (SELECT COUNT(*) 
+    //             FROM public."LikesComments" 
+    //             WHERE "commentId" = comments."id" AND "status" = 'Dislike') as "dislikesCount",
+    //             ` +(userId ? `(SELECT likes."status"
+    //                         FROM public."LikesComments" as likes
+    //                         WHERE likes."userId" = '${userId}' AND comments."id" = likes."commentId") as "myStatus"` 
+    //                     : ` 'None' as "myStatus" `) +
+    //            ` FROM public."Comments" as comments
+    //            LEFT JOIN public."Users" as users
+    //             ON comments."userId" = users."id"
+    //         WHERE comments."id" = $1`;
+    //     const result = await this.dataSourse.query(query, [id]);
+    //     const outputComment = commentsOutputModel(result)[0]
 
-        return outputComment;
+    //     return outputComment;
+    // }
+
+    //                         Not finished        CommentOutputModel | null
+    async getCommentById(id: string, userId: string = ''): Promise<any> {
+       const result = await this.commentsRepository.findOneBy({id: id})
+       return result; 
     }
 }

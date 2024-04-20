@@ -1,53 +1,34 @@
 import { Injectable } from '@nestjs/common';
-import { LikeStatus } from 'src/features/likes/entities/like.entity';
-import { DataSource } from 'typeorm';
-import { InjectDataSource } from '@nestjs/typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { LikeCommentStatus } from 'src/features/likes/entities/likeComment.entity';
 import { myStatus } from 'src/features/posts/types/types';
+import { Repository } from 'typeorm';
+import { LikesComments, LikesPosts } from '../domain/likes.entity';
+import { LikePostStatus } from '../entities/likePost.entity';
 
 @Injectable()
 export class LikesRepository {
-    constructor(@InjectDataSource() protected dataSourse: DataSource) { }
+    constructor(@InjectRepository(LikesComments) private readonly likesCommentsRepository: Repository<LikesComments>,
+                @InjectRepository(LikesPosts) private readonly likesPostsRepository: Repository<LikesPosts>) { }
 
-    async addLikePost(newLike: LikeStatus){
-        const { id, userId, parentId, status, createdAt } = newLike;
-        const query = `
-            INSERT INTO public."LikesPosts"(
-                "id", "userId", "postId", "status", "createdAt")
-                VALUES ('${id}', '${userId}', '${parentId}', '${status}', '${createdAt}');
-        `;
-        const result = await this.dataSourse.query(query);
+    async addLikePost(newLike: LikePostStatus){
+        const result = await this.likesPostsRepository.save(newLike);
         return result;
     }
-    async addLikeComment(newLike: LikeStatus){
-        const { id, userId, parentId, status, createdAt } = newLike;
-        const query = `
-            INSERT INTO public."LikesComments"(
-                "id", "userId", "commentId", "status", "createdAt")
-                VALUES ('${id}', '${userId}', '${parentId}', '${status}', '${createdAt}');
-        `;
-        const result = await this.dataSourse.query(query);
+    async addLikeComment(newLike: LikeCommentStatus){
+        const result = await this.likesCommentsRepository.save(newLike);
         return result;
     }
     async updateLikePost(id: string, newStatus: myStatus): Promise<boolean> {
-        const query = 
-                `UPDATE public."LikesPosts" 
-                SET "status" = '${newStatus}' 
-                WHERE "id" = '${id}'`;
-        const result = await this.dataSourse.query(query);
-        return result[1] === 1;
+       const result = await this.likesPostsRepository.update(id, {status: newStatus});
+       return result.affected === 1;
     }
     async updateLikeComment(id: string, newStatus: myStatus): Promise<boolean> {
-        const query = 
-                `UPDATE public."LikesComments" 
-                SET "status" = '${newStatus}' 
-                WHERE "id" = '${id}'`;
-        const result = await this.dataSourse.query(query);
-        return result[1] === 1;
+        const result = await this.likesCommentsRepository.update(id, {status: newStatus});
+        return result.affected === 1;
     }
     async deleteAllData(){
-        const queryPosts = `DELETE FROM public."LikesPosts"`;
-        const resultPosts = await this.dataSourse.query(queryPosts);
-        const queryComments = `DELETE FROM public."LikesComments"`;
-        const resultComments = await this.dataSourse.query(queryComments);
+        const commentsResult = await this.likesCommentsRepository.clear();
+        const postsResult = await this.likesPostsRepository.clear();
       }
 }
