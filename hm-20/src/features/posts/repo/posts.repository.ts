@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import { UpdatePostForBlogModel } from 'src/features/blogs/api/models/input/update-post.input';
-import { DataSource, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Post } from '../domain/post.entity';
 import { myStatus, PostSQL, PostType } from '../types/types';
 

@@ -1,15 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import { commentsOutputModel } from 'src/common/helpers/commentsOutoutModel';
-import { DataSource, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CommentOutputModel, CommentsWithQueryOutputModel } from '../api/models/output/comment.output.model';
-import { CommentQueryOutputType } from '../types/types';
 import { Comment } from '../domain/comment.entity';
+import { CommentQueryOutputType } from '../types/types';
 
 @Injectable()
 export class CommentsQueryRepo {
-    constructor(@InjectDataSource() protected dataSourse: DataSource,
-                @InjectRepository(Comment) private readonly commentsRepository: Repository<Comment>) { }
+    constructor(@InjectRepository(Comment) private readonly commentsRepository: Repository<Comment>) { }
 
     async getCommentsByPostId(postId: string, query: CommentQueryOutputType,
         userId: string = ''): Promise<CommentsWithQueryOutputModel> {
