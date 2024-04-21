@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
-import { postsOutputModel } from "src/common/helpers/postsOutputModel";
+import { postsOutputModel, updatedPostsOutputModel } from "src/common/helpers/postsOutputModel";
 import { DataSource, Repository, SelectQueryBuilder } from "typeorm";
 import { PostsWithQueryOutputModel } from "../api/models/output/post.output.model";
 import { myStatus, PostQueryOutputType, PostType } from "../types/types";
@@ -16,62 +16,8 @@ export class PostsQueryRepo {
                 @InjectRepository(User) private readonly userRepository: Repository<User>,
                 @InjectRepository(LikesPosts) private readonly likesPostsRepository: Repository<LikesPosts>) { }
     
-    // async getPosts(query: PostQueryOutputType, userId: string = ''): Promise<PostsWithQueryOutputModel> {
-    //     const { pageNumber, pageSize, sortBy, sortDirection } = query;
-    //     const sortDir = sortDirection === "asc" ? "ASC" : "DESC";
-    //     const offset = (pageNumber - 1) * pageSize;
-
-    //     const totalCountQuery = `
-    //         SELECT COUNT(*)
-    //         FROM public."Posts"
-    //     `;
-    //     const totalCountResult = await this.dataSourse.query(totalCountQuery);
-    //     const totalCount = parseInt(totalCountResult[0].count);
-        
-    //     const mainQuery = `
-    //         WITH DistinctPosts AS (
-    //             SELECT posts.*, 
-    //                 (SELECT COUNT(*) FROM public."LikesPosts" WHERE "postId" = posts."id" AND "status" = 'Like') as "likesCount",
-    //                 (SELECT COUNT(*) FROM public."LikesPosts" WHERE "postId" = posts."id" AND "status" = 'Dislike') as "dislikesCount", `
-    //                 +(userId ? `(SELECT likes."status"
-    //                                     FROM public."LikesPosts" as likes
-    //                                      WHERE likes."userId" = '${userId}' AND posts."id" = likes."postId") as "myStatus"` 
-    //                                  : ` 'None' as "myStatus" `) +
-    //             ` FROM public."Posts" as posts
-    //             ORDER BY posts."${sortBy}" ${sortDir}
-    //             LIMIT $1 OFFSET $2
-    //         )
-    //         SELECT DistinctPosts.*,
-    //                 likes."userId",
-    //                 users."login",
-    //                 likes."createdAt" as "addedAt" 
-    //         FROM DistinctPosts 
-    //         LEFT JOIN (
-    //             SELECT *, ROW_NUMBER() OVER (PARTITION BY "postId" ORDER BY "createdAt" DESC) as row_num
-    //             FROM public."LikesPosts"
-    //             WHERE "status" = 'Like'
-    //         ) as likes 
-    //         ON DistinctPosts."id" = likes."postId" AND likes.row_num <= 3
-    //         LEFT JOIN public."Users" as users 
-    //         ON likes."userId" = users."id"
-    //         ORDER BY DistinctPosts."${sortBy}" ${sortDir}, likes."createdAt" DESC
-    //     `;
-        
-    //     const posts = await this.dataSourse.query(mainQuery, [pageSize, offset]);
-    //     const outputPosts = postsOutputModel(posts);
-    //     const pagesCount = Math.ceil(totalCount / pageSize);
-        
-    //     return {
-    //         pagesCount: pagesCount,
-    //         page: pageNumber,
-    //         pageSize: pageSize,
-    //         totalCount: totalCount,
-    //         items: outputPosts
-    //     }; 
-    // }
-
-    //                                                                         PostsWithQueryOutputModel
-    async getPosts(query: PostQueryOutputType, userId: string = ''): Promise<any> {
+   
+    async getPosts(query: PostQueryOutputType, userId: string = ''): Promise<PostsWithQueryOutputModel> {
         const { pageNumber, pageSize, sortBy, sortDirection } = query;
         const sortDir = sortDirection === "asc" ? "ASC" : "DESC";
         const offset = (pageNumber - 1) * pageSize;
@@ -113,11 +59,20 @@ export class PostsQueryRepo {
                     `likes_posts.id = likes_with_rn."likeId"`
                 )
                 .leftJoin("user", "user", `user.id = likes_posts."userId"`)
-                .where(`likes_with_rn.rn <= 4 AND likes_posts."status" = 'Like'`) 
+                .where(`likes_with_rn.rn <= 3 AND likes_posts."status" = 'Like'`) 
                 .orderBy("likes_posts.createdAt", "DESC")
                 .getRawMany();
 
-        return posts;
+        const outputPosts = updatedPostsOutputModel(posts, lastThreeLikes);
+        const pagesCount = Math.ceil(totalCount / pageSize);
+
+        return {
+            pagesCount: pagesCount,
+            page: pageNumber,
+            pageSize: pageSize,
+            totalCount: totalCount,
+            items: outputPosts
+        }; 
 
     }
 
