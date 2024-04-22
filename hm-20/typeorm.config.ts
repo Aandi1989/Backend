@@ -6,7 +6,9 @@ config();
 
 
 export default new DataSource({
-  url: process.env.POSTGRES_DB_DEVELOPMENT_URL,
+  // here must be full url string to data base where you gonna migrate
+  // url: process.env.POSTGRES_DB_DEVELOPMENT_URL,
+  url: process.env.POSTGRES_DB_TEST_URL,
   type: 'postgres',
   migrations: ['migrations/*.ts'],
   entities: ['src/**/*.entity.ts']
