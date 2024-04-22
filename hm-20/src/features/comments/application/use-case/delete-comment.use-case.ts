@@ -17,7 +17,7 @@ export class DeleteCommentUseCase implements ICommandHandler<DeleteCommentComman
                 protected commentsRepository: CommentsRepository) { }
   
     async execute(command: DeleteCommentCommand): Promise<any> {
-        const foundComment = await this.commentsQueryRepo.getCommentById(command.id);
+        const foundComment = await this.commentsQueryRepo.getCommentWithoutLikesById(command.id);
         if(!foundComment) return {
             code: ResultCode.NotFound
         };

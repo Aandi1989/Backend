@@ -19,7 +19,7 @@ export class LikePostUseCase implements ICommandHandler<LikePostCommand>{
                 protected likesQueryRepo: LikesQueryRepo) { }
   
     async execute(command: LikePostCommand): Promise<any> {
-        const foundPost = await this.postsQueryRepo.getPostById(command.postId);
+        const foundPost = await this.postsQueryRepo.getPostWithoutLikesById(command.postId);
         if(!foundPost) return { code: ResultCode.NotFound };
         const foundStatus = await this.likesQueryRepo.getLikePost(command.postId, command.userId);
         if(!foundStatus){

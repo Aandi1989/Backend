@@ -67,5 +67,9 @@ export class CommentsQueryRepo {
         const outputComment = commentsOutputModel([result])
         return outputComment;
     }
+    async getCommentWithoutLikesById(id :string){
+        const result = await this.commentsRepository.findOneBy({id: id});
+        return result;
+    }
 }
 

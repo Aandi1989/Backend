@@ -19,7 +19,7 @@ export class SecurytyController{
                 private commandBus: CommandBus){}
     
     @HttpCode(HTTP_STATUSES.OK_200)            
-    @Get('devices')
+    @Get('devices') 
     async getSessions(@Req() req: Request): Promise<SessionOutputModel[]>{
         const refreshToken = req.cookies.refreshToken;
         const result = await this.commandBus.execute(new CheckSecurityRefreshTokenCommand(refreshToken));

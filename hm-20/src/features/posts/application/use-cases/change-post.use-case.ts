@@ -15,7 +15,7 @@ export class CheckPostUseCase implements ICommandHandler<CheckPostCommand>{
     ) { }
   
     async execute(command: CheckPostCommand): Promise<Result> {
-        const foundedPost = await this.postsQueryRepo.getPostForChange(command.blogId, command.postId);
+        const foundedPost = await this.postsQueryRepo.getPostWithoutLikesByBlogIdAndPostId(command.blogId, command.postId);
         if(!foundedPost) return { code: ResultCode.NotFound};
         // if(foundedPost.userIdFromBlog !== foundedPost.userIdFromUser){
         //     return { code: ResultCode.Forbidden }

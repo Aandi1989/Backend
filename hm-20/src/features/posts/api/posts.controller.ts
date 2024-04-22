@@ -41,7 +41,7 @@ export class PostsController{
     @Get(`:id/${RouterPaths.comments}`)
     async getCommentsForPost(@Req() req: Request, @Param('id') postId: string, 
         @Query() query: Partial<CommentQueryType>): Promise<CommentsWithQueryOutputModel>{
-        const post = await this.postsQueryRepo.getPostById(postId, req.userId!)
+        const post = await this.postsQueryRepo.getPostWithoutLikesById(postId)
         if(!post) throw new NotFoundException('Post not found');
         return await this.commentsQueryRepo.getCommentsByPostId(postId ,commentQueryParams(query), req.userId!);
     }
@@ -49,7 +49,7 @@ export class PostsController{
     @Post(':id/comments')
     async createComment (@Req() req: Request, @Param('id') postId: string, 
         @Body() body: CreateCommentModel): Promise<CommentOutputModel>{
-        const post = await this.postsQueryRepo.getPostById(postId);
+        const post = await this.postsQueryRepo.getPostWithoutLikesById(postId);
         if(!post) throw new NotFoundException();
         return await this.commandBus.execute(new CreateCommentCommand(postId, body.content, req.user!))
     }

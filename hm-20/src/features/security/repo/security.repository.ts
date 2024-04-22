@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { SessionType } from '../types/types';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { RefreshTokenDataModel } from '../api/models/input/refresh-token.input.model';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
 import { Session } from '../domain/session.entity';
+import { SessionType } from '../types/types';
 
 
 
 @Injectable()
 export class SecurityRepository {
-    constructor(@InjectDataSource() protected dataSourse: DataSource,
-                @InjectRepository(Session) private readonly sessionsRepository: Repository<Session>) { }
+    constructor(@InjectRepository(Session) private readonly sessionsRepository: Repository<Session>) { }
 
     async createSession(newSession: SessionType) {
         const result = await this.sessionsRepository.save(newSession);
@@ -32,13 +31,13 @@ export class SecurityRepository {
         return result.affected === 1;
     }
     async revokeSessions(userId: string, deviceId: string){
-        const query = `
-        DELETE FROM public."Sessions"
-        WHERE "userId" = '${userId}'
-        AND "deviceId" != '${deviceId}'
-   `;
-   const result = await this.dataSourse.query(query);
-   return result;
+        const result = await this.sessionsRepository
+            .createQueryBuilder("session")
+            .delete()
+            .from("session")
+            .where("userId = :userId AND deviceId != :deviceId", {userId, deviceId})
+            .execute()
+        return result;
     }
     async deleteAllData() {
         const result = await this.sessionsRepository.clear();
