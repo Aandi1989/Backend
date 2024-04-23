@@ -35,6 +35,7 @@ export class PostsQueryRepo {
                                     : `'None' AS "myStatus"`)
                 .setParameter("userId", userId)
                 .orderBy(`post.${sortBy}`, sortDir)
+                .addOrderBy(`post."createdAt"`, 'ASC')
                 .groupBy("post.id")
                 .limit(pageSize)
                 .offset(offset)
@@ -111,7 +112,7 @@ export class PostsQueryRepo {
 
         const outputPost = updatedPostsOutputModel([post], lastThreeLikes);
 
-        return outputPost;
+        return outputPost[0];
     }
     async getPostsByBlogId(blogId: string, query: PostQueryOutputType, userId: string = ''): Promise<PostsWithQueryOutputModel> {
         const { pageNumber, pageSize, sortBy, sortDirection } = query;
@@ -137,6 +138,7 @@ export class PostsQueryRepo {
             .setParameter("userId", userId)
             .where("post.blogId = :blogId", {blogId})
             .orderBy(`post.${sortBy}`, sortDir)
+            .addOrderBy(`post."createdAt"`, 'ASC')
             .groupBy("post.id")
             .limit(pageSize)
             .offset(offset)

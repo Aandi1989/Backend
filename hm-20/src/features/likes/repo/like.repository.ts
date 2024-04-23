@@ -28,7 +28,13 @@ export class LikesRepository {
         return result.affected === 1;
     }
     async deleteAllData(){
-        const commentsResult = await this.likesCommentsRepository.clear();
-        const postsResult = await this.likesPostsRepository.clear();
+        const commentsResult = await this.likesCommentsRepository
+            .createQueryBuilder()
+            .delete()
+            .execute();
+        const postsResult = await this.likesPostsRepository
+            .createQueryBuilder()
+            .delete()
+            .execute();
       }
 }

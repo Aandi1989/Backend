@@ -18,6 +18,7 @@ export class CommentsQueryRepo {
 
         const totalCount = await this.commentsRepository
             .createQueryBuilder("comment")
+            .where(`comment.postId = :postId`, {postId})
             .getCount();
 
         const comments = await this.commentsRepository
@@ -64,11 +65,14 @@ export class CommentsQueryRepo {
             .where("comment.id = :id", { id })
             .getRawOne();
 
-        const outputComment = commentsOutputModel([result])
-        return outputComment;
+        if(result){
+            const outputComment = commentsOutputModel([result])
+            return outputComment[0];
+        }
+        return result;
     }
     async getCommentWithoutLikesById(id :string){
-        const result = await this.commentsRepository.findOneBy({id: id});
+        const result = await this.commentsRepository.findOneBy({id});
         return result;
     }
 }

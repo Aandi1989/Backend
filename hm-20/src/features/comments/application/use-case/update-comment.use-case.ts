@@ -22,9 +22,9 @@ export class UpdateCommentUseCase implements ICommandHandler<UpdateCommentComman
         if(!foundComment) return {
             code: ResultCode.NotFound
         };
-        // if(foundComment.commentatorInfo.userId !== command.user.id) return {
-        //     code: ResultCode.Forbidden
-        // }
+        if(foundComment.userId !== command.user.id) return {
+            code: ResultCode.Forbidden
+        }
         return await this.commentsRepository.updateComment(command.id, command.content)
     }
   }

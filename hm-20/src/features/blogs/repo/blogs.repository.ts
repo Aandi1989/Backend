@@ -29,18 +29,20 @@ export class BlogsRepository {
         return result.affected === 1;
     }
     async deleteAllData() {
-        const result = await this.blogsRepository.clear();
+        const result = await this.blogsRepository
+        .createQueryBuilder()
+        .delete()
+        .execute();
     }
 }
 
 
 /*
 accessTokens:
-Juan:  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmY2E3OWIwMC04MWQ2LTRkNGUtOWFlNC1mYzRmOGU1ZmU5MTYiLCJpYXQiOjE3MTM1MjY2NzQsImV4cCI6MTcxNjIwNTA3NH0.0vP-qYgb1Jtl5aXcSOcrefky9LxUZoc-aiZavaSQQrM
+Juan:  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMzg5MzVkZS0xZjNhLTQ0ZjEtODY5YS0zODE0NTZlY2M0NjAiLCJpYXQiOjE3MTM4NzEyOTgsImV4cCI6MTcxNjU0OTY5OH0.LPDtHqGGCV7wHuG5w1bF2sn4rEHu-ccp3YVNs685urk
 John:  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI5ZmZhZmRjYi1iMTE3LTRjNGYtYjYwZC0zODU0ZDc3N2I1YzgiLCJpYXQiOjE3MTM2MjU0MDQsImV4cCI6MTcxNjMwMzgwNH0.JXiRDhBkXmgYg2k1Ld87MvomUjVjCIQ2YKUvcY4D3oc
 Anna:   eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiZGZiMWU5OC04ZGQwLTRkMWMtOGQ2ZS0wMDQ3NmVhYzQ5YjciLCJpYXQiOjE3MTM2MjU0NjUsImV4cCI6MTcxNjMwMzg2NX0.9rB2RQhtUfQD00dZPm1ZzUBR0UFUlKVCKCWyjXE78GQ
-Fabi:   eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMjg3ZTJjMy1hYWVkLTQ3NTMtODNiNy1iY2YwYzkxNWQzOGQiLCJpYXQiOjE3MTM2MjU1MDgsImV4cCI6MTcxNjMwMzkwOH0.RD2wiyXINC1_zrvWwzwWwLb7RZdjYqEzXZ7ePz2-3uk
-*/
+Fabi:   eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzOGJkZmZkMi1iN2JiLTRkNjItODM2YS05ODFhYmE1YTk4YWEiLCJpYXQiOjE3MTM4NzEzMzQsImV4cCI6MTcxNjU0OTczNH0.bauXgqXlKKn9j_pwFeVMBT8gAMnpHqHAlPc34udkcBY
 
 
 // const data = await this.commentsRepository

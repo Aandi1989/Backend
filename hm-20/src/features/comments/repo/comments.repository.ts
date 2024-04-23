@@ -31,7 +31,10 @@ export class CommentsRepository {
       return result.affected === 1 ? {code: ResultCode.Success} : {code: ResultCode.NotFound};
   }
   async deleteAllData() {
-    const result = await this.commentsRepository.clear();
+    const result = await this.commentsRepository
+    .createQueryBuilder()
+    .delete()
+    .execute();
   }
   _mapCreatedCommentToOutputView(comment): CommentOutputModel {
     return {

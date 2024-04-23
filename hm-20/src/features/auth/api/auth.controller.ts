@@ -33,7 +33,7 @@ export class AuthController {
                 protected usersQueryRepo: UsersQueryRepo,
                 private commandBus: CommandBus){}
 
-    @UseGuards(ThrottlerGuard)
+    // @UseGuards(ThrottlerGuard)
     @UseGuards(AuthGuard)
     @HttpCode(HTTP_STATUSES.OK_200)
     @Get('me')
@@ -43,7 +43,7 @@ export class AuthController {
         return await this.usersQueryRepo.getAuthById(userId);
     }
      
-    @UseGuards(ThrottlerGuard)
+    // @UseGuards(ThrottlerGuard)
     @HttpCode(HTTP_STATUSES.OK_200)         
     @Post('login')
     async login (@Req() req: Request, @Body() body: AuthBodyModel, @Res() res: Response):Promise<LoginOutputModel>{
@@ -83,7 +83,7 @@ export class AuthController {
         return res.send(newAccessToken);
     }
 
-    @UseGuards(ThrottlerGuard)
+    // @UseGuards(ThrottlerGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204) 
     @Post('registration')
     async registration (@Body() body:CreateUserModel){
@@ -93,7 +93,7 @@ export class AuthController {
         return;
     }
 
-    @UseGuards(ThrottlerGuard)
+    // @UseGuards(ThrottlerGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204) 
     @Post('registration-confirmation')
     async confirmEmail (@Body() body: ConfirmCodeModel){
@@ -102,7 +102,7 @@ export class AuthController {
         return;
     }
 
-    @UseGuards(ThrottlerGuard)
+    // @UseGuards(ThrottlerGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204) 
     @Post('registration-email-resending')
     async registrationEmailResending (@Body() body: ResendEmailModel){
@@ -111,7 +111,7 @@ export class AuthController {
         return;
     }
 
-    @UseGuards(ThrottlerGuard)
+    // @UseGuards(ThrottlerGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204) 
     @Post('password-recovery')
     async passwordRecovery (@Body() body: ResendEmailModel){
@@ -120,7 +120,7 @@ export class AuthController {
         return;
     }
 
-    @UseGuards(ThrottlerGuard)
+    // @UseGuards(ThrottlerGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204) 
     @Post('new-password')
     async newPassword (@Body() body: ChangePasswordModel){

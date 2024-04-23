@@ -40,6 +40,9 @@ export class SecurityRepository {
         return result;
     }
     async deleteAllData() {
-        const result = await this.sessionsRepository.clear();
+        const result = await this.sessionsRepository
+            .createQueryBuilder()
+            .delete()
+            .execute();
     }
 }

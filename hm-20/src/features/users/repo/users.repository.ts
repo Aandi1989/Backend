@@ -22,7 +22,10 @@ export class UsersRepository {
     return result.affected === 1;
   }
   async deleteAllData() {
-    const result = await this.usersRepository.clear();
+    const result = await this.usersRepository
+      .createQueryBuilder()
+      .delete()
+      .execute();
   }
   _mapDBAccountToUserOutputType(user: Account): UserOutputModel {
     return {

@@ -28,7 +28,10 @@ export class PostsRepository {
        return result.affected === 1;
     }
     async deleteAllData(){
-        const result = await this.postRepository.clear();
+        const result = await this.postRepository
+        .createQueryBuilder()
+        .delete()
+        .execute();
     }
     _mapPostToOutputModel(post): PostType{
         return{
@@ -38,7 +41,7 @@ export class PostsRepository {
                 content: post.content,
                 blogId: post.blogId,
                 blogName: post.blogName,
-                createdAt: post.createAt,
+                createdAt: post.createdAt,
                 extendedLikesInfo: {
                     likesCount: 0,
                     dislikesCount: 0,
