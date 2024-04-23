@@ -1,5 +1,5 @@
 import { IsEnum } from "class-validator";
-import { myStatus } from "src/features/posts/types/types";
+import { myStatus } from "../../../../comments/types/types";
 
 export class SetStatusModel {
     @IsEnum(myStatus, {

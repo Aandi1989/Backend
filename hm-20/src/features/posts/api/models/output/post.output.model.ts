@@ -1,4 +1,5 @@
-import { PostType } from "src/features/posts/types/types"
+import { PostType } from "../../../types/types"
+
 
 export class PostsWithQueryOutputModel  {
     pagesCount: number

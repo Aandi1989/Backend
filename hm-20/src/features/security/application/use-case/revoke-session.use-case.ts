@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { JwtService } from "src/common/services/jwt-service";
 import { SecurityRepository } from "../../repo/security.repository";
+import { JwtService } from "../../../../common/services/jwt-service";
 
 
 

@@ -1,15 +1,15 @@
 import { Controller, Delete, ForbiddenException, Get, HttpCode, NotFoundException, Param, Req, UnauthorizedException } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { Request } from 'express';
-import { JwtService } from "src/common/services/jwt-service";
-import { ResultCode } from "src/common/types/types";
-import { HTTP_STATUSES, RouterPaths } from "src/common/utils/utils";
 import { CheckSecurityRefreshTokenCommand } from "../application/use-case/check-security-refreshToken.use-case.";
 import { RevokeSessionCommand } from "../application/use-case/revoke-session.use-case";
 import { RevokeSessionsCommand } from "../application/use-case/revoke-sessions.use-case";
 import { SecurityQueryRepo } from "../repo/security.query.repository";
 import { DeleteSessionModel } from "./models/input/delete-session.input.model";
 import { SessionOutputModel } from "./models/output/security.output.model";
+import { JwtService } from "../../../common/services/jwt-service";
+import { ResultCode } from "../../../common/types/types";
+import { RouterPaths, HTTP_STATUSES } from "../../../common/utils/utils";
 
 
 @Controller(RouterPaths.security)

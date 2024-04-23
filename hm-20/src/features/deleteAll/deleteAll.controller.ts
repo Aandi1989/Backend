@@ -1,12 +1,12 @@
 import { Controller, Delete, Res } from "@nestjs/common";
-import { PostsRepository } from "src/features/posts/repo/posts.repository";
 import { Response } from 'express';
 import { UsersRepository } from "../users/repo/users.repository";
 import { BlogsRepository } from "../blogs/repo/blogs.repository";
 import { CommentsRepository } from "../comments/repo/comments.repository";
-import { RouterPaths, HTTP_STATUSES } from "src/common/utils/utils";
 import { LikesRepository } from "../likes/repo/like.repository";
 import { SecurityRepository } from "../security/repo/security.repository";
+import { PostsRepository } from "../posts/repo/posts.repository";
+import { HTTP_STATUSES, RouterPaths } from "../../common/utils/utils";
 
 @Controller(RouterPaths.testingAllData)
 export class DeleteAllDataController {

@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { PostsRepository } from "../../repo/posts.repository";
 import { myStatus, PostType } from "../../types/types";
-import { CreatePostForBlogModel } from "src/features/blogs/api/models/input/create-post-for-blog.model";
 import {v4 as uuidv4} from 'uuid';
+import { CreatePostForBlogModel } from "../../../blogs/api/models/input/create-post-for-blog.model";
 
 
 export class CreatePostForBlogCommand {

@@ -1,11 +1,10 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { AuthQueryRepo } from "../../repo/auth.query.repo";
-import { ResultCode } from "src/common/types/types";
 import { AuthRepository } from "../../repo/auth.repository";
-import { emailManager } from "src/common/services/email-manager/email-manager";
 import * as bcrypt from "bcrypt";
-import { recoveryCodeDoesntExist } from "src/common/helpers/errorMessagesHelpers";
 import { ChangePasswordModel } from "../../api/models/input/change.password.model";
+import { recoveryCodeDoesntExist } from "../../../../common/helpers/errorMessagesHelpers";
+import { ResultCode } from "../../../../common/types/types";
 
 
 

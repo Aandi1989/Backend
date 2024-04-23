@@ -1,9 +1,8 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { ObjectId } from "mongodb";
-import { UserOutputModel } from "src/features/users/api/models/output/user.output.model";
 import { CommentsQueryRepo } from "../../repo/comments.query.repository";
-import { ResultCode } from "src/common/types/types";
 import { CommentsRepository } from "../../repo/comments.repository";
+import { ResultCode } from "../../../../common/types/types";
+import { UserOutputModel } from "../../../users/api/models/output/user.output.model";
 
 
 export class DeleteCommentCommand {

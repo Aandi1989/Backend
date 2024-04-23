@@ -1,30 +1,29 @@
 import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, HttpCode, NotFoundException, Param, Post, Put, Query, Req, Res, UseGuards } from "@nestjs/common";
 import { BlogQueryType, BlogType } from "../types/types";
-import { blogQueryParams, postQueryParams } from "src/common/helpers/queryStringModifiers";
 import { BlogsQueryRepo } from "../repo/blogs.query.repository";
 import { BlogsService } from "../application/blogs.service";
-import { PostQueryType, PostType } from "src/features/posts/types/types";
-import { PostsService } from "src/features/posts/application/posts.service";
-import { PostsQueryRepo } from "src/features/posts/repo/posts.query.repository";
-import { RouterPaths, HTTP_STATUSES } from "src/common/utils/utils";
 import { CreateBlogModel } from "./models/input/create-blog.input.model";
 import { BlogsWithQueryOutputModel } from "./models/output/blog.output.model";
-import { PostsWithQueryOutputModel } from "src/features/posts/api/models/output/post.output.model";
 import { CommandBus } from "@nestjs/cqrs";
 import { CreateBlogCommand } from "../application/use-case/create-blog.use-case";
 import { DeleteBlogCommand } from "../application/use-case/delete-blog.use-case";
 import { UpdateBlogCommand } from "../application/use-case/update-blog.use-case";
-import { BasicAuthGuard } from "src/common/guards/basicAuth";
-import { CreatePostForBlogCommand } from "src/features/posts/application/use-cases/create-post-for-blog.use-case";
 import { CreatePostForBlogModel } from "./models/input/create-post-for-blog.model";
-import { AccessUserId } from "src/common/guards/accessUserId";
 import { Response, Request } from 'express';
-import { CreatePostModel } from "src/features/posts/api/models/input/create-post.input.model";
-import { DeletePostCommand } from "src/features/posts/application/use-cases/delete-post.use-case";
-import { ResultCode } from "src/common/types/types";
-import { UpdatePostCommand } from "src/features/posts/application/use-cases/update-post.use-case";
 import { UpdatePostForBlogModel } from "./models/input/update-post.input";
-import { CheckPostCommand } from "src/features/posts/application/use-cases/change-post.use-case";
+import { AccessUserId } from "../../../common/guards/accessUserId";
+import { BasicAuthGuard } from "../../../common/guards/basicAuth";
+import { blogQueryParams, postQueryParams } from "../../../common/helpers/queryStringModifiers";
+import { ResultCode } from "../../../common/types/types";
+import { RouterPaths, HTTP_STATUSES } from "../../../common/utils/utils";
+import { PostsWithQueryOutputModel } from "../../posts/api/models/output/post.output.model";
+import { PostsService } from "../../posts/application/posts.service";
+import { CreatePostForBlogCommand } from "../../posts/application/use-cases/create-post-for-blog.use-case";
+import { DeletePostCommand } from "../../posts/application/use-cases/delete-post.use-case";
+import { UpdatePostCommand } from "../../posts/application/use-cases/update-post.use-case";
+import { PostsQueryRepo } from "../../posts/repo/posts.query.repository";
+import { PostType, PostQueryType } from "../../posts/types/types";
+
 
 @Controller(RouterPaths.blogsSA)
 export class BlogsSAController {

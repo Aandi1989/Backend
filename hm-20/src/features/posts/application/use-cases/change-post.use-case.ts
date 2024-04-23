@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { Result, ResultCode } from "src/common/types/types";
 import { PostsQueryRepo } from "../../repo/posts.query.repository";
 import { PostsRepository } from "../../repo/posts.repository";
+import { Result, ResultCode } from "../../../../common/types/types";
 
 export class CheckPostCommand {
     constructor(public blogId: string,

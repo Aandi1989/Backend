@@ -6,7 +6,7 @@ import { AppModule } from './../src/app.module';
 describe('AppController (e2e)', () => {
   let app: INestApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -15,10 +15,15 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
+  it('should create a new user', () => {
     return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
-  });
+        .post('/sa/users')
+        .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
+        .send({
+            login:"Jonny",
+            password: "123456",
+            email:"master2021@gmail.com"
+        })
+        .expect(201)
+  }) 
 });

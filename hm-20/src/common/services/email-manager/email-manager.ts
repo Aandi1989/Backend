@@ -1,4 +1,5 @@
-import { Account } from "src/features/users/entities/account"
+
+import { Account } from "../../../features/users/entities/account"
 import { emailAdapter } from "./adapter/email-adapter"
 
 

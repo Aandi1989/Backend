@@ -1,7 +1,8 @@
-import { BlogQueryType, BlogQueryOutputType } from 'src/features/blogs/types/types';
-import { CommentQueryType, CommentQueryOutputType } from 'src/features/comments/types/types';
-import { PostQueryOutputType, PostQueryType } from 'src/features/posts/types/types';
-import { UserQueryOutputType, UserQueryType } from 'src/features/users/types/types';
+import { BlogQueryType, BlogQueryOutputType } from "../../features/blogs/types/types";
+import { CommentQueryType, CommentQueryOutputType } from "../../features/comments/types/types";
+import { PostQueryType, PostQueryOutputType } from "../../features/posts/types/types";
+import { UserQueryType, UserQueryOutputType } from "../../features/users/types/types";
+
 
 
 export const userQueryParams = (

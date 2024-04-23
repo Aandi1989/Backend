@@ -1,14 +1,6 @@
 import { Body, Controller, Get, HttpCode, NotFoundException, Param, Post, Put, Query, Req, UseGuards } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { Request } from 'express';
-import { AccessUserId } from "src/common/guards/accessUserId";
-import { AuthGuard } from "src/common/guards/auth.guard";
-import { commentQueryParams, postQueryParams } from "src/common/helpers/queryStringModifiers";
-import { ResultCode } from "src/common/types/types";
-import { HTTP_STATUSES, RouterPaths } from "src/common/utils/utils";
-import { CreateCommentModel } from "src/features/comments/api/models/input/create-comment.input.model";
-import { CommentOutputModel, CommentsWithQueryOutputModel } from "src/features/comments/api/models/output/comment.output.model";
-import { CreateCommentCommand } from "src/features/comments/application/use-case/create-comment.use-case";
 import { CommentsQueryRepo } from "../../comments/repo/comments.query.repository";
 import { CommentQueryType } from "../../comments/types/types";
 import { SetStatusModel } from "../../likes/api/models/input/set-status.input.model";
@@ -17,6 +9,14 @@ import { PostsService } from "../application/posts.service";
 import { PostsQueryRepo } from "../repo/posts.query.repository";
 import { PostQueryType, PostType } from "../types/types";
 import { PostsWithQueryOutputModel } from "./models/output/post.output.model";
+import { AccessUserId } from "../../../common/guards/accessUserId";
+import { AuthGuard } from "../../../common/guards/auth.guard";
+import { postQueryParams, commentQueryParams } from "../../../common/helpers/queryStringModifiers";
+import { ResultCode } from "../../../common/types/types";
+import { RouterPaths, HTTP_STATUSES } from "../../../common/utils/utils";
+import { CreateCommentModel } from "../../comments/api/models/input/create-comment.input.model";
+import { CommentsWithQueryOutputModel, CommentOutputModel } from "../../comments/api/models/output/comment.output.model";
+import { CreateCommentCommand } from "../../comments/application/use-case/create-comment.use-case";
 
 
 @Controller(RouterPaths.posts)

@@ -1,20 +1,17 @@
-import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, Put, Query, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
-import { UsersService } from '../application/users.service';
-import { UserQueryType } from '../types/types';
-import { UsersQueryRepo } from '../repo/users.query.repository';
-import { userQueryParams } from 'src/common/helpers/queryStringModifiers';
-import { Response } from 'express';
-import { RouterPaths, HTTP_STATUSES } from 'src/common/utils/utils';
-import { UserOutputModel, UsersWithQueryOutputModel } from './models/output/user.output.model';
-import { CreateUserModel } from './models/input/create-user.input.model';
-import { AuthGuard } from 'src/common/guards/auth.guard';
-import { CreateUserCommand, CreateUserUseCase } from '../application/use-cases/create-user.use-case';
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { Request } from 'express';
+import { CreateUserCommand } from '../application/use-cases/create-user.use-case';
 import { DeleteUserCommand } from '../application/use-cases/delete-user.use-case';
-import { BasicAuthGuard } from 'src/common/guards/basicAuth';
+import { UsersService } from '../application/users.service';
+import { UsersQueryRepo } from '../repo/users.query.repository';
+import { UserQueryType } from '../types/types';
+import { CreateUserModel } from './models/input/create-user.input.model';
+import { UserOutputModel, UsersWithQueryOutputModel } from './models/output/user.output.model';
+import { BasicAuthGuard } from '../../../common/guards/basicAuth';
+import { userQueryParams } from '../../../common/helpers/queryStringModifiers';
+import { RouterPaths } from '../../../common/utils/utils';
 
-@Controller(RouterPaths.users)
+@Controller(RouterPaths.usersSA)
 export class UsersController {
   constructor(protected usersService: UsersService,
     protected usersQueryRepo: UsersQueryRepo,

@@ -1,4 +1,5 @@
-import { BlogType } from "src/features/blogs/types/types";
+import { BlogType } from "../../../types/types";
+
 
 export class BlogsWithQueryOutputModel {
      pagesCount: number;

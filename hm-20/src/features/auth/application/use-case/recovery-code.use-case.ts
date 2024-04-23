@@ -1,10 +1,10 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { AuthQueryRepo } from "../../repo/auth.query.repo";
-import { ResultCode } from "src/common/types/types";
 import {v4 as uuidv4} from 'uuid';
 import { add } from 'date-fns/add';
 import { AuthRepository } from "../../repo/auth.repository";
-import { emailManager } from "src/common/services/email-manager/email-manager";
+import { emailManager } from "../../../../common/services/email-manager/email-manager";
+import { ResultCode } from "../../../../common/types/types";
 
 
 

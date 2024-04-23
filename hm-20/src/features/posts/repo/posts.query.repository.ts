@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { updatedPostsOutputModel } from "src/common/helpers/postsOutputModel";
-import { LikesPosts } from "src/features/likes/domain/likes.entity";
 import { Repository } from "typeorm";
 import { PostsWithQueryOutputModel } from "../api/models/output/post.output.model";
 import { Post } from "../domain/post.entity";
 import { PostQueryOutputType, PostType } from "../types/types";
+import { updatedPostsOutputModel } from "../../../common/helpers/postsOutputModel";
+import { LikesPosts } from "../../likes/domain/likes.entity";
 
 
 @Injectable()

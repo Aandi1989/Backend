@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { JwtService } from "src/common/services/jwt-service";
 import { SessionType } from "../../types/types";
 import { SecurityRepository } from "../../repo/security.repository";
 import {v4 as uuidv4} from 'uuid';
+import { JwtService } from "../../../../common/services/jwt-service";
 
 
 

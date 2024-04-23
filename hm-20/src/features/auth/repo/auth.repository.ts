@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Result, ResultCode } from "src/common/types/types";
-import { User } from "src/features/users/domain/user.entity";
 import { Repository } from "typeorm";
 import { CodeRecoveryModel } from "../api/models/input/recovery.code.model";
+import { Result, ResultCode } from "../../../common/types/types";
+import { User } from "../../users/domain/user.entity";
 
 
 @Injectable()

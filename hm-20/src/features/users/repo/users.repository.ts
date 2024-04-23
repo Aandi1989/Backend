@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Result, ResultCode } from 'src/common/types/types';
 import { Repository } from "typeorm";
 import { UserOutputModel } from '../api/models/output/user.output.model';
 import { User } from '../domain/user.entity';
 import { Account } from '../entities/account';
+import { Result, ResultCode } from '../../../common/types/types';
 
 
 @Injectable()

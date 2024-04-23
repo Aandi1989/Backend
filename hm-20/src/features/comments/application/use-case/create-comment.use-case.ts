@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { UserOutputModel } from "src/features/users/api/models/output/user.output.model";
 import { CommentsRepository } from "../../repo/comments.repository";
 import {v4 as uuidv4} from 'uuid';
+import { UserOutputModel } from "../../../users/api/models/output/user.output.model";
 
 
 export class CreateCommentCommand {

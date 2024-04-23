@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { AuthBodyModel } from "../../api/models/input/login.input.model";
-import { UsersQueryRepo } from "src/features/users/repo/users.query.repository";
 import * as bcrypt from 'bcrypt';
+import { UsersQueryRepo } from "../../../users/repo/users.query.repository";
 
 
 

@@ -1,4 +1,5 @@
-import { myStatus } from "src/features/comments/types/types"
+import { myStatus } from "../../../types/types"
+
 
 export class CommentsWithQueryOutputModel {
     pagesCount: number
