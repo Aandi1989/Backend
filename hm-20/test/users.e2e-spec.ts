@@ -5,7 +5,7 @@ import { AppModule } from './../src/app.module';
 import { HTTP_STATUSES, RouterPaths } from '../src/common/utils/utils';
 import { applyAppSettings } from '../src/common/settings/apply-app-setting';
 
-describe('AppController (e2e)', () => {
+describe('Users SuperAdmin (e2e)', () => {
   let app: INestApplication;
   let httpServer;
 
@@ -79,6 +79,36 @@ describe('AppController (e2e)', () => {
         createdUser = response.body;
   }) 
 
+  it('- DELETE should not delete user by unathorithed', async () => {
+    return request(httpServer)
+      .delete(`/${RouterPaths.usersSA}/12345`)
+      .set('Authorization', 'Basic wrongAoth')
+      .expect(HTTP_STATUSES.UNAUTHORIZED_401)
+  })
+
+  it('- DELETE should not delete user with incorrect id', async () => {
+    return request(httpServer)
+      .delete(`/${RouterPaths.usersSA}/b9fc0872-5a32-4628-b9ee-9d9b3aebce4a`)
+      .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
+      .expect(HTTP_STATUSES.NOT_FOUND_404)
+  })
+
+  it('+ DELETE should delete user with correct id', async () => {
+    return request(httpServer)
+      .delete(`/${RouterPaths.usersSA}/${createdUser.id}`)
+      .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
+      .expect(HTTP_STATUSES.NO_CONTENT_204);
+  })
+
+  it('+ GET should return 200 and empty array', async () => {
+    const res = await request(httpServer)
+      .get(`/${RouterPaths.usersSA}`)
+      .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
+      .expect(HTTP_STATUSES.OK_200)
+
+      expect(res.body.items).toEqual([])
+  })
+
   it(' + POST create multiple users', async () => {
     for(let i =1; i <= 12; i++){
       await request(httpServer)
@@ -91,6 +121,222 @@ describe('AppController (e2e)', () => {
         })
         .expect(HTTP_STATUSES.CREATED_201)
     }
+  }, 10000)
+
+  it('+ GET users correct pagination without query params', async () => {
+    const res = await request(httpServer)
+      .get(`/${RouterPaths.usersSA}`)
+      .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
+      .expect(HTTP_STATUSES.OK_200)
+
+      expect(res.body).toEqual({
+        "pagesCount": 2,
+        "page": 1,
+        "pageSize": 10,
+        "totalCount": 12,
+        "items": expect.arrayContaining([
+          expect.objectContaining
+            ({
+                "id":  expect.any(String),
+                "login": "TestUser12",
+                "email": "testUser12@gmail.com",
+                "createdAt": expect.any(String)
+            }),
+            expect.objectContaining
+            ({
+                "id":  expect.any(String),
+                "login": "TestUser11",
+                "email": "testUser11@gmail.com",
+                "createdAt": expect.any(String)
+            }), 
+            expect.objectContaining
+            ({
+                "id":  expect.any(String),
+                "login": "TestUser10",
+                "email": "testUser10@gmail.com",
+                "createdAt": expect.any(String)
+            }),
+            expect.objectContaining
+            ({
+                "id":  expect.any(String),
+                "login": "TestUser9",
+                "email": "testUser9@gmail.com",
+                "createdAt": expect.any(String)
+            }),
+            expect.objectContaining
+            ({
+                "id":  expect.any(String),
+                "login": "TestUser8",
+                "email": "testUser8@gmail.com",
+                "createdAt": expect.any(String)
+            }),
+            expect.objectContaining
+            ({
+                "id":  expect.any(String),
+                "login": "TestUser7",
+                "email": "testUser7@gmail.com",
+                "createdAt": expect.any(String)
+            }),
+            expect.objectContaining
+            ({
+                "id":  expect.any(String),
+                "login": "TestUser6",
+                "email": "testUser6@gmail.com",
+                "createdAt": expect.any(String)
+            }),
+            expect.objectContaining
+            ({
+                "id":  expect.any(String),
+                "login": "TestUser5",
+                "email": "testUser5@gmail.com",
+                "createdAt": expect.any(String)
+            }),
+            expect.objectContaining
+            ({
+                "id":  expect.any(String),
+                "login": "TestUser4",
+                "email": "testUser4@gmail.com",
+                "createdAt": expect.any(String)
+            }),
+            expect.objectContaining
+            ({
+                "id":  expect.any(String),
+                "login": "TestUser3",
+                "email": "testUser3@gmail.com",
+                "createdAt": expect.any(String)
+            }),
+        ])
+    })
+  })
+
+  it('+ GET users correct pagination with query params', async () => {
+    const res = await request(httpServer)
+      .get(`/${RouterPaths.usersSA}/?pageSize=4&pageNumber=2`)
+      .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
+      .expect(HTTP_STATUSES.OK_200)
+
+      expect(res.body).toEqual({
+        "pagesCount": 3,
+        "page": 2,
+        "pageSize": 4,
+        "totalCount": 12,
+        "items": expect.arrayContaining([
+          expect.objectContaining
+            ({
+                "id": expect.any(String),
+                "login": "TestUser8",
+                "email": "testUser8@gmail.com",
+                "createdAt": expect.any(String)
+            }),
+          expect.objectContaining
+            ({
+                "id": expect.any(String),
+                "login": "TestUser7",
+                "email": "testUser7@gmail.com",
+                "createdAt": expect.any(String)
+            }),
+          expect.objectContaining
+            ({
+                "id": expect.any(String),
+                "login": "TestUser6",
+                "email": "testUser6@gmail.com",
+                "createdAt": expect.any(String)
+            }),
+          expect.objectContaining
+            ({
+                "id": expect.any(String),
+                "login": "TestUser5",
+                "email": "testUser5@gmail.com",
+                "createdAt": expect.any(String)
+            })
+        ])
+    })
+  })
+
+  it('+ GET users correct sorting by createdAt ASC', async () => {
+    const res = await request(httpServer)
+      .get(`/${RouterPaths.usersSA}/?sortedBy=createdAt&sortDirection=asc`)
+      .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
+      .expect(HTTP_STATUSES.OK_200)
+
+      expect(res.body).toEqual({
+        "pagesCount": 2,
+        "page": 1,
+        "pageSize": 10,
+        "totalCount": 12,
+        "items": expect.arrayContaining([
+          expect.objectContaining
+            ({
+                "id":  expect.any(String),
+                "login": "TestUser1",
+                "email": "testUser1@gmail.com",
+                "createdAt": expect.any(String)
+            }),
+            expect.objectContaining
+            ({
+                "id":  expect.any(String),
+                "login": "TestUser2",
+                "email": "testUser2@gmail.com",
+                "createdAt": expect.any(String)
+            }), 
+            expect.objectContaining
+            ({
+                "id":  expect.any(String),
+                "login": "TestUser3",
+                "email": "testUser3@gmail.com",
+                "createdAt": expect.any(String)
+            }),
+            expect.objectContaining
+            ({
+                "id":  expect.any(String),
+                "login": "TestUser4",
+                "email": "testUser4@gmail.com",
+                "createdAt": expect.any(String)
+            }),
+            expect.objectContaining
+            ({
+                "id":  expect.any(String),
+                "login": "TestUser5",
+                "email": "testUser5@gmail.com",
+                "createdAt": expect.any(String)
+            }),
+            expect.objectContaining
+            ({
+                "id":  expect.any(String),
+                "login": "TestUser6",
+                "email": "testUser6@gmail.com",
+                "createdAt": expect.any(String)
+            }),
+            expect.objectContaining
+            ({
+                "id":  expect.any(String),
+                "login": "TestUser7",
+                "email": "testUser7@gmail.com",
+                "createdAt": expect.any(String)
+            }),
+            expect.objectContaining
+            ({
+                "id":  expect.any(String),
+                "login": "TestUser8",
+                "email": "testUser8@gmail.com",
+                "createdAt": expect.any(String)
+            }),
+            expect.objectContaining
+            ({
+                "id":  expect.any(String),
+                "login": "TestUser9",
+                "email": "testUser9@gmail.com",
+                "createdAt": expect.any(String)
+            }),
+            expect.objectContaining
+            ({
+                "id":  expect.any(String),
+                "login": "TestUser10",
+                "email": "testUser10@gmail.com",
+                "createdAt": expect.any(String)
+            }),
+        ])
+    })
   })
 
   afterAll( async () => {
