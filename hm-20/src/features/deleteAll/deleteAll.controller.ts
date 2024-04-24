@@ -25,6 +25,6 @@ export class DeleteAllDataController {
         await this.postsRepository.deleteAllData();
         await this.blogsRepository.deleteAllData();
         await this.usersRepository.deleteAllData();
-        return res.send(HTTP_STATUSES.NO_CONTENT_204);
+        return res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
     }
 }
