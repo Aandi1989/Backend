@@ -6,7 +6,7 @@ import { CommandBus } from "@nestjs/cqrs";
 import { DeleteCommentCommand } from "../application/use-case/delete-comment.use-case";
 import { CreateCommentModel } from "./models/input/create-comment.input.model";
 import { UpdateCommentCommand } from "../application/use-case/update-comment.use-case";
-import { LikeCommentCommand } from "../application/use-case/like-comment.use-case";
+import { LikeCommentCommand } from "../../likes/application/use-cases/like-comment.use-case";
 import { AccessUserId } from "../../../common/guards/accessUserId";
 import { AuthGuard } from "../../../common/guards/auth.guard";
 import { ResultCode } from "../../../common/types/types";

@@ -1,21 +1,19 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
+import { BasicAuthGuard } from '../../../common/guards/basicAuth';
+import { userQueryParams } from '../../../common/helpers/queryStringModifiers';
+import { RouterPaths } from '../../../common/utils/utils';
 import { CreateUserCommand } from '../application/use-cases/create-user.use-case';
 import { DeleteUserCommand } from '../application/use-cases/delete-user.use-case';
-import { UsersService } from '../application/users.service';
 import { UsersQueryRepo } from '../repo/users.query.repository';
 import { UserQueryType } from '../types/types';
 import { CreateUserModel } from './models/input/create-user.input.model';
 import { UserOutputModel, UsersWithQueryOutputModel } from './models/output/user.output.model';
-import { BasicAuthGuard } from '../../../common/guards/basicAuth';
-import { userQueryParams } from '../../../common/helpers/queryStringModifiers';
-import { RouterPaths } from '../../../common/utils/utils';
 
 @Controller(RouterPaths.usersSA)
 export class UsersController {
-  constructor(protected usersService: UsersService,
-    protected usersQueryRepo: UsersQueryRepo,
-    private commandBus: CommandBus) { }
+  constructor(protected usersQueryRepo: UsersQueryRepo,
+            private commandBus: CommandBus) { }
  
   @UseGuards(BasicAuthGuard)
   @Get()

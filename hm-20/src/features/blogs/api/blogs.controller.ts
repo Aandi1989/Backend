@@ -1,25 +1,19 @@
 import { Controller, Get, NotFoundException, Param, Query, Req, UseGuards } from "@nestjs/common";
-import { CommandBus } from "@nestjs/cqrs";
 import { Request } from 'express';
-import { BlogsService } from "../application/blogs.service";
-import { BlogsQueryRepo } from "../repo/blogs.query.repository";
-import { BlogQueryType, BlogType } from "../types/types";
-import { BlogsWithQueryOutputModel } from "./models/output/blog.output.model";
 import { AccessUserId } from "../../../common/guards/accessUserId";
 import { blogQueryParams, postQueryParams } from "../../../common/helpers/queryStringModifiers";
 import { RouterPaths } from "../../../common/utils/utils";
 import { PostsWithQueryOutputModel } from "../../posts/api/models/output/post.output.model";
-import { PostsService } from "../../posts/application/posts.service";
 import { PostsQueryRepo } from "../../posts/repo/posts.query.repository";
 import { PostQueryType } from "../../posts/types/types";
+import { BlogsQueryRepo } from "../repo/blogs.query.repository";
+import { BlogQueryType, BlogType } from "../types/types";
+import { BlogsWithQueryOutputModel } from "./models/output/blog.output.model";
 
 @Controller(RouterPaths.blogs)
 export class BlogsController {
     constructor(protected blogsQueryRepo: BlogsQueryRepo,
-                protected blogsService: BlogsService,
-                protected postsService: PostsService,
-                protected postsQueryRepo: PostsQueryRepo,
-                private commandBus: CommandBus){}
+                protected postsQueryRepo: PostsQueryRepo){}
     @Get()
     async getBlogs(@Query() query: Partial<BlogQueryType>): Promise<BlogsWithQueryOutputModel>{
         return await this.blogsQueryRepo.getBlogs(blogQueryParams(query));

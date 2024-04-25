@@ -28,8 +28,6 @@ import { PostType, PostQueryType } from "../../posts/types/types";
 @Controller(RouterPaths.blogsSA)
 export class BlogsSAController {
     constructor(protected blogsQueryRepo: BlogsQueryRepo,
-                protected blogsService: BlogsService,
-                protected postsService: PostsService,
                 protected postsQueryRepo: PostsQueryRepo,
                 private commandBus: CommandBus){}
     @UseGuards(BasicAuthGuard)

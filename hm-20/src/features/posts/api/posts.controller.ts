@@ -5,7 +5,6 @@ import { CommentsQueryRepo } from "../../comments/repo/comments.query.repository
 import { CommentQueryType } from "../../comments/types/types";
 import { SetStatusModel } from "../../likes/api/models/input/set-status.input.model";
 import { LikePostCommand } from "../../likes/application/use-cases/like-post.use-case";
-import { PostsService } from "../application/posts.service";
 import { PostsQueryRepo } from "../repo/posts.query.repository";
 import { PostQueryType, PostType } from "../types/types";
 import { PostsWithQueryOutputModel } from "./models/output/post.output.model";
@@ -22,7 +21,6 @@ import { CreateCommentCommand } from "../../comments/application/use-case/create
 @Controller(RouterPaths.posts)
 export class PostsController{
     constructor(protected postsQueryRepo: PostsQueryRepo,
-                protected postsService: PostsService,
                 protected commentsQueryRepo: CommentsQueryRepo,
                 private commandBus: CommandBus){}
     @UseGuards(AccessUserId)

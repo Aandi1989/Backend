@@ -19,7 +19,7 @@ import { RouterPaths, HTTP_STATUSES } from "../../../common/utils/utils";
 import { AuthGuard } from "../../../common/guards/auth.guard";
 import { CheckRefreshTokenCommand } from "../../security/application/use-case/check-refreshToken.use-case";
 import { ResultCode } from "../../../common/types/types";
-import { RefreshTokensCommand } from "../../blogs/application/use-case/refresh-tokens.use-case";
+import { RefreshTokensCommand } from "../../security/application/use-case/refresh-tokens.use-case";
 import { RevokeSessionCommand } from "../../security/application/use-case/revoke-session.use-case";
 import { CreateUserModel } from "../../users/api/models/input/create-user.input.model";
 import { UsersQueryRepo } from "../../users/repo/users.query.repository";
