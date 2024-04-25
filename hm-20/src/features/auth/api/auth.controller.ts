@@ -43,7 +43,7 @@ export class AuthController {
         return await this.usersQueryRepo.getAuthById(userId);
     }
      
-    // @UseGuards(ThrottlerGuard)
+    @UseGuards(ThrottlerGuard)
     @HttpCode(HTTP_STATUSES.OK_200)         
     @Post('login')
     async login (@Req() req: Request, @Body() body: AuthBodyModel, @Res() res: Response):Promise<LoginOutputModel>{
