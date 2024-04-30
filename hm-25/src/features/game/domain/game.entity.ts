@@ -73,3 +73,12 @@ export class Answer {
     @Column()
     sequence: number;
 }
+
+@Entity()
+export class UserWaitingForGame {
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
+
+    @Column({type:"uuid", nullable: false})
+    userId: string;
+}

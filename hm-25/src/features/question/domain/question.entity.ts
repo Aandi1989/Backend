@@ -9,8 +9,8 @@ export class Question {
     @Column()
     body: string;
 
-    @Column()
-    correctAnswer: string;
+    @Column({type: 'json', nullable: false})
+    correctAnswers: (string | number | boolean);
 
     @Column()
     published: boolean;

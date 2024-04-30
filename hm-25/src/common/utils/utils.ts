@@ -20,6 +20,9 @@ export const RouterPaths = {
   security: 'security',
   testingAllData: 'testing/all-data',
 
+  quizQuestion: 'sa/quiz/question',
+  pairGame: 'pair-game-quiz/pairs',
+
   __test__: 'testing',
 };
 
