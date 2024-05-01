@@ -11,6 +11,7 @@ import { LikesModule } from './features/likes/like.module';
 import { PostsModule } from './features/posts/post.module';
 import { SessionsModule } from './features/security/session.module';
 import { UsersModule } from './features/users/user.module';
+import { QuestionsModule } from './features/question/question.module';
 
 
 @Module({
@@ -43,7 +44,8 @@ import { UsersModule } from './features/users/user.module';
     BlogsModule,
     UsersModule,
     AuthModule,
-    DeleteAllModule
+    DeleteAllModule,
+    QuestionsModule
   ]
 })
 export class AppModule { }

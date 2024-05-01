@@ -2,12 +2,10 @@ import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from
 import { Request } from 'express';
 import { Observable } from 'rxjs';
 import { JwtService } from '../services/jwt-service';
-import { UsersQueryRepo } from '../../features/users/repo/users.query.repository';
 
 @Injectable()
 export class BasicAuthGuard implements CanActivate {
-    constructor(protected usersQueryRepo: UsersQueryRepo,
-        protected jwtService: JwtService) { }
+    constructor(protected jwtService: JwtService) { }
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request: Request = context.switchToHttp().getRequest();
 

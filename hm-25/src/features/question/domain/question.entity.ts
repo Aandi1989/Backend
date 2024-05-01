@@ -10,7 +10,7 @@ export class Question {
     body: string;
 
     @Column({type: 'json', nullable: false})
-    correctAnswers: (string | number | boolean);
+    correctAnswers: (string | number)[];
 
     @Column()
     published: boolean;

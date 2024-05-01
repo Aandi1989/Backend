@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class QuizFourthMigration1714478720687 implements MigrationInterface {
-    name = 'QuizFourthMigration1714478720687'
+export class QuizFifthMigration1714557573914 implements MigrationInterface {
+    name = 'QuizFifthMigration1714557573914'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`ALTER TABLE "question" RENAME COLUMN "correctAnswer" TO "correctAnswers"`);
