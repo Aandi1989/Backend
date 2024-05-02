@@ -8,32 +8,40 @@ import { QuestionQueryOutputType } from '../types/types';
 @Injectable()
 export class QuestionsQueryRepo {
     constructor(@InjectRepository(Question) private readonly questionsRepository: Repository<Question>) { }
-    //                                                  QuestionsWithQueryOutputModel
-    async getQuestions(query: QuestionQueryOutputType): Promise<any> {
-        const { pageNumber, pageSize, bodySearchTerm, publishedStatus, sortBy, sortDirection } = query;
+    async getQuestions(query: QuestionQueryOutputType): Promise<QuestionsWithQueryOutputModel> {
+        let { pageNumber, pageSize, bodySearchTerm, publishedStatus, sortBy, sortDirection } = query;
         const sortDir = sortDirection === "asc" ? "ASC" : "DESC";
         const offset = (pageNumber - 1) * pageSize;
-        const isPublished = definePublishStatus(publishedStatus);
-
         
-       
+        let queryBulderCount = this.questionsRepository
+            .createQueryBuilder("question")
+            .where([{body: ILike (`%${bodySearchTerm}%`)}]);
+        if(publishedStatus !== "all"){
+            let status = publishedStatus === "published" ? true : false;
+            queryBulderCount = queryBulderCount.andWhere("question.published = :status", {status})
+        }
+        const totalCount = await queryBulderCount.getCount();
 
-        const totalCount = await this.questionsRepository
-        .createQueryBuilder("questions")
-        .where([{body: ILike (`%${bodySearchTerm}%`)}])
-        // .andWhere(isPublished)
-        .andWhere('')
-        .getCount();
+        let queryBulder = this.questionsRepository
+            .createQueryBuilder("question")
+            .where([{body: ILike (`%${bodySearchTerm}%`)}]);
+        if(publishedStatus !== "all"){
+            let status = publishedStatus === "published" ? true : false;
+            queryBulderCount = queryBulder.andWhere("question.published = :status", {status})
+        }
+        const questions = await queryBulder
+            .orderBy(`question.${sortBy}`, sortDir)
+            .limit(pageSize)
+            .offset(offset)
+            .getMany();
 
-        return totalCount;
+        const pagesCount = Math.ceil(totalCount / pageSize);
+        return {
+            pagesCount: pagesCount,
+            page: pageNumber,
+            pageSize: pageSize,
+            totalCount: totalCount,
+            items: questions
+        }
     }
-}
-
-function definePublishStatus(publishedStatus: string){
-    let status;
-    if(publishedStatus === "all"){ 
-        return status = "question.published IS TRUE OR question.published IS FALSE";
-     }else{
-        return status = `"question.published = :isPublished", { ${publishedStatus}}`
-     }
 }
