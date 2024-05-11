@@ -11,13 +11,14 @@ import { DeleteQuestionUseCase } from "./application/use-case/delete-question.us
 import { UpdateQuestionUseCase } from "./application/use-case/update-question.use-case";
 import { PublishQuestionUseCase } from "./application/use-case/publish-question.use-case";
 import { QuestionsQueryRepo } from "./repo/questions.query.repository";
+import { RedisService } from "../redis/application/redis.service";
 
 @Module({
     // Game, Answer must be replaced to the GameModule afterward
     imports:[TypeOrmModule.forFeature([Question, GameQuestion, Game, Answer]), CqrsModule],
     providers:[QuestionsRepository, QuestionsQueryRepo, CreateQuestionUseCase, DeleteQuestionUseCase, UpdateQuestionUseCase,
-        PublishQuestionUseCase , JwtService],
+        PublishQuestionUseCase , JwtService, RedisService],
     controllers: [QuestionsSAController],
-    exports: []
+    exports: [QuestionsRepository]
 })
 export class QuestionsModule{}

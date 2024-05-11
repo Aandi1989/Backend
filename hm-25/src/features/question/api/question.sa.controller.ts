@@ -11,8 +11,8 @@ import { PublishQuestionDto } from "./modules/input/publish-question.dto";
 import { PublishQuestionCommand } from "../application/use-case/publish-question.use-case";
 import { QuestionQueryType } from "../types/types";
 import { QuestionsQueryRepo } from "../repo/questions.query.repository";
-import { query } from "express";
 import { questionQueryParams } from "../../../common/helpers/queryStringModifiers";
+import { QuestionsWithQueryOutputModel } from "./modules/output/questionPagination.output.model";
 
 @Controller(RouterPaths.quizQuestion)
 export class QuestionsSAController {
@@ -21,8 +21,7 @@ export class QuestionsSAController {
     ){}
     @UseGuards(BasicAuthGuard)
     @Get()
-    //                                                                must be nolmal value
-    async getQuestions(@Query() query: Partial<QuestionQueryType>): Promise<any>{
+    async getQuestions(@Query() query: Partial<QuestionQueryType>): Promise<QuestionsWithQueryOutputModel>{
         return await this.questionsQueryRepo.getQuestions(questionQueryParams(query))
     }
     @UseGuards(BasicAuthGuard)

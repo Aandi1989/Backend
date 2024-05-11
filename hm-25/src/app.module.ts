@@ -12,6 +12,7 @@ import { PostsModule } from './features/posts/post.module';
 import { SessionsModule } from './features/security/session.module';
 import { UsersModule } from './features/users/user.module';
 import { QuestionsModule } from './features/question/question.module';
+import { RedisModule } from './features/redis/redis.module';
 
 
 @Module({
@@ -45,7 +46,8 @@ import { QuestionsModule } from './features/question/question.module';
     UsersModule,
     AuthModule,
     DeleteAllModule,
-    QuestionsModule
+    QuestionsModule,
+    RedisModule
   ]
 })
 export class AppModule { }

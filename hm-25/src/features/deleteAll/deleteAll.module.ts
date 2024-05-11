@@ -6,11 +6,12 @@ import { CommentsModule } from "../comments/comment.module";
 import { LikesModule } from "../likes/like.module";
 import { PostsModule } from "../posts/post.module";
 import { SessionsModule } from "../security/session.module";
+import { QuestionsModule } from "../question/question.module";
 
 
 @Module({
     imports:[ UsersModule, BlogsModule, PostsModule, CommentsModule, 
-        LikesModule, SessionsModule
+        LikesModule, SessionsModule, QuestionsModule
      ],
     providers:[],
     controllers:[DeleteAllDataController],
