@@ -5,7 +5,6 @@ import { CreateQuestionUseCase } from "./application/use-case/create-question.us
 import { GameQuestion, Question } from "./domain/question.entity";
 import { QuestionsRepository } from "./repo/questions.repository";
 import { Module } from "@nestjs/common";
-import { Answer, Game } from "../game/domain/game.entity";
 import { JwtService } from "../../common/services/jwt-service";
 import { DeleteQuestionUseCase } from "./application/use-case/delete-question.use-case";
 import { UpdateQuestionUseCase } from "./application/use-case/update-question.use-case";
@@ -14,8 +13,7 @@ import { QuestionsQueryRepo } from "./repo/questions.query.repository";
 import { RedisService } from "../redis/application/redis.service";
 
 @Module({
-    // Game, Answer must be replaced to the GameModule afterward
-    imports:[TypeOrmModule.forFeature([Question, GameQuestion, Game, Answer]), CqrsModule],
+    imports:[TypeOrmModule.forFeature([Question, GameQuestion]), CqrsModule],
     providers:[QuestionsRepository, QuestionsQueryRepo, CreateQuestionUseCase, DeleteQuestionUseCase, UpdateQuestionUseCase,
         PublishQuestionUseCase , JwtService, RedisService],
     controllers: [QuestionsSAController],

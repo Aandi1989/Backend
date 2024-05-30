@@ -27,7 +27,7 @@ describe('QuizGame test (e2e)', () => {
           .delete(`/${RouterPaths.testingAllData}`)
       });
 
-      let firstQuestionId, secondQuestId, thirdQuestId, fourthQuestId, fifthQuestId, sixthQuestId,
+      let firstQuestionId, secondQuestionId, thirdQuestionId, fourthQuestionId, fifthQuestionId, sixthQuestionId,
         firstAccessToken, secondAccessToken;
       it('+ GET should return 200 and empty array', async () => {
         const res = await request(httpServer)
@@ -73,12 +73,12 @@ describe('QuizGame test (e2e)', () => {
                 ]
             })
             .expect(HTTP_STATUSES.CREATED_201)
-            secondQuestId = response.body.id;          
+            secondQuestionId = response.body.id;          
       })
 
       it('+ PUT publish second question', () => {
         return request(httpServer)
-            .put(`/${RouterPaths.quizQuestion}/${secondQuestId}/publish`)
+            .put(`/${RouterPaths.quizQuestion}/${secondQuestionId}/publish`)
             .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
             .send({
                 published: true
@@ -97,12 +97,12 @@ describe('QuizGame test (e2e)', () => {
                 ]
             })
             .expect(HTTP_STATUSES.CREATED_201)
-            thirdQuestId = response.body.id;          
+            thirdQuestionId = response.body.id;          
       })
 
       it('+ PUT publish third question', () => {
         return request(httpServer)
-            .put(`/${RouterPaths.quizQuestion}/${thirdQuestId}/publish`)
+            .put(`/${RouterPaths.quizQuestion}/${thirdQuestionId}/publish`)
             .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
             .send({
                 published: true
@@ -121,12 +121,12 @@ describe('QuizGame test (e2e)', () => {
                 ]
             })
             .expect(HTTP_STATUSES.CREATED_201)
-            fourthQuestId = response.body.id;          
+            fourthQuestionId = response.body.id;          
       })
 
       it('+ PUT publish fourth question', () => {
         return request(httpServer)
-            .put(`/${RouterPaths.quizQuestion}/${fourthQuestId}/publish`)
+            .put(`/${RouterPaths.quizQuestion}/${fourthQuestionId}/publish`)
             .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
             .send({
                 published: true
@@ -145,12 +145,12 @@ describe('QuizGame test (e2e)', () => {
                 ]
             })
             .expect(HTTP_STATUSES.CREATED_201)
-            fifthQuestId = response.body.id;          
+            fifthQuestionId = response.body.id;          
       })
 
       it('+ PUT publish fifth question', () => {
         return request(httpServer)
-            .put(`/${RouterPaths.quizQuestion}/${fifthQuestId}/publish`)
+            .put(`/${RouterPaths.quizQuestion}/${fifthQuestionId}/publish`)
             .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
             .send({
                 published: true
@@ -169,12 +169,12 @@ describe('QuizGame test (e2e)', () => {
                 ]
             })
             .expect(HTTP_STATUSES.CREATED_201)
-            sixthQuestId = response.body.id;          
+            sixthQuestionId = response.body.id;          
       })
 
       it('+ PUT publish sixth question', () => {
         return request(httpServer)
-            .put(`/${RouterPaths.quizQuestion}/${sixthQuestId}/publish`)
+            .put(`/${RouterPaths.quizQuestion}/${sixthQuestionId}/publish`)
             .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
             .send({
                 published: true
@@ -200,6 +200,39 @@ describe('QuizGame test (e2e)', () => {
                 email: "firstUser@mail.com"
             })
             .expect(HTTP_STATUSES.NO_CONTENT_204)
+      })
+
+      it('+ POST login first user', async () => {
+        const res = await request(httpServer)
+        .post(`/${RouterPaths.auth}/login`)
+        .send({
+            loginOrEmail: "FirstUser",
+            password: "123456"
+        })
+        .expect(HTTP_STATUSES.OK_200)
+        firstAccessToken = res.body.accessToken
+      })
+
+      it('+ POST registration of the second user', async () => {
+        return request(httpServer)
+            .post(`/${RouterPaths.auth}/registration`)
+            .send({
+                login: "SecondUser",
+                password: "123456",
+                email: "secondUser@mail.com"
+            })
+            .expect(HTTP_STATUSES.NO_CONTENT_204)
+      })
+
+      it('+ POST login second user', async () => {
+        const res = await request(httpServer)
+        .post(`/${RouterPaths.auth}/login`)
+        .send({
+            loginOrEmail: "SecondUser",
+            password: "123456"
+        })
+        .expect(HTTP_STATUSES.OK_200)
+        secondAccessToken = res.body.accessToken
       })
 
       

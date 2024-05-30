@@ -8,7 +8,7 @@ import { PublishQuestionDto } from "../api/modules/input/publish-question.dto";
 @Injectable()
 export class QuestionsRepository {
     constructor(@InjectRepository(Question) private readonly questionsRepository: Repository<Question>,
-                @InjectRepository(Question) private readonly gameQuestionsRepository: Repository<GameQuestion>){}
+                @InjectRepository(GameQuestion) private readonly gameQuestionsRepository: Repository<GameQuestion>){}
 
     async createQuestion(newQuestion: QuestionType): Promise<QuestionType>{
         const result = await this.questionsRepository.save(newQuestion);

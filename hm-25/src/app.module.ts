@@ -13,6 +13,7 @@ import { SessionsModule } from './features/security/session.module';
 import { UsersModule } from './features/users/user.module';
 import { QuestionsModule } from './features/question/question.module';
 import { RedisModule } from './features/redis/redis.module';
+import { GameModule } from './features/game/game.module';
 
 
 @Module({
@@ -47,6 +48,7 @@ import { RedisModule } from './features/redis/redis.module';
     AuthModule,
     DeleteAllModule,
     QuestionsModule,
+    GameModule,
     RedisModule
   ]
 })
