@@ -16,4 +16,15 @@ export class GamesQueryRepository {
 
         return response;
     }
+    async findActivePair(userId: string): Promise<Game | null>{
+        const foundedGame = await this.gamesRepository
+            .createQueryBuilder("game")
+            .where("game.firstUserId = :userId OR game.secondUserId = :userId", {userId})
+            .andWhere("game.status = :activeStatus OR game.status = :pendingStatus", {
+                activeStatus: 'Active',
+                pendingStatus: 'PendingForSecondUser'
+            })
+            .getOne();
+        return foundedGame
+    }
 }
