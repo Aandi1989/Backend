@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { commentsOutputModel } from 'src/common/helpers/commentsOutoutModel';
-import { Result, ResultCode } from 'src/common/types/types';
 import { DataSource } from 'typeorm';
 import { CommentOutputModel } from '../api/models/output/comment.output.model';
 import { CommentSQL } from '../types/types';
+import { commentsOutputModel } from '../../../common/helpers/commentsOutoutModel';
+import { Result, ResultCode } from '../../../common/types/types';
 
 @Injectable()
 export class CommentsRepository {

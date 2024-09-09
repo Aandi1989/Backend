@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { UserQueryOutputType, UserSQL } from '../types/types';
 import { UserAuthOutputModel, UserOutputModel, UsersWithQueryOutputModel } from '../api/models/output/user.output.model';
-import { MeOutputModel } from 'src/features/auth/api/models/output/me.output.model';
 import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { Account } from '../entities/account';
+import { MeOutputModel } from '../../auth/api/models/output/me.output.model';
 
 @Injectable()
 export class UsersQueryRepo {

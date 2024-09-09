@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
-import { postsOutputModel } from "src/common/helpers/postsOutputModel";
 import { DataSource } from "typeorm";
 import { PostsWithQueryOutputModel } from "../api/models/output/post.output.model";
 import { PostQueryOutputType, PostType } from "../types/types";
+import { postsOutputModel } from "../../../common/helpers/postsOutputModel";
 
 
 @Injectable()

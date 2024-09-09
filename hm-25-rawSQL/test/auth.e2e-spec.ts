@@ -8,6 +8,8 @@ import { Repository } from 'typeorm';
 import { User } from '../src/features/users/domain/user.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
+// we dont have User entity as we rewrote or TypeOPM requests to raw SQL and deleted entities
+
 describe('Auth flow (e2e)', () => {
   let app: INestApplication;
   let httpServer;

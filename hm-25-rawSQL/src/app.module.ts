@@ -72,30 +72,40 @@ import { GamesController } from './features/game/api/game.controller';
 import { ConnectGameUseCase } from './features/game/application/use-case/connect-game.use-case';
 import { GamesQueryRepository } from './features/game/repo/games.query.repository';
 import { GamesRepository } from './features/game/repo/games.repository';
+import { AuthModule } from './features/auth/auth.module';
+import { BlogsModule } from './features/blogs/blog.module';
+import { CommentsModule } from './features/comments/comment.module';
+import { DeleteAllModule } from './features/deleteAll/deleteAll.module';
+import { GameModule } from './features/game/game.module';
+import { LikesModule } from './features/likes/like.module';
+import { PostsModule } from './features/posts/post.module';
+import { QuestionsModule } from './features/question/question.module';
+import { SessionsModule } from './features/security/session.module';
+import { UsersModule } from './features/users/user.module';
 
 
 
-const controllers = [AppController, UsersController, BlogsController, PostsController,
-  CommentsController, DeleteAllDataController, AuthController, SecurytyController, BlogsSAController,
-  // ---------------- added during rewriting on raw SQL
-  QuestionsSAController,
-  GamesController];
+// const controllers = [AppController, UsersController, BlogsController, PostsController,
+//   CommentsController, DeleteAllDataController, AuthController, SecurytyController, BlogsSAController,
+//   // ---------------- added during rewriting on raw SQL
+//   QuestionsSAController,
+//   GamesController];
 
-const providers = [AppService, UsersService, UsersRepository, UsersQueryRepo, BlogsService, BlogsQueryRepo,
-  BlogsRepository, PostsQueryRepo, PostsRepository, PostsService, CommentsQueryRepo, CommentsRepository, JwtService,
-  AuthService, SecurityRepository, SecurityQueryRepo, AuthQueryRepo, AuthRepository, LikesQueryRepo, LikesRepository,
-  // ---------------- added during rewriting on raw SQL
-  QuestionsRepository, QuestionsQueryRepo, CreateQuestionUseCase, DeleteQuestionUseCase, UpdateQuestionUseCase,
-  PublishQuestionUseCase,
+// const providers = [AppService, UsersService, UsersRepository, UsersQueryRepo, BlogsService, BlogsQueryRepo,
+//   BlogsRepository, PostsQueryRepo, PostsRepository, PostsService, CommentsQueryRepo, CommentsRepository, JwtService,
+//   AuthService, SecurityRepository, SecurityQueryRepo, AuthQueryRepo, AuthRepository, LikesQueryRepo, LikesRepository,
+//   // ---------------- added during rewriting on raw SQL
+//   QuestionsRepository, QuestionsQueryRepo, CreateQuestionUseCase, DeleteQuestionUseCase, UpdateQuestionUseCase,
+//   PublishQuestionUseCase,
 
-  GamesRepository, GamesQueryRepository, ConnectGameUseCase];
+//   GamesRepository, GamesQueryRepository, ConnectGameUseCase];
 
-const useCases = [CreateUserUseCase, DeleteUserUseCase, CreatePostUseCase, DeletePostUseCase, CheckPostUseCase,
-  CreateblogUseCase, DeleteBlogUseCase, UpdateBlogUseCase, CheckCredentialsUseCase, CreateSessionUseCase,
-  CheckRefreshTokenUseCase, RevokeSessionUseCase, RefreshTokensUseCase, CreateAccountUseCase, ConfirmEmailUseCase,
-  ResendEmailUseCase, RecoveryCodeUseCase, ChangeCodeUseCase, CreateCommentUseCase, LikePostUseCase, DeleteCommentUseCase,
-  UpdateCommentUseCase, LikeCommentUseCase, CheckSecurityRefreshTokenUseCase, RevokeSessionsUseCase, AddRequestUseCase,
-  CreatePostForBlogUseCase, UpdatePostUseCase, CheckPostUseCase ]
+// const useCases = [CreateUserUseCase, DeleteUserUseCase, CreatePostUseCase, DeletePostUseCase, CheckPostUseCase,
+//   CreateblogUseCase, DeleteBlogUseCase, UpdateBlogUseCase, CheckCredentialsUseCase, CreateSessionUseCase,
+//   CheckRefreshTokenUseCase, RevokeSessionUseCase, RefreshTokensUseCase, CreateAccountUseCase, ConfirmEmailUseCase,
+//   ResendEmailUseCase, RecoveryCodeUseCase, ChangeCodeUseCase, CreateCommentUseCase, LikePostUseCase, DeleteCommentUseCase,
+//   UpdateCommentUseCase, LikeCommentUseCase, CheckSecurityRefreshTokenUseCase, RevokeSessionsUseCase, AddRequestUseCase,
+//   CreatePostForBlogUseCase, UpdatePostUseCase, CheckPostUseCase ]
 
 @Module({
   imports: [
@@ -121,10 +131,17 @@ const useCases = [CreateUserUseCase, DeleteUserUseCase, CreatePostUseCase, Delet
       synchronize: false,
     }),
     CqrsModule,
-    
-  ],
-  controllers: [...controllers],
-  providers: [...providers, ...useCases],
+    SessionsModule,
+    LikesModule,
+    CommentsModule,
+    PostsModule,
+    BlogsModule,
+    UsersModule,
+    AuthModule,
+    DeleteAllModule,
+    QuestionsModule,
+    GameModule,
+  ]
 })
 export class AppModule { }
 

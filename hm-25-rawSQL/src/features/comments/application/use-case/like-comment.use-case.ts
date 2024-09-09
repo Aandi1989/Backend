@@ -1,11 +1,11 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { Result, ResultCode } from "src/common/types/types";
-import { LikeStatus } from "src/features/likes/entities/like";
-import { LikesQueryRepo } from "src/features/likes/repo/like.query.repository";
-import { LikesRepository } from "src/features/likes/repo/like.repository";
 import { CommentsQueryRepo } from "../../repo/comments.query.repository";
 import { CommentsRepository } from "../../repo/comments.repository";
 import { myStatus } from "../../types/types";
+import { Result, ResultCode } from "../../../../common/types/types";
+import { LikeStatus } from "../../../likes/entities/like";
+import { LikesQueryRepo } from "../../../likes/repo/like.query.repository";
+import { LikesRepository } from "../../../likes/repo/like.repository";
 
 
 export class LikeCommentCommand {

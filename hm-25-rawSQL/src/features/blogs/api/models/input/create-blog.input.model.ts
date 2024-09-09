@@ -1,5 +1,5 @@
 import { IsString, Length, Matches } from "class-validator"
-import { Trim } from "src/common/pipes/trim-pipe"
+import { Trim } from "../../../../../common/pipes/trim-pipe"
 
 export class CreateBlogModel  {
     @IsString()

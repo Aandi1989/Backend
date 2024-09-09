@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { AuthQueryRepo } from "../../repo/auth.query.repo";
-import { ResultCode } from "src/common/types/types";
-import { codeAlredyConfirmed, codeDoesntExist, codeExpired } from "src/common/helpers/errorMessagesHelpers";
 import { AuthRepository } from "../../repo/auth.repository";
+import { codeDoesntExist, codeAlredyConfirmed, codeExpired } from "../../../../common/helpers/errorMessagesHelpers";
+import { ResultCode } from "../../../../common/types/types";
 
 
 

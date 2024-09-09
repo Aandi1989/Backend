@@ -1,17 +1,17 @@
 import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, NotFoundException, Param, Put, Req, Res, UseGuards } from "@nestjs/common";
 import { Response, Request } from 'express';
 import { CommentsQueryRepo } from "../repo/comments.query.repository";
-import { RouterPaths, HTTP_STATUSES } from "src/common/utils/utils";
 import { CommentOutputModel } from "./models/output/comment.output.model";
-import { AuthGuard } from "src/common/guards/auth.guard";
 import { CommandBus } from "@nestjs/cqrs";
 import { DeleteCommentCommand } from "../application/use-case/delete-comment.use-case";
-import { ResultCode } from "src/common/types/types";
 import { CreateCommentModel } from "./models/input/create-comment.input.model";
 import { UpdateCommentCommand } from "../application/use-case/update-comment.use-case";
-import { SetStatusModel } from "src/features/likes/api/models/input/set-status.input.model";
 import { LikeCommentCommand } from "../application/use-case/like-comment.use-case";
-import { AccessUserId } from "src/common/guards/accessUserId";
+import { AccessUserId } from "../../../common/guards/accessUserId";
+import { AuthGuard } from "../../../common/guards/auth.guard";
+import { ResultCode } from "../../../common/types/types";
+import { RouterPaths, HTTP_STATUSES } from "../../../common/utils/utils";
+import { SetStatusModel } from "../../likes/api/models/input/set-status.input.model";
 
 @Controller(RouterPaths.comments)
 export class CommentsController {

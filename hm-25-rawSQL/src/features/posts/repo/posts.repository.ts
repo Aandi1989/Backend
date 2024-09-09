@@ -3,8 +3,9 @@ import { PostSQL, PostType } from '../types/types';
 import { CreatePostModel } from '../api/models/input/create-post.input.model';
 import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { postsOutputModel } from 'src/common/helpers/postsOutputModel';
-import { UpdatePostForBlogModel } from 'src/features/blogs/api/models/input/update-post.input';
+import { postsOutputModel } from '../../../common/helpers/postsOutputModel';
+import { UpdatePostForBlogModel } from '../../blogs/api/models/input/update-post.input';
+
 
 @Injectable()
 export class PostsRepository {

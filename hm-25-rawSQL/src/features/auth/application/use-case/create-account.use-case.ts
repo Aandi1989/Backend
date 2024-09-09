@@ -1,13 +1,13 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { UsersQueryRepo } from "src/features/users/repo/users.query.repository";
-import { CreateUserModel } from "src/features/users/api/models/input/create-user.input.model";
-import { Result, ResultCode } from "src/common/types/types";
 import * as bcrypt from 'bcrypt';
-import { Account } from "src/features/users/entities/account";
 import { AuthQueryRepo } from "../../repo/auth.query.repo";
-import { accountExistError } from "src/common/helpers/errorMessagesHelpers";
-import { UsersRepository } from "src/features/users/repo/users.repository";
-import { emailManager } from "src/common/services/email-manager/email-manager";
+import { accountExistError } from "../../../../common/helpers/errorMessagesHelpers";
+import { emailManager } from "../../../../common/services/email-manager/email-manager";
+import { Result, ResultCode } from "../../../../common/types/types";
+import { CreateUserModel } from "../../../users/api/models/input/create-user.input.model";
+import { Account } from "../../../users/entities/account";
+import { UsersQueryRepo } from "../../../users/repo/users.query.repository";
+import { UsersRepository } from "../../../users/repo/users.repository";
 
 
 

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Account } from '../entities/account';
-import { Result, ResultCode } from 'src/common/types/types';
 import { UserOutputModel } from '../api/models/output/user.output.model';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { Result, ResultCode } from '../../../common/types/types';
 
 
 @Injectable()

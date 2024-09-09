@@ -28,7 +28,7 @@ describe('Users SuperAdmin (e2e)', () => {
 
   it('+ GET should return 200 and empty array', async () => {
     const res = await request(httpServer)
-      .get(`/${RouterPaths.usersSA}`)
+      .get(`/${RouterPaths.users}`)
       .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
       .expect(HTTP_STATUSES.OK_200)
 
@@ -37,7 +37,7 @@ describe('Users SuperAdmin (e2e)', () => {
 
   it(' - POST should not create a new user because of wrong basic authorization', () => {
     return request(httpServer)
-        .post(`/${RouterPaths.usersSA}`)
+        .post(`/${RouterPaths.users}`)
         .set('Authorization', 'Basic invalidAuth')
         .send({
             login:"TestUser",
@@ -49,7 +49,7 @@ describe('Users SuperAdmin (e2e)', () => {
 
   it(' - POST should not create a new user because of incorrect input', () => {
     return request(httpServer)
-        .post(`/${RouterPaths.usersSA}`)
+        .post(`/${RouterPaths.users}`)
         .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
         .send({
             login:"Te",
@@ -67,7 +67,7 @@ describe('Users SuperAdmin (e2e)', () => {
   let createdUser:any = null;
   it(' + POST should create a new user', async () => {
     const response = await request(httpServer)
-        .post(`/${RouterPaths.usersSA}`)
+        .post(`/${RouterPaths.users}`)
         .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
         .send({
             login:"TestUser",
@@ -81,28 +81,28 @@ describe('Users SuperAdmin (e2e)', () => {
 
   it('- DELETE should not delete user by unathorithed', async () => {
     return request(httpServer)
-      .delete(`/${RouterPaths.usersSA}/12345`)
+      .delete(`/${RouterPaths.users}/12345`)
       .set('Authorization', 'Basic wrongAoth')
       .expect(HTTP_STATUSES.UNAUTHORIZED_401)
   })
 
   it('- DELETE should not delete user with incorrect id', async () => {
     return request(httpServer)
-      .delete(`/${RouterPaths.usersSA}/b9fc0872-5a32-4628-b9ee-9d9b3aebce4a`)
+      .delete(`/${RouterPaths.users}/b9fc0872-5a32-4628-b9ee-9d9b3aebce4a`)
       .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
       .expect(HTTP_STATUSES.NOT_FOUND_404)
   })
 
   it('+ DELETE should delete user with correct id', async () => {
     return request(httpServer)
-      .delete(`/${RouterPaths.usersSA}/${createdUser.id}`)
+      .delete(`/${RouterPaths.users}/${createdUser.id}`)
       .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
       .expect(HTTP_STATUSES.NO_CONTENT_204);
   })
 
   it('+ GET should return 200 and empty array', async () => {
     const res = await request(httpServer)
-      .get(`/${RouterPaths.usersSA}`)
+      .get(`/${RouterPaths.users}`)
       .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
       .expect(HTTP_STATUSES.OK_200)
 
@@ -112,7 +112,7 @@ describe('Users SuperAdmin (e2e)', () => {
   it(' + POST create multiple users', async () => {
     for(let i =1; i <= 12; i++){
       await request(httpServer)
-        .post(`/${RouterPaths.usersSA}`)
+        .post(`/${RouterPaths.users}`)
         .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
         .send({
             login: `TestUser${i}`,
@@ -125,7 +125,7 @@ describe('Users SuperAdmin (e2e)', () => {
 
   it('+ GET users correct pagination without query params', async () => {
     const res = await request(httpServer)
-      .get(`/${RouterPaths.usersSA}`)
+      .get(`/${RouterPaths.users}`)
       .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
       .expect(HTTP_STATUSES.OK_200)
 
@@ -211,7 +211,7 @@ describe('Users SuperAdmin (e2e)', () => {
 
   it('+ GET users correct pagination with query params', async () => {
     const res = await request(httpServer)
-      .get(`/${RouterPaths.usersSA}/?pageSize=4&pageNumber=2`)
+      .get(`/${RouterPaths.users}/?pageSize=4&pageNumber=2`)
       .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
       .expect(HTTP_STATUSES.OK_200)
 
@@ -255,7 +255,7 @@ describe('Users SuperAdmin (e2e)', () => {
 
   it('+ GET users correct sorting by createdAt ASC', async () => {
     const res = await request(httpServer)
-      .get(`/${RouterPaths.usersSA}/?sortedBy=createdAt&sortDirection=asc`)
+      .get(`/${RouterPaths.users}/?sortedBy=createdAt&sortDirection=asc`)
       .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
       .expect(HTTP_STATUSES.OK_200)
 

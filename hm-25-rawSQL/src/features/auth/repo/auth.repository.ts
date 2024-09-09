@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { Result, ResultCode } from "src/common/types/types";
 import { CodeRecoveryModel } from "../api/models/input/recovery.code.model";
 import { DataSource } from "typeorm";
 import { InjectDataSource } from "@nestjs/typeorm";
+import { Result, ResultCode } from "../../../common/types/types";
 
 
 @Injectable()
