@@ -2,6 +2,7 @@ import { BlogQueryType, BlogQueryOutputType } from 'src/features/blogs/types/typ
 import { CommentQueryType, CommentQueryOutputType } from 'src/features/comments/types/types';
 import { PostQueryOutputType, PostQueryType } from 'src/features/posts/types/types';
 import { UserQueryOutputType, UserQueryType } from 'src/features/users/types/types';
+import { QuestionQueryOutputType, QuestionQueryType } from '../../features/question/types/types';
 
 
 export const userQueryParams = (
@@ -52,3 +53,16 @@ export const commentQueryParams = (query: Partial<CommentQueryType>): CommentQue
       sortDirection: query.sortDirection ? query.sortDirection : "desc"
   };
 }
+
+export const questionQueryParams = (query: Partial<QuestionQueryType>): QuestionQueryOutputType => {
+  const allowedStatus = ["all", "published", "notPublished"]
+  return {
+    pageNumber: query.pageNumber ? +query.pageNumber : 1,
+    pageSize: query.pageSize ? +query.pageSize : 10,
+    bodySearchTerm: query.bodySearchTerm ? query.bodySearchTerm : '',
+    publishedStatus: query.publishedStatus && allowedStatus.includes(query.publishedStatus) ? query.publishedStatus : "all",
+    sortBy: query.sortBy ? query.sortBy : "createdAt",
+    sortDirection: query.sortDirection ? query.sortDirection : "desc"
+  }
+}
+

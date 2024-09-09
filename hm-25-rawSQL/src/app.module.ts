@@ -61,15 +61,34 @@ import { UsersRepository } from './features/users/repo/users.repository';
 import { BlogsSAController } from './features/blogs/api/blogs.sa.controller';
 import { UpdatePostUseCase } from './features/posts/application/use-cases/update-post.use-case';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { CreateQuestionUseCase } from './features/question/application/use-case/create-question.use-case';
+import { DeleteQuestionUseCase } from './features/question/application/use-case/delete-question.use-case';
+import { PublishQuestionUseCase } from './features/question/application/use-case/publish-question.use-case';
+import { UpdateQuestionUseCase } from './features/question/application/use-case/update-question.use-case';
+import { QuestionsQueryRepo } from './features/question/repo/questions.query.repository';
+import { QuestionsRepository } from './features/question/repo/questions.repository';
+import { QuestionsSAController } from './features/question/api/question.sa.controller';
+import { GamesController } from './features/game/api/game.controller';
+import { ConnectGameUseCase } from './features/game/application/use-case/connect-game.use-case';
+import { GamesQueryRepository } from './features/game/repo/games.query.repository';
+import { GamesRepository } from './features/game/repo/games.repository';
 
 
 
 const controllers = [AppController, UsersController, BlogsController, PostsController,
-  CommentsController, DeleteAllDataController, AuthController, SecurytyController, BlogsSAController];
+  CommentsController, DeleteAllDataController, AuthController, SecurytyController, BlogsSAController,
+  // ---------------- added during rewriting on raw SQL
+  QuestionsSAController,
+  GamesController];
 
 const providers = [AppService, UsersService, UsersRepository, UsersQueryRepo, BlogsService, BlogsQueryRepo,
   BlogsRepository, PostsQueryRepo, PostsRepository, PostsService, CommentsQueryRepo, CommentsRepository, JwtService,
-  AuthService, SecurityRepository, SecurityQueryRepo, AuthQueryRepo, AuthRepository, LikesQueryRepo, LikesRepository];
+  AuthService, SecurityRepository, SecurityQueryRepo, AuthQueryRepo, AuthRepository, LikesQueryRepo, LikesRepository,
+  // ---------------- added during rewriting on raw SQL
+  QuestionsRepository, QuestionsQueryRepo, CreateQuestionUseCase, DeleteQuestionUseCase, UpdateQuestionUseCase,
+  PublishQuestionUseCase,
+
+  GamesRepository, GamesQueryRepository, ConnectGameUseCase];
 
 const useCases = [CreateUserUseCase, DeleteUserUseCase, CreatePostUseCase, DeletePostUseCase, CheckPostUseCase,
   CreateblogUseCase, DeleteBlogUseCase, UpdateBlogUseCase, CheckCredentialsUseCase, CreateSessionUseCase,
