@@ -55,13 +55,34 @@ export class QuestionsRepository {
         return result[1] === 1;
     }
 
+    async generateGameQuestions(gameId: string):  Promise<boolean>{
+        const query = `
+            WITH RandomQuestions AS (
+                SELECT id, row_number() OVER (ORDER BY RANDOM()) AS sequence
+                FROM public."Question"
+                WHERE "published" = true
+                ORDER BY RANDOM()
+                LIMIT 5
+            )
+            INSERT INTO public."Game_question" ("id", "gameId", "questionId", "sequence")
+            SELECT uuid_generate_v4(), '${gameId}', id, sequence
+            FROM RandomQuestions;
+            `;
+        const result = await this.dataSource.query(query);
+        return result[1] === 1;
+    }
+
     async deleteAllData(){
         const questionQuery = `DELETE FROM public."Question"`;
-        const questionDelete = this.dataSource.query(questionQuery);
-
         const queryGameQuestions = `DELETE FROM public."Game_question"`;
-        const gameQuestionDelete = this.dataSource.query(queryGameQuestions);
+        const queryGames = `DELETE FROM public."Game"`;
+        const queryAnswer = `DELETE FROM public."Answer"`;
+        const queryWaitingUser = `DELETE FROM public."User_waiting_for_game"`;
 
-        await Promise.all([questionDelete, gameQuestionDelete])
+        await this.dataSource.query(queryGameQuestions);  
+        await this.dataSource.query(queryAnswer);        
+        await this.dataSource.query(queryGames);          
+        await this.dataSource.query(questionQuery);      
+        await this.dataSource.query(queryWaitingUser)
     }
 }

@@ -2,6 +2,8 @@ import { Injectable } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 import { GameType, UserWaitingForGame } from "../types/types";
+import { GameOutputModel } from "../api/modules/output/game.output.model";
+import { UserOutputModel } from "../../users/api/models/output/user.output.model";
 
 @Injectable()
 export class GamesQueryRepository {
@@ -16,14 +18,25 @@ export class GamesQueryRepository {
         return result[0] ? result[0] : null;
     }
     
-    async findActivePair(userId: string): Promise<GameType | null>{
+    async findActiveGame(userId: string): Promise<GameType | null>{
         const query = `
             SELECT *
             FROM public."Game"
             WHERE ("firstUserId" = '${userId}' OR "secondUserId" = '${userId}')
-            AND ("status" = 'Active' OR "status" = 'PendingForSecondUser');
+            AND ("status" = 'Active');
         `;
         const result = await this.dataSource.query(query);
         return result[0] ? result[0] : null;
     }
+
+    async findPendingGame(): Promise<GameType | null>{
+        const query = `
+            SELECT *
+            FROM public."Game"
+            WHERE "status" = 'PendingSecondPlayer';
+        `;
+        const result = await this.dataSource.query(query);
+        return result[0] ? result[0] : null;
+    }
+
 }

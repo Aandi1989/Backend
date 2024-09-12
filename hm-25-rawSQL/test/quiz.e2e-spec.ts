@@ -235,6 +235,34 @@ describe('QuizGame test (e2e)', () => {
         secondAccessToken = res.body.accessToken
       })
 
+      it(' + POST create game by the first user', async () => {
+        const res = await request(httpServer)
+        .post(`/${RouterPaths.pairGame}/connection`)
+        .set('Authorization', `Basic ${firstAccessToken}`)
+        .expect(HTTP_STATUSES.OK_200)
+      })
+
+      it(' - POST double create game by the first user', async () => {
+        const res = await request(httpServer)
+        .post(`/${RouterPaths.pairGame}/connection`)
+        .set('Authorization', `Basic ${firstAccessToken}`)
+        .expect(HTTP_STATUSES.ACCESS_FORBIDDEN_403)
+      })
+
+      it(' + POST participate game by the second user', async () => {
+        const res = await request(httpServer)
+        .post(`/${RouterPaths.pairGame}/connection`)
+        .set('Authorization', `Basic ${secondAccessToken}`)
+        .expect(HTTP_STATUSES.OK_200)
+      })
+
+      it(' - POST double participate game by the second user', async () => {
+        const res = await request(httpServer)
+        .post(`/${RouterPaths.pairGame}/connection`)
+        .set('Authorization', `Basic ${secondAccessToken}`)
+        .expect(HTTP_STATUSES.ACCESS_FORBIDDEN_403)
+      })
+
       
 
       afterAll( async () => {

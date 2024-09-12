@@ -7,7 +7,6 @@ import { LikesRepository } from "../likes/repo/like.repository";
 import { SecurityRepository } from "../security/repo/security.repository";
 import { PostsRepository } from "../posts/repo/posts.repository";
 import { RouterPaths, HTTP_STATUSES } from "../../common/utils/utils";
-import { GamesRepository } from "../game/repo/games.repository";
 import { QuestionsRepository } from "../question/repo/questions.repository";
 
 @Controller(RouterPaths.testingAllData)
@@ -18,12 +17,10 @@ export class DeleteAllDataController {
                 protected commentsRepository: CommentsRepository,
                 protected likesRepository: LikesRepository,
                 protected securityRepository: SecurityRepository,
-                protected questionsRepository: QuestionsRepository,
-                protected gamesRepository: GamesRepository){}
+                protected questionsRepository: QuestionsRepository){}
 
     @Delete()
     async deleteAllData(@Res() res: Response){
-        await this.gamesRepository.deleteAllData();
         await this.questionsRepository.deleteAllData();
         await this.securityRepository.deleteAllData();
         await this.likesRepository.deleteAllData();

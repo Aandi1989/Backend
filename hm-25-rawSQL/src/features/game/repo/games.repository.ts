@@ -3,6 +3,7 @@ import { GameType, UserWaitingForGame } from "../types/types";
 import { GameOutputModel } from "../api/modules/output/game.output.model";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
+import { UserOutputModel } from "../../users/api/models/output/user.output.model";
 
 @Injectable()
 export class GamesRepository {
@@ -30,18 +31,24 @@ export class GamesRepository {
         const result = await this.dataSource.query(query);
         return this._mapCreatedGameToOutputType(result, login);
     }
-    async deleteAllData() {
-        const queryGames = `DELETE FROM public."Game"`;
-        const gamesDelete = this.dataSource.query(queryGames);
 
-        const queryAnswer = `DELETE FROM public."Answer"`;
-        const answersDelete = this.dataSource.query(queryAnswer);
-
-        const queryWaitingUser = `DELETE FROM public."User_waiting_for_game"`;
-        const waitingUserDelete = this.dataSource.query(queryWaitingUser);
-
-        await Promise.all([gamesDelete, answersDelete, waitingUserDelete])
+    async activateGame(user: UserOutputModel, gameId: string, startDateGame: string){
+        const query = 
+            `UPDATE public."Game"
+            SET "secondUserId"='${user.id}', "startGameDate"='${startDateGame}', status='Active'
+            WHERE "id" = '${gameId}'
+            `;
+        const result = await this.dataSource.query(query);
+        return result[1] === 1;
     }
+
+    async deleteWaitingUser(){
+        const query =  `DELETE FROM public."User_waiting_for_game"`;
+        const result = await this.dataSource.query(query);
+        return result[1] === 1;
+    }
+
+
     _mapCreatedGameToOutputType(game: GameType, login: string): GameOutputModel {
         return {
             id: game.id,
@@ -61,5 +68,4 @@ export class GamesRepository {
             finishGameDate: null
         }
     }
-
 }
