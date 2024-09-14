@@ -1,9 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { GameType, UserWaitingForGame } from "../types/types";
+import { AnswerType, GameType, UserWaitingForGame } from "../types/types";
 import { GameOutputModel } from "../api/modules/output/game.output.model";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 import { UserOutputModel } from "../../users/api/models/output/user.output.model";
+import { Result, ResultCode } from "../../../common/types/types";
 
 @Injectable()
 export class GamesRepository {
@@ -40,6 +41,24 @@ export class GamesRepository {
             `;
         const result = await this.dataSource.query(query);
         return result[1] === 1;
+    }
+
+    async addAnswer(answer: AnswerType): Promise<Result>{
+        const { id, gameId, playerId, questionId, answerStatus, addedAt, sequence } = answer;
+        const query = 
+            `INSERT INTO public."Answer"(
+	        id, "gameId", "playerId", "questionId", "answerStatus", "addedAt", sequence)
+	        VALUES ('${id}','${gameId}','${playerId}','${questionId}','${answerStatus}','${addedAt}','${sequence}')
+            RETURNING "questionId", "answerStatus", "addedAt";
+        `;
+        console.log('query of addAnswer', query);
+        const result = await this.dataSource.query(query);
+        console.log("addAnswer result-->", result);
+        if(result[0]){
+            return {code: ResultCode.Success, data: result[0]}
+        }else{
+            return{code: ResultCode.Failed}
+        }
     }
 
     async deleteWaitingUser(){

@@ -7,7 +7,7 @@ import { UsersQueryRepo } from '../../features/users/repo/users.query.repository
 @Injectable()
 export class AuthGuard implements CanActivate {
     constructor(protected usersQueryRepo: UsersQueryRepo,
-        protected jwtService: JwtService) { }
+                protected jwtService: JwtService) { }
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request: Request = context.switchToHttp().getRequest();
 

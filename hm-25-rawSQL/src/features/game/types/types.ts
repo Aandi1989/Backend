@@ -18,3 +18,12 @@ export class GameType {
     amountOfFinishedGame: number
 }
 
+export class AnswerType {
+    id: string
+    gameId: string
+    playerId: string
+    questionId: string
+    answerStatus: string
+    addedAt: string
+    sequence: number
+}

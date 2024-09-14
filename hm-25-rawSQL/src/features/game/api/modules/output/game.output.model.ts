@@ -23,7 +23,7 @@ export class GameOutputModel  {
     finishGameDate: string | null
   };
 
-  class AnswerOutputModel {
+  export class AnswerOutputModel {
     questionId: string
     answerStatus: string
     addedAt: string

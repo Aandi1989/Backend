@@ -1,13 +1,15 @@
-import { Controller, ForbiddenException, Get, HttpCode, NotFoundException, Post, Req, UnauthorizedException, UseGuards } from "@nestjs/common";
+import { Body, Controller, ForbiddenException, Get, HttpCode, NotFoundException, Post, Req, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { HTTP_STATUSES, RouterPaths } from "../../../common/utils/utils";
 import { CommandBus } from "@nestjs/cqrs";
 import { ConnectGameCommand } from "../application/use-case/connect-game.use-case";
 import { Request } from 'express';
 import { AuthGuard } from "../../../common/guards/auth.guard";
 import { Result, ResultCode } from "../../../common/types/types";
-import { GameOutputModel } from "./modules/output/game.output.model";
+import { AnswerOutputModel, GameOutputModel } from "./modules/output/game.output.model";
 import { GamesQueryRepository } from "../repo/games.query.repository";
 import { GetCurrentGameCommand } from "../application/use-case/get-current-game.use-case";
+import { SendAnswerCommand } from "../application/use-case/send-answer.use-case";
+import { CreateAnswerDto } from "./modules/input/create-answer.dto";
 
 @Controller(RouterPaths.pairGame)
 export class GamesController {
@@ -22,6 +24,16 @@ export class GamesController {
         if (result.code == ResultCode.Success){ return result.data};
         if (result.code == ResultCode.Forbidden) throw new ForbiddenException();
         if (result.code !== ResultCode.Success) throw new NotFoundException();
+    }
+
+    @UseGuards(AuthGuard)
+    @HttpCode(HTTP_STATUSES.OK_200)
+    @Post('/my-current/answer')
+    async sendAnswer(@Req() req: Request, @Body() body: CreateAnswerDto): Promise<AnswerOutputModel | undefined>{
+        const result = await this.commandBus.execute(new SendAnswerCommand(req.user, body));
+        if (result.code == ResultCode.Success){ return result.data};
+        if (result.code == ResultCode.Forbidden) throw new ForbiddenException();
+        if (result.code !== ResultCode.Success) throw new NotFoundException();    
     }
 
     // @UseGuards(AuthGuard)

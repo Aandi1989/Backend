@@ -54,7 +54,7 @@ export class UsersQueryRepo {
             FROM public."Users"
             WHERE "id" = '${id}'`;
         const result = await this.dataSourse.query(query);
-        return result ? this._mapAccountToUserOutputType(result[0]) : null;
+        return result.length != 0 ? this._mapAccountToUserOutputType(result[0]) : null;
   }
   async getByLoginOrEmail(loginOrEmail: string): Promise<Account | null> {
     const query = `

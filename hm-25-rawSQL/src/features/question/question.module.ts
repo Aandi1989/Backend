@@ -15,6 +15,6 @@ import { QuestionsQueryRepo } from "./repo/questions.query.repository";
     providers:[QuestionsRepository, QuestionsQueryRepo, CreateQuestionUseCase, DeleteQuestionUseCase, UpdateQuestionUseCase,
         PublishQuestionUseCase , JwtService],
     controllers: [QuestionsSAController],
-    exports: [QuestionsRepository]
+    exports: [QuestionsRepository, QuestionsQueryRepo]
 })
 export class QuestionsModule{}

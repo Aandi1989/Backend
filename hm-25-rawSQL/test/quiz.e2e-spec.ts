@@ -69,7 +69,8 @@ describe('QuizGame test (e2e)', () => {
             .send({
                 body: "How many threads does JavaScript have?",
                 correctAnswers: [
-                    1
+                    // 1
+                    "JS"
                 ]
             })
             .expect(HTTP_STATUSES.CREATED_201)
@@ -93,7 +94,8 @@ describe('QuizGame test (e2e)', () => {
             .send({
                 body: "What tools do we use for writing backend on JS?",
                 correctAnswers: [
-                    "Express", "Nest"
+                    // "Express", "Nest"
+                    "JS"
                 ]
             })
             .expect(HTTP_STATUSES.CREATED_201)
@@ -117,7 +119,8 @@ describe('QuizGame test (e2e)', () => {
             .send({
                 body: "What tools do we use for writing frontend on JS?",
                 correctAnswers: [
-                    "React", "Next"
+                    // "React", "Next"
+                    "JS"
                 ]
             })
             .expect(HTTP_STATUSES.CREATED_201)
@@ -141,7 +144,8 @@ describe('QuizGame test (e2e)', () => {
             .send({
                 body: "What is better React or Next?",
                 correctAnswers: [
-                     "Next"
+                    //  "Next"
+                    "JS"
                 ]
             })
             .expect(HTTP_STATUSES.CREATED_201)
@@ -263,7 +267,18 @@ describe('QuizGame test (e2e)', () => {
         .expect(HTTP_STATUSES.ACCESS_FORBIDDEN_403)
       })
 
-      
+      it(' + POST send answer by the first user', async () => {
+        const res = await request(httpServer)
+        .post(`/${RouterPaths.pairGame}/my-current/answer`)
+        .set('Authorization', `Basic ${firstAccessToken}`)
+        .send({
+          answer: "C++"
+        })
+        .expect(HTTP_STATUSES.OK_200)
+        
+        console.log("firstAccessToken-->", firstAccessToken);
+        console.log("secondAccessToken-->", secondAccessToken);
+      })
 
       afterAll( async () => {
         await app.close();

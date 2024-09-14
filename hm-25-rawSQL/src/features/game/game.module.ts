@@ -9,11 +9,13 @@ import { UsersQueryRepo } from "../users/repo/users.query.repository";
 import { JwtService } from "../../common/services/jwt-service";
 import { GetCurrentGameUseCase } from "./application/use-case/get-current-game.use-case";
 import { QuestionsModule } from "../question/question.module";
+import { SendAnswerUseCase } from "./application/use-case/send-answer.use-case";
+import { QuestionsQueryRepo } from "../question/repo/questions.query.repository";
 
 @Module({
     imports:[TypeOrmModule.forFeature(), CqrsModule, QuestionsModule],
     providers:[GamesRepository, GamesQueryRepository, ConnectGameUseCase,
-        UsersQueryRepo, GetCurrentGameUseCase, JwtService
+        UsersQueryRepo, GetCurrentGameUseCase, SendAnswerUseCase, QuestionsQueryRepo, JwtService
     ],
     controllers:[GamesController],
     exports:[GamesRepository]

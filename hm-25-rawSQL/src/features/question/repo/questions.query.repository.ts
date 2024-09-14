@@ -66,4 +66,17 @@ export class QuestionsQueryRepo {
             items: questions
         };
     }
+
+    async getCorrectAnswer(gameId: string, sequence: number){
+        const query = `
+            SELECT q."correctAnswers", q.id 
+            FROM public."Game_question" as gq
+            LEFT JOIN  public."Question" as q
+            ON q.id = gq."questionId"
+            WHERE gq."gameId" = '${gameId}' AND gq.sequence = '${sequence}'
+        `;
+        const result = await this.dataSource.query(query);
+        console.log('result of getCorrectAnswer-->', result);
+        return {correctAnswers: result[0].correctAnswers, questionId: result[0].id};
+    }
 }
