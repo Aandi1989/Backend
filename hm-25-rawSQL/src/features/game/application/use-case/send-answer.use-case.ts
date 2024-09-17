@@ -24,11 +24,9 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
 
         const activeGame = await this.gamesQueryRepository.findActiveGame(userId);
         const userHasActiveGame = activeGame?.firstUserId == userId || activeGame?.secondUserId == userId;
-        // console.log('activeGame--->',  activeGame, 'userHasActiveGame--->', userHasActiveGame);
         if (!activeGame || !userHasActiveGame) return { code: ResultCode.Forbidden };
 
         let amountOfAnswers = await this.gamesQueryRepository.getAmountOfAnswer(userId, activeGame.id);
-        // console.log('amountOfAnswers--->', amountOfAnswers,  'amountOfAnswers >= 5', amountOfAnswers >= 5);
         if(amountOfAnswers && amountOfAnswers >= 5) return { code: ResultCode.Forbidden };
 
         // find out if the answer is correct

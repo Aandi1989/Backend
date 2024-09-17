@@ -78,4 +78,17 @@ export class QuestionsQueryRepo {
         const result = await this.dataSource.query(query);
         return {correctAnswers: result[0].correctAnswers, questionId: result[0].id};
     }
+
+    async getQuestionsOfGame(gameId: string){
+        const query = `
+            SELECT gq."sequence", q."id", q."body"
+            FROM public."Game_question" as gq
+            LEFT JOIN public."Question" as q
+            ON q.id = gq."questionId"
+            WHERE gq."gameId" = '${gameId}'
+            ORDER BY gq."sequence" ASC
+        `;
+        const result = await this.dataSource.query(query);
+        return result;
+    }
 }

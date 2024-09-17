@@ -39,6 +39,27 @@ export class GamesQueryRepository {
         return result[0] ? result[0] : null;
     }
 
+    async getCurrentUserGame(userId: string){
+        const query = `
+            SELECT *
+            FROM public."Game"
+            WHERE "status" = 'PendingSecondPlayer' OR status = 'Active' 
+            AND "firstUserId" = '${userId}' OR "secondUserId" = '${userId}'
+        `;
+        const result = await this.dataSource.query(query);
+        return result ? result[0] : null;
+    }
+
+    async getGameById(gameId: string){
+        const query = `
+            SELECT *
+            FROM public."Game"
+            WHERE "id" = '${gameId}' 
+        `;
+        const result = await this.dataSource.query(query);
+        return result ? result[0] : null;
+    }
+
     async getAmountOfAnswer(userId: string, gameId: string){
         const query = `
             SELECT COUNT(*)
@@ -49,4 +70,14 @@ export class GamesQueryRepository {
         return result[0].count;
     }
 
+    async getGameAnswersOfUser(userId: string, gameId: string){
+        const query = `
+            SELECT "questionId", "answerStatus", "addedAt", sequence
+            FROM public."Answer" 
+            WHERE "playerId" = '${userId}' AND "gameId" = '${gameId}'
+            ORDER BY sequence ASC
+        `;
+        const result = await this.dataSource.query(query);
+        return result;
+    }
 }

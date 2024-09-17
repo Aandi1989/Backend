@@ -1,10 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { AnswerType, GameType, UserWaitingForGame } from "../types/types";
-import { GameOutputModel } from "../api/modules/output/game.output.model";
+import { AnswerOutputModel, GameOutputModel } from "../api/modules/output/game.output.model";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 import { UserOutputModel } from "../../users/api/models/output/user.output.model";
 import { Result, ResultCode } from "../../../common/types/types";
+import { QuestionOutputModel } from "../../question/api/modules/output/question.output.model";
 
 @Injectable()
 export class GamesRepository {
@@ -30,7 +31,7 @@ export class GamesRepository {
              '${firstUserScore}', '${secondUserScore}')
             `;
         const result = await this.dataSource.query(query);
-        return this._mapCreatedGameToOutputType(result, login);
+        return this._mapPendingGameToOutputType(result, login);
     }
 
     async activateGame(user: UserOutputModel, gameId: string, startDateGame: string){
@@ -124,7 +125,7 @@ export class GamesRepository {
     }
 
 
-    _mapCreatedGameToOutputType(game: GameType, login: string): GameOutputModel {
+    _mapPendingGameToOutputType(game: GameType, login: string): GameOutputModel {
         return {
             id: game.id,
             firstPlayerProgress: {
@@ -142,5 +143,44 @@ export class GamesRepository {
             startGameDate: null,
             finishGameDate: null
         }
+    }
+
+    _mapGameToOutputType(game: GameType, firstUserLogin: string, secondUserLogin: string, questions: QuestionOutputModel[], 
+        firstUserAnswers: AnswerOutputModel[], secondUserAnswers: AnswerOutputModel[]): GameOutputModel{
+            return {
+                id: game.id,
+                firstPlayerProgress: {
+                    answers: firstUserAnswers.map(answer => ({
+                        questionId: answer.questionId,
+                        answerStatus: answer.answerStatus,
+                        addedAt: answer.addedAt
+                    })),
+                    player: {
+                        id: game.firstUserId,
+                        login: firstUserLogin
+                    },
+                    score: game.firstUserScore
+                },
+                secondPlayerProgress: {
+                    answers: secondUserAnswers.map(answer => ({
+                        questionId: answer.questionId,
+                        answerStatus: answer.answerStatus,
+                        addedAt: answer.addedAt
+                    })),
+                    player: {
+                        id: game.secondUserId!,
+                        login: secondUserLogin
+                    },
+                    score: game.secondUserScore
+                },
+                questions: questions.map(q => ({
+                    id: q.id,
+                    body: q.body
+                })),
+                status: game.status,
+                pairCreatedDate: game.pairCreatedDate,
+                startGameDate: game.startGameDate!,
+                finishGameDate: game.finishGameDate ? game.finishGameDate : null
+            }
     }
 }

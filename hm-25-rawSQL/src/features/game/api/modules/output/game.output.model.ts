@@ -29,7 +29,7 @@ export class GameOutputModel  {
     addedAt: string
   }
 
-  class QuestionOutputModel {
+  export class QuestionOutputModel {
     id: string
     body: string
   }

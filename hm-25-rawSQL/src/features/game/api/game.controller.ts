@@ -1,4 +1,4 @@
-import { Body, Controller, ForbiddenException, Get, HttpCode, NotFoundException, Post, Req, UnauthorizedException, UseGuards } from "@nestjs/common";
+import { Body, Controller, ForbiddenException, Get, HttpCode, NotFoundException, Param, Post, Req, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { HTTP_STATUSES, RouterPaths } from "../../../common/utils/utils";
 import { CommandBus } from "@nestjs/cqrs";
 import { ConnectGameCommand } from "../application/use-case/connect-game.use-case";
@@ -10,6 +10,7 @@ import { GamesQueryRepository } from "../repo/games.query.repository";
 import { GetCurrentGameCommand } from "../application/use-case/get-current-game.use-case";
 import { SendAnswerCommand } from "../application/use-case/send-answer.use-case";
 import { CreateAnswerDto } from "./modules/input/create-answer.dto";
+import { GetUserGameCommand } from "../application/use-case/get-user-game.use-case";
 
 @Controller(RouterPaths.pairGame)
 export class GamesController {
@@ -36,16 +37,24 @@ export class GamesController {
         if (result.code !== ResultCode.Success) throw new NotFoundException();    
     }
 
-    // @UseGuards(AuthGuard)
-    // @HttpCode(HTTP_STATUSES.OK_200)
-    // @Get('/my-current')
+    @UseGuards(AuthGuard)
+    @HttpCode(HTTP_STATUSES.OK_200)
+    @Get('/my-current')
+    async getMyCurrentGame(@Req() req: Request): Promise<GameOutputModel>{
+        const result = await this.commandBus.execute(new GetCurrentGameCommand(req.user));
+        if(result.code != ResultCode.Success) throw new NotFoundException();
+        return result.data;
+    }
 
-    // async getMyCurrentGame(@Req() req: Request): Promise<GameOutputModel>{
-    //     const result = await this.commandBus.execute(new GetCurrentGameCommand(req.user));
-    //     if(result.code == ResultCode.NotFound) throw new NotFoundException();
-
-    //     return result.data;
-    // }
+    @UseGuards(AuthGuard)
+    @HttpCode(HTTP_STATUSES.OK_200)
+    @Get('/:id')
+    async getUserGame(@Req() req: Request, @Param('id') gameId: string): Promise<GameOutputModel>{
+        const result = await this.commandBus.execute(new GetUserGameCommand(req.user, gameId));
+        if (result.code == ResultCode.Forbidden) throw new ForbiddenException();
+        if (result.code != ResultCode.Success)throw new NotFoundException();
+        return result.data;
+    }
 }
 
 // Fabi token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3NGI1YjAyMS0wMTVmLTQzMjYtOTdhZS02YjUwNDZjM2M5OTMiLCJpYXQiOjE3MjU5NDMyNjQsImV4cCI6MTcyODYyMTY2NH0.BfGxu87-c2HAcSXDfhO3vJ8gyswvGvtwIkJ0g0tNDtM
