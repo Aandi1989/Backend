@@ -21,13 +21,13 @@ export class GamesRepository {
     }
 
     async createGame(newGame: GameType, login: string) {
-        const { id, firstUserId, status, pairCreatedDate, firstUserScore, secondUserScore, amountOfFinishedGame } = newGame;
+        const { id, firstUserId, status, pairCreatedDate, firstUserScore, secondUserScore } = newGame;
         
         const query =
             `INSERT INTO public."Game" 
-            (id, "firstUserId", status, "pairCreatedDate", "firstUserScore", "secondUserScore", "amountOfFinishedGame")
+            (id, "firstUserId", status, "pairCreatedDate", "firstUserScore", "secondUserScore")
             VALUES ('${id}', '${firstUserId}', '${status}', '${pairCreatedDate}',  
-             '${firstUserScore}', '${secondUserScore}', '${amountOfFinishedGame}')
+             '${firstUserScore}', '${secondUserScore}')
             `;
         const result = await this.dataSource.query(query);
         return this._mapCreatedGameToOutputType(result, login);
@@ -43,6 +43,64 @@ export class GamesRepository {
         return result[1] === 1;
     }
 
+    async updateGameScore(gameId: string, isFirstUser: boolean):  Promise<boolean>{
+        // Define the column to update based on isFirstUser
+        const scoreColumn = isFirstUser ? "firstUserScore" : "secondUserScore";
+
+        const query = `
+            UPDATE public."Game"
+            SET "${scoreColumn}" = "${scoreColumn}" + 1
+            WHERE id = '${gameId}'
+        `;
+        const result = await this.dataSource.query(query);
+        return result[1] === 1;
+    }
+
+    async firstUserFinishesGame(gameId: string, isFirstUser: boolean, userId: string, answerStatus: string): Promise<boolean>{
+        // Define the column to update based on isFirstUser
+        const scoreColumn = isFirstUser ? "firstUserScore" : "secondUserScore";
+        const correctAnswer = answerStatus === "Correct" ? true : false;
+
+        const query = `
+            UPDATE public."Game"
+            SET "firstFinishedUserId" = '${userId}'
+            ${correctAnswer ? `, "${scoreColumn}" = "${scoreColumn}" + 1` : ''}
+            WHERE id = '${gameId}'
+        `;
+        const result = await this.dataSource.query(query);
+        return result[1] === 1;
+    }
+
+    async finishGame(game: GameType): Promise<boolean>{
+        const { id, status, finishGameDate, winnerId, loserId, firstUserScore, secondUserScore } = game;
+
+        let query = `
+            UPDATE public."Game"
+            SET "status" = $1, "finishGameDate" = $2, "firstUserScore" = $3, "secondUserScore" = $4
+        `;
+
+        const values = [status, finishGameDate, firstUserScore, secondUserScore];
+
+        let parameterIndex = values.length + 1; 
+
+        if (winnerId) {
+            query += `, "winnerId" = $${parameterIndex}`;
+            values.push(winnerId);
+            parameterIndex++;
+        }
+
+        if (loserId) {
+            query += `, "loserId" = $${parameterIndex}`;
+            values.push(loserId);
+            parameterIndex++;
+        }
+
+        query += ` WHERE id = $${parameterIndex}`;
+        values.push(id);
+        const result = await this.dataSource.query(query, values);
+        return result[1] === 1;
+    }
+
     async addAnswer(answer: AnswerType): Promise<Result>{
         const { id, gameId, playerId, questionId, answerStatus, addedAt, sequence } = answer;
         const query = 
@@ -51,9 +109,7 @@ export class GamesRepository {
 	        VALUES ('${id}','${gameId}','${playerId}','${questionId}','${answerStatus}','${addedAt}','${sequence}')
             RETURNING "questionId", "answerStatus", "addedAt";
         `;
-        console.log('query of addAnswer', query);
         const result = await this.dataSource.query(query);
-        console.log("addAnswer result-->", result);
         if(result[0]){
             return {code: ResultCode.Success, data: result[0]}
         }else{

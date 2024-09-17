@@ -40,14 +40,12 @@ export class GamesQueryRepository {
     }
 
     async getAmountOfAnswer(userId: string, gameId: string){
-        console.log('inside getAmountOfAnswer');
         const query = `
             SELECT COUNT(*)
             FROM public."Answer"
             WHERE "playerId" = '${userId}' AND "gameId" = '${gameId}';
         `;
         const result = await this.dataSource.query(query);
-        // console.log('getNumberOfAnswer result-->', result);
         return result[0].count;
     }
 

@@ -81,7 +81,7 @@ export class ConnectGameUseCase implements ICommandHandler<ConnectGameCommand> {
             loserId: undefined,
             firstUserScore: 0,
             secondUserScore: 0,
-            amountOfFinishedGame: 0
+            firstFinishedUserId: undefined
         }
         return await this.gamesRepository.createGame(newGame, login)
     }

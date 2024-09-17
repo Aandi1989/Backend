@@ -15,7 +15,7 @@ export class GameType {
     loserId?: string
     firstUserScore: number
     secondUserScore: number
-    amountOfFinishedGame: number
+    firstFinishedUserId?: string
 }
 
 export class AnswerType {
