@@ -40,7 +40,7 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
         // update game
         const updatedGame = await this.updateGameData(amountOfAnswers, answerStatus, userId, activeGame);
 
-        return updatedGame;
+        return addedAnswer;
     }
 
     private async createNewAnswer(gameId: string, answerStatus: string, playerId: string, 

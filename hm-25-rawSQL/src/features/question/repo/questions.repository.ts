@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
-import { DataSource, Repository } from "typeorm";
+import { Injectable } from "@nestjs/common";
+import { InjectDataSource } from "@nestjs/typeorm";
+import { DataSource,  } from "typeorm";
 import { QuestionType, UpdateQuestionType } from "../types/types";
 import { PublishQuestionDto } from "../api/modules/input/publish-question.dto";
 
@@ -13,8 +13,8 @@ export class QuestionsRepository {
         const correctAnswersStr = JSON.stringify(correctAnswers);
         const query = `
             INSERT INTO public."Question"(
-                "id", "body", "published", "createdAt", "updatedAt", "correctAnswers")
-                VALUES ('${id}', '${body}', '${published}', '${createdAt}', '${updatedAt}', '${correctAnswersStr}')
+                "id", "body", "published", "createdAt", "correctAnswers")
+                VALUES ('${id}', '${body}', '${published}', '${createdAt}', '${correctAnswersStr}')
                 RETURNING *;
         `;
         const result = await this.dataSource.query(query);
@@ -38,10 +38,11 @@ export class QuestionsRepository {
     
      async publishQuestion(id: string, data: PublishQuestionDto): Promise<boolean>{
        const { published } = data;
+       const updatedAt = new Date().toISOString();
        const query = 
             `UPDATE public."Question"
-            SET ` +
-            (published ? ` "published"='${published}'` : '') +
+            SET "updatedAt"='${updatedAt}' ` +
+            (published ? `, "published"='${published}'` : '') +
             `WHERE "id" = $1`;
        const result = await this.dataSource.query(query, [id]);
        return result[1] === 1;

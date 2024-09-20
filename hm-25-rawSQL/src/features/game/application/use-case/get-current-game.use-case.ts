@@ -1,7 +1,6 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { GamesQueryRepository } from "../../repo/games.query.repository";
 import { UserOutputModel } from "../../../users/api/models/output/user.output.model";
-import { v4 as uuidv4 } from 'uuid';
 import { GameType } from "../../types/types";
 import { Result, ResultCode } from "../../../../common/types/types";
 import { GamesRepository } from "../../repo/games.repository";
@@ -38,7 +37,7 @@ export class GetCurrentGameUseCase implements ICommandHandler<GetCurrentGameComm
                  secondUserLogin = secondUser?.login;
             }else{
                 secondUserLogin = command.user.login;
-                let firstUser = await this.usersQueryRepo.getUserById(currentGame.secondUserId!);
+                let firstUser = await this.usersQueryRepo.getUserById(currentGame.firstUserId!);
                 firstUserLogin = firstUser?.login;
             }
 

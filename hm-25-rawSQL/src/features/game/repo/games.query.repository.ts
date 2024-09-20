@@ -43,21 +43,26 @@ export class GamesQueryRepository {
         const query = `
             SELECT *
             FROM public."Game"
-            WHERE "status" = 'PendingSecondPlayer' OR status = 'Active' 
-            AND "firstUserId" = '${userId}' OR "secondUserId" = '${userId}'
+            WHERE ("status" = 'PendingSecondPlayer' OR status = 'Active') 
+            AND ("firstUserId" = '${userId}' OR "secondUserId" = '${userId}')
         `;
         const result = await this.dataSource.query(query);
         return result ? result[0] : null;
     }
 
     async getGameById(gameId: string){
-        const query = `
-            SELECT *
-            FROM public."Game"
-            WHERE "id" = '${gameId}' 
-        `;
-        const result = await this.dataSource.query(query);
-        return result ? result[0] : null;
+        try{
+            const query = `
+                SELECT *
+                FROM public."Game"
+                WHERE "id" = '${gameId}' 
+            `;
+            const result = await this.dataSource.query(query);
+            return result ? result[0] : null;
+        }catch(error){
+            console.log("Error trying to get user game by Id:", error);
+            return null;
+        }
     }
 
     async getAmountOfAnswer(userId: string, gameId: string){

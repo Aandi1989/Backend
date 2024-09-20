@@ -4,7 +4,7 @@ export class QuestionType {
     correctAnswers: (string | number)[];
     published: boolean;
     createdAt: string;
-    updatedAt: string;
+    updatedAt?: string;
 }
 
 export class UpdateQuestionType {

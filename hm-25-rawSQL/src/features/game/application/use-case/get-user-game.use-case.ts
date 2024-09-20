@@ -41,7 +41,7 @@ export class GetUserGameUseCase implements ICommandHandler<GetUserGameCommand> {
                  secondUserLogin = secondUser?.login;
             }else{
                 secondUserLogin = command.user.login;
-                let firstUser = await this.usersQueryRepo.getUserById(foundGame.secondUserId!);
+                let firstUser = await this.usersQueryRepo.getUserById(foundGame.firstUserId!);
                 firstUserLogin = firstUser?.login;
             }
 

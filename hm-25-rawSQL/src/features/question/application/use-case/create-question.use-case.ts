@@ -18,8 +18,7 @@ export class CreateQuestionUseCase implements ICommandHandler<CreateQuestionComm
             body: command.data.body,
             correctAnswers: command.data.correctAnswers,
             published: false,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
+            createdAt: new Date().toISOString()
         };
         const createdQuestion = await this.questionsRepository.createQuestion(newQuestion);
 

@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Res } from "@nestjs/common";
 import { AnswerType, GameType, UserWaitingForGame } from "../types/types";
 import { AnswerOutputModel, GameOutputModel } from "../api/modules/output/game.output.model";
 import { InjectDataSource } from "@nestjs/typeorm";
@@ -31,17 +31,24 @@ export class GamesRepository {
              '${firstUserScore}', '${secondUserScore}')
             `;
         const result = await this.dataSource.query(query);
-        return this._mapPendingGameToOutputType(result, login);
+        return this._mapPendingGameToOutputType(newGame, login);
     }
 
-    async activateGame(user: UserOutputModel, gameId: string, startDateGame: string){
+    async activateGame(user: UserOutputModel, gameId: string, startDateGame: string): Promise<Result>{
         const query = 
             `UPDATE public."Game"
             SET "secondUserId"='${user.id}', "startGameDate"='${startDateGame}', status='Active'
             WHERE "id" = '${gameId}'
+            RETURNING *
             `;
+        
         const result = await this.dataSource.query(query);
-        return result[1] === 1;
+        
+        if(result[1] === 1){
+            return {code: ResultCode.Success, data: result[0][0]};
+        }else{
+            return {code: ResultCode.Failed}
+        }
     }
 
     async updateGameScore(gameId: string, isFirstUser: boolean):  Promise<boolean>{

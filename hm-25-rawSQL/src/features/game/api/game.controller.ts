@@ -1,4 +1,4 @@
-import { Body, Controller, ForbiddenException, Get, HttpCode, NotFoundException, Param, Post, Req, UnauthorizedException, UseGuards } from "@nestjs/common";
+import { Body, Controller, ForbiddenException, Get, HttpCode, NotFoundException, Param, ParseUUIDPipe, Post, Req, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { HTTP_STATUSES, RouterPaths } from "../../../common/utils/utils";
 import { CommandBus } from "@nestjs/cqrs";
 import { ConnectGameCommand } from "../application/use-case/connect-game.use-case";
@@ -11,6 +11,7 @@ import { GetCurrentGameCommand } from "../application/use-case/get-current-game.
 import { SendAnswerCommand } from "../application/use-case/send-answer.use-case";
 import { CreateAnswerDto } from "./modules/input/create-answer.dto";
 import { GetUserGameCommand } from "../application/use-case/get-user-game.use-case";
+import { GameParams } from "./modules/input/game-id.dto";
 
 @Controller(RouterPaths.pairGame)
 export class GamesController {
@@ -29,7 +30,7 @@ export class GamesController {
 
     @UseGuards(AuthGuard)
     @HttpCode(HTTP_STATUSES.OK_200)
-    @Post('/my-current/answer')
+    @Post('/my-current/answers')
     async sendAnswer(@Req() req: Request, @Body() body: CreateAnswerDto): Promise<AnswerOutputModel | undefined>{
         const result = await this.commandBus.execute(new SendAnswerCommand(req.user, body));
         if (result.code == ResultCode.Success){ return result.data};
@@ -49,8 +50,9 @@ export class GamesController {
     @UseGuards(AuthGuard)
     @HttpCode(HTTP_STATUSES.OK_200)
     @Get('/:id')
-    async getUserGame(@Req() req: Request, @Param('id') gameId: string): Promise<GameOutputModel>{
-        const result = await this.commandBus.execute(new GetUserGameCommand(req.user, gameId));
+    // async getUserGame(@Req() req: Request, @Param() gameId: string): Promise<GameOutputModel>{
+    async getUserGame(@Req() req: Request, @Param() params: GameParams): Promise<GameOutputModel>{
+        const result = await this.commandBus.execute(new GetUserGameCommand(req.user, params.id));
         if (result.code == ResultCode.Forbidden) throw new ForbiddenException();
         if (result.code != ResultCode.Success)throw new NotFoundException();
         return result.data;

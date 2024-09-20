@@ -6,6 +6,8 @@ import { GamesRepository } from "../../repo/games.repository";
 import { GameType } from "../../types/types";
 import { Result, ResultCode } from "../../../../common/types/types";
 import { QuestionsRepository } from "../../../question/repo/questions.repository";
+import { UsersQueryRepo } from "../../../users/repo/users.query.repository";
+import { QuestionsQueryRepo } from "../../../question/repo/questions.query.repository";
 
 export class ConnectGameCommand {
     constructor(public user: UserOutputModel) { }
@@ -16,7 +18,8 @@ export class ConnectGameUseCase implements ICommandHandler<ConnectGameCommand> {
     constructor(protected gamesQueryRepository: GamesQueryRepository,
                 protected gamesRepository: GamesRepository,
                 protected questionsRepository: QuestionsRepository,
-    ) { }
+                protected usersQueryRepo: UsersQueryRepo,
+                protected questionsQueryRepo: QuestionsQueryRepo) { }
 
     async execute(command: ConnectGameCommand): Promise<Result> {
         try {
@@ -38,7 +41,7 @@ export class ConnectGameUseCase implements ICommandHandler<ConnectGameCommand> {
                 return this.createNewGame(command)
             }
         } catch (error) {
-            console.error('Error connecting game:', error);
+            console.log('Error connecting game:', error);
             return { code: ResultCode.Failed };
         }
     }
@@ -48,8 +51,12 @@ export class ConnectGameUseCase implements ICommandHandler<ConnectGameCommand> {
         const startDateGame = new Date().toISOString();
         const activatedGame = await this.gamesRepository.activateGame(user, gameId, startDateGame);
         const addedQuestions = await this.questionsRepository.generateGameQuestions(gameId);
-
-        return { code: ResultCode.Success };
+        const questions = await this.questionsQueryRepo.getQuestionsOfGame(activatedGame.data.id);
+        const firstUser = await this.usersQueryRepo.getUserById(activatedGame.data.firstUserId);
+        const outputGameModel = this.gamesRepository._mapGameToOutputType(activatedGame.data, firstUser!.login, user.login, 
+            questions , [], []
+        )
+        return { code: ResultCode.Success, data: outputGameModel };
     }
 
     private async createNewGame(command) {
