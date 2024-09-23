@@ -31,7 +31,7 @@ export class GetMyStatisticUseCase implements ICommandHandler<GetMyStatisticComm
             }
 
             if(userId == game.secondUserId){
-                initStatistic.sumScore += game.firstUserScore;
+                initStatistic.sumScore += game.secondUserScore;
             }
             
             userId == game.winnerId ? initStatistic.winsCount++ : null;

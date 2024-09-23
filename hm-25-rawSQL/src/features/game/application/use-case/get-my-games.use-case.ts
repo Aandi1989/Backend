@@ -10,106 +10,118 @@ import { GameInitialOutputModel, GameOutputModel, GameSOutputModel } from "../..
 
 export class GetMyGamesCommand {
     constructor(public user: UserOutputModel,
-                public query: GameQueryOutputType,
+        public query: GameQueryOutputType,
     ) { }
 }
 
 @CommandHandler(GetMyGamesCommand)
 export class GetMyGamesUseCase implements ICommandHandler<GetMyGamesCommand> {
     constructor(protected gamesQueryRepository: GamesQueryRepository,
-                protected gamesRepository: GamesRepository,
-                protected questionsQueryRepo: QuestionsQueryRepo,
-                protected usersQueryRepo: UsersQueryRepo) { }
+        protected gamesRepository: GamesRepository,
+        protected questionsQueryRepo: QuestionsQueryRepo,
+        protected usersQueryRepo: UsersQueryRepo) { }
 
     async execute(command: GetMyGamesCommand): Promise<Result> {
-        const userId = command.user.id;
-        const gameIds: string[] = [];
-        const usersIds = new Set();
-        let logins: loginsDictionary = {};
-        let questions: questionsDictionary = {};
-        let answers: gamesAnswersDictionary = {};
+        try {
+            const userId = command.user.id;
+            const gameIds: string[] = [];
+            const usersIds = new Set();
+            let logins: loginsDictionary = {};
+            let questions: questionsDictionary = {};
+            let answers: gamesAnswersDictionary = {};
 
-        // get sorted user's games in GameType
-        let userGames: GameInitialOutputModel = await this.gamesQueryRepository.getUserGames(userId, command.query);
-        
-        const games = userGames.items;
-        games.forEach(game =>{
-            gameIds.push(game.id);
-            usersIds.add(game.firstUserId);
-            usersIds.add(game.secondUserId);
-        });
+            // get sorted user's games in GameType
+            let userGames: GameInitialOutputModel = await this.gamesQueryRepository.getUserGames(userId, command.query);
 
-        // get users' logins
-        const loginsArr = await this.usersQueryRepo.getLoginsByIdArr(Array.from(usersIds) as string[]);
-        logins = loginsArr.reduce((obj, user) => {
-            obj[user.id] = user.login;
-            return obj;
-        }, {});
-
-        // get games' questions
-        const questionsArr = await this.questionsQueryRepo.getQuestionsByGameIds(gameIds);
-        questions = questionsArr.reduce((acc, question) => {
-            if (!acc[question.gameId]) {
-                acc[question.gameId] = [];
-            }
-            acc[question.gameId].push({ id: question.id, body: question.body });
-            return acc;
-        }, {});
-
-        // get answers for all games
-        const answerArr = await this.gamesQueryRepository.getAnswersForUserGames(Array.from(usersIds) as string[], gameIds);
-        answers = answerArr.reduce((acc, ans) => {
-            if (!acc[ans.gameId]) {
-                acc[ans.gameId] = {};
-            }
-
-            if (!acc[ans.gameId][ans.playerId]) {
-                acc[ans.gameId][ans.playerId] = [];
-            }
-
-            acc[ans.gameId][ans.playerId].push({
-                questionId: ans.questionId,
-                answerStatus: ans.answerStatus,
-                addedAt: ans.addedAt
+            const games = userGames.items;
+            games.forEach(game => {
+                gameIds.push(game.id);
+                usersIds.add(game.firstUserId);
+                usersIds.add(game.secondUserId);
             });
-            return acc;
-        },{});
 
-        // form final array of games
-        const gamesOutput: GameOutputModel[] = games.map((game: GameType) => ({
-            id: game.id,
-            firstPlayerProgress: {
-                answers: answers[game.id][game.firstUserId] ?  answers[game.id][game.firstUserId] : [],
-                player: {
-                    id: game.firstUserId,
-                    login: logins[game.firstUserId]
-                },
-                score: game.firstUserScore
-            },
-            secondPlayerProgress: game.secondUserId 
-                ? { answers: answers[game.id][game.secondUserId!] ?  answers[game.id][game.secondUserId!] : [],
-                    player: {
-                        id: game.secondUserId,
-                        login: logins[game.secondUserId]
-                    },
-                    score: game.secondUserScore
+            // get users' logins
+            const loginsArr = await this.usersQueryRepo.getLoginsByIdArr(Array.from(usersIds) as string[]);
+            logins = loginsArr.reduce((obj, user) => {
+                obj[user.id] = user.login;
+                return obj;
+            }, {});
+
+            // get games' questions
+            const questionsArr = await this.questionsQueryRepo.getQuestionsByGameIds(gameIds);
+            questions = questionsArr.reduce((acc, question) => {
+                if (!acc[question.gameId]) {
+                    acc[question.gameId] = [];
                 }
-                : null, 
-            questions: questions[game.id] ? questions[game.id] : null,
-            status: game.status,
-            pairCreatedDate: game.pairCreatedDate,
-            startGameDate: game.startGameDate ? game.startGameDate : null,
-            finishGameDate: game.finishGameDate ? game.finishGameDate : null
-        }))
+                acc[question.gameId].push({ id: question.id, body: question.body });
+                return acc;
+            }, {});
 
-        const result: GameSOutputModel = {
-            pagesCount: userGames.pagesCount,
-            page: userGames.page,
-            pageSize: userGames.pageSize,
-            totalCount: userGames.totalCount,
-            items : gamesOutput
+            // get answers for all games
+            const answerArr = await this.gamesQueryRepository.getAnswersForUserGames(Array.from(usersIds) as string[], gameIds);
+            answers = answerArr.reduce((acc, ans) => {
+                if (!acc[ans.gameId]) {
+                    acc[ans.gameId] = {};
+                }
+
+                if (!acc[ans.gameId][ans.playerId]) {
+                    acc[ans.gameId][ans.playerId] = [];
+                }
+
+                acc[ans.gameId][ans.playerId].push({
+                    questionId: ans.questionId,
+                    answerStatus: ans.answerStatus,
+                    addedAt: ans.addedAt
+                });
+                return acc;
+            }, {});
+
+            // form final array of games
+            const gamesOutput: GameOutputModel[] = games.map((game: GameType) => {
+                const firstPlayerAnswers = answers[game.id] && answers[game.id][game.firstUserId] ? answers[game.id][game.firstUserId] : [];
+                const secondPlayerAnswers = game.secondUserId && answers[game.id] && answers[game.id][game.secondUserId] ? answers[game.id][game.secondUserId] : [];
+                return {
+                    id: game.id,
+                    firstPlayerProgress: {
+                        // answers: answers[game.id][game.firstUserId] ? answers[game.id][game.firstUserId] : [],
+                        answers: firstPlayerAnswers,
+                        player: {
+                            id: game.firstUserId,
+                            login: logins[game.firstUserId]
+                        },
+                        score: game.firstUserScore
+                    },
+                    secondPlayerProgress: game.secondUserId
+                        ? {
+                            // answers: answers[game.id][game.secondUserId!] ? answers[game.id][game.secondUserId!] : [],
+                            answers: secondPlayerAnswers,
+                            player: {
+                                id: game.secondUserId,
+                                login: logins[game.secondUserId]
+                            },
+                            score: game.secondUserScore
+                        }
+                        : null,
+                    questions: questions[game.id] ? questions[game.id] : null,
+                    status: game.status,
+                    pairCreatedDate: game.pairCreatedDate,
+                    startGameDate: game.startGameDate ? game.startGameDate : null,
+                    finishGameDate: game.finishGameDate ? game.finishGameDate : null
+                }
+            })
+
+            const result: GameSOutputModel = {
+                pagesCount: userGames.pagesCount,
+                page: userGames.page,
+                pageSize: userGames.pageSize,
+                totalCount: userGames.totalCount,
+                items: gamesOutput
+            }
+
+            return { code: ResultCode.Success, data: result }
+        } catch (error) {
+            console.log("ERROR:", error);
+            return { code: ResultCode.Failed }
         }
-
-        return {code: ResultCode.Success, data: result}
     }
 }
