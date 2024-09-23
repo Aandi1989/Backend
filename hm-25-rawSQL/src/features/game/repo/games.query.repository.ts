@@ -131,4 +131,14 @@ export class GamesQueryRepository {
         const result = await this.dataSource.query(query, [gameIds, userIds]);
         return result;
     }
+
+    async getUserStatistic(userId: string){
+        const query = `
+            SELECT *
+            FROM public."Game"
+            WHERE "firstUserId" = '${userId}' OR "secondUserId" = '${userId}'
+        `;
+        const result = await this.dataSource.query(query);
+        return result;
+    }
 }

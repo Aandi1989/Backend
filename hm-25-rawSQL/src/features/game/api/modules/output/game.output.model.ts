@@ -52,7 +52,7 @@ export class GameOutputModel  {
     body: string
   }
 
-  export class MyStatistic {
+  export class MyStatisticModel {
     sumScore: number
     avgScores: number
     gamesCount: number

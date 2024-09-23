@@ -52,6 +52,13 @@ type userAnswersDictionary = Record<string, AnswerOutputModel[]>
 
 export type gamesAnswersDictionary = Record<string, userAnswersDictionary>
 
+export type InitialStatistic = {
+    sumScore: number,
+    winsCount: number,
+    lossesCount: number,
+    unfinishedGames: number,
+}
+
 
 type GameSortBy = "id" | "firstUserId" | "secondUserId" | "status" | "pairCreatedDate" | "startGameDate" | "finishGameDate";
 

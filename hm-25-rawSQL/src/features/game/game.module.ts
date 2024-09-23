@@ -14,12 +14,13 @@ import { QuestionsQueryRepo } from "../question/repo/questions.query.repository"
 import { UsersModule } from "../users/user.module";
 import { GetUserGameUseCase } from "./application/use-case/get-user-game.use-case";
 import { GetMyGamesUseCase } from "./application/use-case/get-my-games.use-case";
+import { GetMyStatisticUseCase } from "./application/use-case/get-my-statistic.use-case";
 
 @Module({
     imports:[TypeOrmModule.forFeature(), CqrsModule, QuestionsModule, UsersModule],
     providers:[GamesRepository, GamesQueryRepository, ConnectGameUseCase, UsersQueryRepo, 
         GetCurrentGameUseCase, SendAnswerUseCase, QuestionsQueryRepo, GetUserGameUseCase, 
-        GetMyGamesUseCase, JwtService
+        GetMyGamesUseCase, GetMyStatisticUseCase, JwtService
     ],
     controllers:[GamesController],
     exports:[GamesRepository]

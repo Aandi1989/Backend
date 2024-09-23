@@ -21,7 +21,7 @@ export const RouterPaths = {
   testingAllData: 'testing/all-data',
 
   quizQuestion: 'sa/quiz/questions',
-  pairGame: 'pair-game-quiz/pairs',
+  pairGame: 'pair-game-quiz',
 
   __test__: 'testing',
 };

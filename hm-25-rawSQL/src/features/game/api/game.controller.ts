@@ -5,7 +5,7 @@ import { ConnectGameCommand } from "../application/use-case/connect-game.use-cas
 import { Request } from 'express';
 import { AuthGuard } from "../../../common/guards/auth.guard";
 import { Result, ResultCode } from "../../../common/types/types";
-import { AnswerOutputModel, GameOutputModel, GameSOutputModel } from "./modules/output/game.output.model";
+import { AnswerOutputModel, GameOutputModel, GameSOutputModel, MyStatisticModel } from "./modules/output/game.output.model";
 import { GamesQueryRepository } from "../repo/games.query.repository";
 import { GetCurrentGameCommand } from "../application/use-case/get-current-game.use-case";
 import { SendAnswerCommand } from "../application/use-case/send-answer.use-case";
@@ -16,6 +16,7 @@ import { GetMyGamesCommand } from "../application/use-case/get-my-games.use-case
 import { GameQueryType } from "../types/types";
 import { gameQueryParams } from "../../../common/helpers/queryStringModifiers";
 import { GameQueryDTO } from "./modules/input/game-query.dto";
+import { GetMyStatisticCommand } from "../application/use-case/get-my-statistic.use-case";
 
 @Controller(RouterPaths.pairGame)
 export class GamesController {
@@ -24,7 +25,7 @@ export class GamesController {
     
     @UseGuards(AuthGuard)
     @HttpCode(HTTP_STATUSES.OK_200)
-    @Post('/connection')
+    @Post('/pairs/connection')
     async connectToGame(@Req() req: Request): Promise<GameOutputModel | undefined>{
         const result = await this.commandBus.execute(new ConnectGameCommand(req.user));
         if (result.code == ResultCode.Success){ return result.data};
@@ -34,7 +35,7 @@ export class GamesController {
 
     @UseGuards(AuthGuard)
     @HttpCode(HTTP_STATUSES.OK_200)
-    @Post('/my-current/answers')
+    @Post('/pairs/my-current/answers')
     async sendAnswer(@Req() req: Request, @Body() body: CreateAnswerDto): Promise<AnswerOutputModel | undefined>{
         const result = await this.commandBus.execute(new SendAnswerCommand(req.user, body));
         if (result.code == ResultCode.Success){ return result.data};
@@ -44,7 +45,7 @@ export class GamesController {
 
     @UseGuards(AuthGuard)
     @HttpCode(HTTP_STATUSES.OK_200)
-    @Get('/my-current')
+    @Get('/pairs/my-current')
     async getMyCurrentGame(@Req() req: Request): Promise<GameOutputModel>{
         const result = await this.commandBus.execute(new GetCurrentGameCommand(req.user));
         if(result.code != ResultCode.Success) throw new NotFoundException();
@@ -53,8 +54,7 @@ export class GamesController {
 
     @UseGuards(AuthGuard)
     @HttpCode(HTTP_STATUSES.OK_200)
-    @Get('/my')
-    // async getUserGames(@Req() req: Request, @Query() query: Partial<GameQueryType>): Promise<GameSOutputModel>{
+    @Get('/pairs/my')
     async getUserGames(@Req() req: Request, @Query() query: GameQueryDTO): Promise<GameSOutputModel>{
         const queryBody = gameQueryParams(query);
         const result = await this.commandBus.execute(new GetMyGamesCommand(req.user, queryBody));
@@ -64,7 +64,16 @@ export class GamesController {
 
     @UseGuards(AuthGuard)
     @HttpCode(HTTP_STATUSES.OK_200)
-    @Get('/:id')
+    @Get('/users/my-statistic')
+    async getMyStatistic(@Req() req: Request): Promise<MyStatisticModel>{
+        const result = await this.commandBus.execute(new GetMyStatisticCommand(req.user));
+        if (result.code != ResultCode.Success)throw new BadRequestException();
+        return result.data;
+    }
+
+    @UseGuards(AuthGuard)
+    @HttpCode(HTTP_STATUSES.OK_200)
+    @Get('/pairs/:id')
     async getUserGame(@Req() req: Request, @Param() params: GameParams): Promise<GameOutputModel>{
         const result = await this.commandBus.execute(new GetUserGameCommand(req.user, params.id));
         if (result.code == ResultCode.Forbidden) throw new ForbiddenException();
