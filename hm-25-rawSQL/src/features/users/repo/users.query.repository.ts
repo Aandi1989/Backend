@@ -72,6 +72,15 @@ export class UsersQueryRepo {
         const result = await this.dataSourse.query(query);
         return result ? this._mapAccountToUserAuthType(result[0]) : null;
   }
+  async getLoginsByIdArr(ids: string[]){
+    const query = `
+        SELECT id, login
+        FROM public."Users"
+        WHERE "id" = ANY($1)
+      `;
+    const result = await this.dataSourse.query(query, [ids]);
+    return result;
+  }
   _mapAccountToUserAuthType(user: Account): UserAuthOutputModel {
     return {
       userId: user.id,

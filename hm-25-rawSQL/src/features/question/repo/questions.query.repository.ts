@@ -91,4 +91,16 @@ export class QuestionsQueryRepo {
         const result = await this.dataSource.query(query);
         return result;
     }
+
+    async getQuestionsByGameIds(ids: string[]){
+        const query = `
+            SELECT gq."sequence", q."id", q."body", gq."gameId"
+            FROM public."Game_question" as gq
+            LEFT JOIN public."Question" as q
+            ON q.id = gq."questionId"
+            WHERE gq."gameId" = ANY($1)
+        `;
+        const result = await this.dataSource.query(query, [ids]);
+        return result;
+    }
 }

@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
-import { GameType, UserWaitingForGame } from "../types/types";
-import { GameOutputModel } from "../api/modules/output/game.output.model";
+import { GameQueryOutputType, GameType, UserWaitingForGame } from "../types/types";
+import { GameInitialOutputModel, GameOutputModel } from "../api/modules/output/game.output.model";
 import { UserOutputModel } from "../../users/api/models/output/user.output.model";
 
 @Injectable()
@@ -65,6 +65,41 @@ export class GamesQueryRepository {
         }
     }
 
+    async getUserGames(userId: string, query: GameQueryOutputType): Promise<GameInitialOutputModel>{
+        const { pageNumber, pageSize, sortBy, sortDirection } = query;
+        const sortDir = sortDirection === "asc" ? "ASC" : "DESC";
+        const offset = (pageNumber - 1) * pageSize;
+
+        const totalCountQuuery = `
+            SELECT COUNT(*)
+            FROM public."Game"
+            WHERE "firstUserId" = '${userId}' OR "secondUserId" = '${userId}' 
+        `;
+
+        const totalCountResult = await this.dataSource.query(totalCountQuuery);
+        const totalCount = parseInt(totalCountResult[0].count);
+
+        const mainQuery = `
+            SELECT * 
+            FROM public."Game"
+            WHERE "firstUserId" = '${userId}' OR "secondUserId" = '${userId}'
+            ORDER BY "${sortBy}" ${sortDir}, "pairCreatedDate" DESC
+            LIMIT $1
+            OFFSET $2
+        `;
+
+        const games = await this.dataSource.query(mainQuery, [pageSize, offset]);
+        const pagesCount = Math.ceil(totalCount / pageSize);
+        
+        return {
+            pagesCount: pagesCount,
+            page: pageNumber,
+            pageSize: pageSize,
+            totalCount: totalCount,
+            items: games
+        };
+    }
+
     async getAmountOfAnswer(userId: string, gameId: string){
         const query = `
             SELECT COUNT(*)
@@ -83,6 +118,17 @@ export class GamesQueryRepository {
             ORDER BY sequence ASC
         `;
         const result = await this.dataSource.query(query);
+        return result;
+    }
+
+    async getAnswersForUserGames(userIds: string[], gameIds: string[]){
+        const query = `
+            SELECT *
+            FROM public."Answer"
+            WHERE "gameId" = ANY($1) AND "playerId" = ANY($2)
+            ORDER BY sequence ASC
+        `;
+        const result = await this.dataSource.query(query, [gameIds, userIds]);
         return result;
     }
 }

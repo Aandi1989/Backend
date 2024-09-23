@@ -240,27 +240,27 @@ describe('QuizGame test (e2e)', () => {
         secondAccessToken = res.body.accessToken
       })
 
-      // it('+ POST registration of the third user', async () => {
-      //   return request(httpServer)
-      //       .post(`/${RouterPaths.auth}/registration`)
-      //       .send({
-      //           login: "ThirdUser",
-      //           password: "123456",
-      //           email: "thirdUser@mail.com"
-      //       })
-      //       .expect(HTTP_STATUSES.NO_CONTENT_204)
-      // })
+      it('+ POST registration of the third user', async () => {
+        return request(httpServer)
+            .post(`/${RouterPaths.auth}/registration`)
+            .send({
+                login: "ThirdUser",
+                password: "123456",
+                email: "thirdUser@mail.com"
+            })
+            .expect(HTTP_STATUSES.NO_CONTENT_204)
+      })
 
-      // it('+ POST login third user', async () => {
-      //   const res = await request(httpServer)
-      //   .post(`/${RouterPaths.auth}/login`)
-      //   .send({
-      //       loginOrEmail: "ThirdUser",
-      //       password: "123456"
-      //   })
-      //   .expect(HTTP_STATUSES.OK_200)
-      //   thirdAccessToken = res.body.accessToken
-      // })
+      it('+ POST login third user', async () => {
+        const res = await request(httpServer)
+        .post(`/${RouterPaths.auth}/login`)
+        .send({
+            loginOrEmail: "ThirdUser",
+            password: "123456"
+        })
+        .expect(HTTP_STATUSES.OK_200)
+        thirdAccessToken = res.body.accessToken
+      })
 
       it(' + POST create game by the first user', async () => {
         const res = await request(httpServer)
@@ -608,6 +608,7 @@ describe('QuizGame test (e2e)', () => {
         .expect(HTTP_STATUSES.OK_200)
       })
       //======================================================
+      // 4 - 6 
 
       it(' + POST create game by the second user', async () => {
         const res = await request(httpServer)
@@ -635,12 +636,6 @@ describe('QuizGame test (e2e)', () => {
         .expect(HTTP_STATUSES.OK_200)
       })
 
-      it(' + GET current game by first user', async () => {
-        const res = await request(httpServer)
-        .get(`/${RouterPaths.pairGame}/my-current`)
-        .set('Authorization', `Bearer ${firstAccessToken}`)
-        .expect(HTTP_STATUSES.OK_200)
-      })
 
        it(' + POST send first answer by the second user', async () => {
         const res = await request(httpServer)
@@ -652,13 +647,6 @@ describe('QuizGame test (e2e)', () => {
         .expect(HTTP_STATUSES.OK_200)
       })
 
-      it(' + GET current game by second user', async () => {
-        const res = await request(httpServer)
-        .get(`/${RouterPaths.pairGame}/my-current`)
-        .set('Authorization', `Bearer ${secondAccessToken}`)
-        .expect(HTTP_STATUSES.OK_200)
-        console.log("current game of second user after first answer--->", res.body)
-      })
 
       it(' + POST send second answer by the second user', async () => {
         const res = await request(httpServer)
@@ -670,14 +658,158 @@ describe('QuizGame test (e2e)', () => {
         .expect(HTTP_STATUSES.OK_200)
       })
 
-      it(' + GET current game by second user', async () => {
+
+      it(' + POST send second answer by the first user', async () => {
         const res = await request(httpServer)
-        .get(`/${RouterPaths.pairGame}/my-current`)
-        .set('Authorization', `Bearer ${secondAccessToken}`)
+        .post(`/${RouterPaths.pairGame}/my-current/answers`)
+        .set('Authorization', `Basic ${firstAccessToken}`)
+        .send({
+          answer: "JS"
+        })
         .expect(HTTP_STATUSES.OK_200)
       })
 
 
+      it(' + POST send third answer by the first user', async () => {
+        const res = await request(httpServer)
+        .post(`/${RouterPaths.pairGame}/my-current/answers`)
+        .set('Authorization', `Basic ${firstAccessToken}`)
+        .send({
+          answer: "JS"
+        })
+        .expect(HTTP_STATUSES.OK_200)
+      })
+
+    
+      it(' + POST send fourth answer by the first user', async () => {
+        const res = await request(httpServer)
+        .post(`/${RouterPaths.pairGame}/my-current/answers`)
+        .set('Authorization', `Basic ${firstAccessToken}`)
+        .send({
+          answer: "JS"
+        })
+        .expect(HTTP_STATUSES.OK_200)
+      })
+
+
+      it(' + POST send fifth answer by the first user', async () => {
+        const res = await request(httpServer)
+        .post(`/${RouterPaths.pairGame}/my-current/answers`)
+        .set('Authorization', `Basic ${firstAccessToken}`)
+        .send({
+          answer: "JS"
+        })
+        .expect(HTTP_STATUSES.OK_200)
+      })
+
+      it(' + POST send third answer by the second user', async () => {
+        const res = await request(httpServer)
+        .post(`/${RouterPaths.pairGame}/my-current/answers`)
+        .set('Authorization', `Basic ${secondAccessToken}`)
+        .send({
+          answer: "JS"
+        })
+        .expect(HTTP_STATUSES.OK_200)
+      })
+
+      it(' + POST send fourth answer by the second user', async () => {
+        const res = await request(httpServer)
+        .post(`/${RouterPaths.pairGame}/my-current/answers`)
+        .set('Authorization', `Basic ${secondAccessToken}`)
+        .send({
+          answer: "JS"
+        })
+        .expect(HTTP_STATUSES.OK_200)
+      })
+
+      it(' + POST send fifth answer by the second user', async () => {
+        const res = await request(httpServer)
+        .post(`/${RouterPaths.pairGame}/my-current/answers`)
+        .set('Authorization', `Basic ${secondAccessToken}`)
+        .send({
+          answer: "JS"
+        })
+        .expect(HTTP_STATUSES.OK_200)
+      })
+      //======================================================
+
+      //======================================================
+      // unfinished game between first and third users
+      it(' + POST create game by the first user', async () => {
+        const res = await request(httpServer)
+        .post(`/${RouterPaths.pairGame}/connection`)
+        .set('Authorization', `Basic ${firstAccessToken}`)
+        .expect(HTTP_STATUSES.OK_200)
+        gameId = res.body.id;
+      })
+
+      it(' + POST participate game by the third user', async () => {
+        const res = await request(httpServer)
+        .post(`/${RouterPaths.pairGame}/connection`)
+        .set('Authorization', `Basic ${thirdAccessToken}`)
+        .expect(HTTP_STATUSES.OK_200)
+      })
+
+      it(' + POST send first answer by the first user', async () => {
+        const res = await request(httpServer)
+        .post(`/${RouterPaths.pairGame}/my-current/answers`)
+        .set('Authorization', `Basic ${firstAccessToken}`)
+        .send({
+          answer: "JS"
+        })
+        .expect(HTTP_STATUSES.OK_200)
+      })
+
+      it(' + POST send first answer by the third user', async () => {
+        const res = await request(httpServer)
+        .post(`/${RouterPaths.pairGame}/my-current/answers`)
+        .set('Authorization', `Basic ${thirdAccessToken}`)
+        .send({
+          answer: "JS"
+        })
+        .expect(HTTP_STATUSES.OK_200)
+      })
+
+      it(' + POST send second answer by the first user', async () => {
+        const res = await request(httpServer)
+        .post(`/${RouterPaths.pairGame}/my-current/answers`)
+        .set('Authorization', `Basic ${firstAccessToken}`)
+        .send({
+          answer: "JS"
+        })
+        .expect(HTTP_STATUSES.OK_200)
+      })
+
+      it(' + POST send second answer by the third user', async () => {
+        const res = await request(httpServer)
+        .post(`/${RouterPaths.pairGame}/my-current/answers`)
+        .set('Authorization', `Basic ${thirdAccessToken}`)
+        .send({
+          answer: "JS"
+        })
+        .expect(HTTP_STATUSES.OK_200)
+      })
+
+      it(' + POST send third answer by the first user', async () => {
+        const res = await request(httpServer)
+        .post(`/${RouterPaths.pairGame}/my-current/answers`)
+        .set('Authorization', `Basic ${firstAccessToken}`)
+        .send({
+          answer: "JS"
+        })
+        .expect(HTTP_STATUSES.OK_200)
+      })
+
+      it(' + POST send third answer by the third user', async () => {
+        const res = await request(httpServer)
+        .post(`/${RouterPaths.pairGame}/my-current/answers`)
+        .set('Authorization', `Basic ${thirdAccessToken}`)
+        .send({
+          answer: "JS"
+        })
+        .expect(HTTP_STATUSES.OK_200)
+      })
+      //======================================================
 
 
       //======================================================

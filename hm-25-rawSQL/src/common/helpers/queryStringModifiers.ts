@@ -3,6 +3,8 @@ import { CommentQueryType, CommentQueryOutputType } from 'src/features/comments/
 import { PostQueryOutputType, PostQueryType } from 'src/features/posts/types/types';
 import { UserQueryOutputType, UserQueryType } from 'src/features/users/types/types';
 import { QuestionQueryOutputType, QuestionQueryType } from '../../features/question/types/types';
+import { GameQueryOutputType, GameQueryType } from '../../features/game/types/types';
+import { GameQueryDTO } from '../../features/game/api/modules/input/game-query.dto';
 
 
 export const userQueryParams = (
@@ -62,6 +64,15 @@ export const questionQueryParams = (query: Partial<QuestionQueryType>): Question
     bodySearchTerm: query.bodySearchTerm ? query.bodySearchTerm : '',
     publishedStatus: query.publishedStatus && allowedStatus.includes(query.publishedStatus) ? query.publishedStatus : "all",
     sortBy: query.sortBy ? query.sortBy : "createdAt",
+    sortDirection: query.sortDirection ? query.sortDirection : "desc"
+  }
+}
+
+export const gameQueryParams = (query: GameQueryDTO): GameQueryOutputType => {
+  return {
+    pageNumber: query.pageNumber ? +query.pageNumber : 1,
+    pageSize: query.pageSize ? +query.pageSize : 10,
+    sortBy: query.sortBy ? query.sortBy : "pairCreatedDate",
     sortDirection: query.sortDirection ? query.sortDirection : "desc"
   }
 }
