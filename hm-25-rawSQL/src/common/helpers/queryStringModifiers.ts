@@ -5,6 +5,7 @@ import { UserQueryOutputType, UserQueryType } from 'src/features/users/types/typ
 import { QuestionQueryOutputType, QuestionQueryType } from '../../features/question/types/types';
 import { GameQueryOutputType, GameQueryType } from '../../features/game/types/types';
 import { GameQueryDTO } from '../../features/game/api/modules/input/game-query.dto';
+import { StatisticQueryDTO } from '../../features/game/api/modules/input/statistic-query.dto';
 
 
 export const userQueryParams = (
@@ -77,3 +78,11 @@ export const gameQueryParams = (query: GameQueryDTO): GameQueryOutputType => {
   }
 }
 
+export const statisticQueryParams = (query: StatisticQueryDTO) :StatisticQueryDTO => {
+  return {
+    pageNumber: query.pageNumber ? +query.pageNumber : 1,
+    pageSize: query.pageSize ? +query.pageSize : 10,
+    sort: query.sort ? query.sort : ["avgScores desc", "sumScore desc"],
+
+  }
+}

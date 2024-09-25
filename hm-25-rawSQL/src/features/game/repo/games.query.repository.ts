@@ -100,6 +100,15 @@ export class GamesQueryRepository {
         };
     }
 
+    async getAllGames(){
+        const query = `
+            SELECT *
+            FROM public."Game"
+        `;
+        const result = await this.dataSource.query(query);
+        return result;
+    }
+
     async getAmountOfAnswer(userId: string, gameId: string){
         const query = `
             SELECT COUNT(*)

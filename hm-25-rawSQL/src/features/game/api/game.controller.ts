@@ -5,7 +5,7 @@ import { ConnectGameCommand } from "../application/use-case/connect-game.use-cas
 import { Request } from 'express';
 import { AuthGuard } from "../../../common/guards/auth.guard";
 import { Result, ResultCode } from "../../../common/types/types";
-import { AnswerOutputModel, GameOutputModel, GameSOutputModel, MyStatisticModel } from "./modules/output/game.output.model";
+import { AnswerOutputModel, GameOutputModel, GameSOutputModel, MyStatisticModel, StatisticWithPaginationModel } from "./modules/output/game.output.model";
 import { GamesQueryRepository } from "../repo/games.query.repository";
 import { GetCurrentGameCommand } from "../application/use-case/get-current-game.use-case";
 import { SendAnswerCommand } from "../application/use-case/send-answer.use-case";
@@ -14,9 +14,11 @@ import { GetUserGameCommand } from "../application/use-case/get-user-game.use-ca
 import { GameParams } from "./modules/input/game-id.dto";
 import { GetMyGamesCommand } from "../application/use-case/get-my-games.use-case";
 import { GameQueryType } from "../types/types";
-import { gameQueryParams } from "../../../common/helpers/queryStringModifiers";
+import { gameQueryParams, statisticQueryParams } from "../../../common/helpers/queryStringModifiers";
 import { GameQueryDTO } from "./modules/input/game-query.dto";
 import { GetMyStatisticCommand } from "../application/use-case/get-my-statistic.use-case";
+import { StatisticQueryDTO } from "./modules/input/statistic-query.dto";
+import { GetTopStatisticCommand } from "../application/use-case/get-top-statistic.use-case";
 
 @Controller(RouterPaths.pairGame)
 export class GamesController {
@@ -69,6 +71,14 @@ export class GamesController {
         const result = await this.commandBus.execute(new GetMyStatisticCommand(req.user));
         if (result.code != ResultCode.Success)throw new BadRequestException();
         return result.data;
+    }
+
+    @HttpCode(HTTP_STATUSES.OK_200)
+    @Get('/users/top')
+    async getTopStatistic(@Req() req: Request, @Query() query: StatisticQueryDTO): Promise<StatisticWithPaginationModel>{
+        const queryBody = statisticQueryParams(query);
+        const result = await this.commandBus.execute(new GetTopStatisticCommand(queryBody));
+        return result;
     }
 
     @UseGuards(AuthGuard)

@@ -52,6 +52,14 @@ export class GameOutputModel  {
     body: string
   }
 
+  export class StatisticWithPaginationModel {
+    pagesCount: number
+    page: number
+    pageSize: number
+    totalCount: number
+    items: MyStatisticModel[]
+  }
+
   export class MyStatisticModel {
     sumScore: number
     avgScores: number
@@ -59,4 +67,11 @@ export class GameOutputModel  {
     winsCount: number
     lossesCount: number
     drawsCount: number
+    unfinishedCount?: number
+    player?: PlayerType
+  }
+
+  export type PlayerType = {
+    id: string
+    login: string
   }

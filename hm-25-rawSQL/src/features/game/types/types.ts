@@ -1,4 +1,4 @@
-import { AnswerOutputModel, QuestionOutputModel } from "../api/modules/output/game.output.model"
+import { AnswerOutputModel, MyStatisticModel, QuestionOutputModel } from "../api/modules/output/game.output.model"
 
 export class UserWaitingForGame {
     id: string
@@ -51,6 +51,8 @@ export type questionsDictionary = Record<string, QuestionOutputModel[]>
 type userAnswersDictionary = Record<string, AnswerOutputModel[]>
 
 export type gamesAnswersDictionary = Record<string, userAnswersDictionary>
+
+export type topUsersDictionary = Record<string, MyStatisticModel>
 
 export type InitialStatistic = {
     sumScore: number,
