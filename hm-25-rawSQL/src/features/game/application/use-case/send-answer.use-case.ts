@@ -34,17 +34,25 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
         const { correctAnswers, questionId } = questionInfo;
         const answerStatus = correctAnswers.includes(command.body.answer) ? "Correct" : "Incorrect";
 
+        // create the date for addedAt field of answer
+        const addedAnswerTime = new Date().toISOString();
+
+        // create the date for auto completion of game 
+        const date = new Date(addedAnswerTime);
+        date.setSeconds(date.getSeconds() + 10);
+        const dateOfAutoFinishGame = date.toISOString();
+
         // insert the answer with status in the db
-        const addedAnswer = await this.createNewAnswer(activeGame.id, answerStatus, userId, questionId, amountOfAnswers);
+        const addedAnswer = await this.createNewAnswer(activeGame.id, answerStatus, userId, questionId, amountOfAnswers, addedAnswerTime);
 
         // update game
-        const updatedGame = await this.updateGameData(amountOfAnswers, answerStatus, userId, activeGame);
+        const updatedGame = await this.updateGameData(amountOfAnswers, answerStatus, userId, activeGame, dateOfAutoFinishGame);
 
         return addedAnswer;
     }
 
     private async createNewAnswer(gameId: string, answerStatus: string, playerId: string, 
-        questionId: string, sequence: number): Promise<Result>{
+        questionId: string, sequence: number, addedAt: string): Promise<Result>{
         const newAnswer: AnswerType = {
             id: uuidv4(),
             gameId,
@@ -52,12 +60,27 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
             playerId,
             questionId,
             sequence,
-            addedAt: new Date().toISOString()
+            addedAt
         }
         return await this.gamesRepository.addAnswer(newAnswer);
     }
 
-    private async updateGameData(amountOfAnswers: number, answerStatus: string, userId: string, game: GameType): Promise<Result> {
+    private async createAutoAnswer(gameId: string, playerId: string, questionId: string, 
+        sequence: number, addedAt: string):Promise<Result>{
+            const newAnswer: AnswerType = {
+                id: uuidv4(),
+                gameId,
+                answerStatus: "Incorrect",
+                playerId,
+                questionId,
+                sequence,
+                addedAt
+            }
+            return await this.gamesRepository.addAnswer(newAnswer);
+    }
+
+    private async updateGameData(amountOfAnswers: number, answerStatus: string, userId: string, game: GameType,
+        dateOfAutoFinishGame: string): Promise<Result> {
         const isFirstUser = userId == game.firstUserId ? true : false;
         
         // user haven't finish game yet
@@ -72,10 +95,7 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
         
         // user answers last question
         if(!game.firstFinishedUserId){
-            await this.firstUserFinishesGame(game, isFirstUser, userId, answerStatus);
-            
-            // const updatedGame = await this.gamesRepository.sendLastAnswerOfFirstUSer(game.id, isFirstUser, userId, answerStatus);
-            // if(updatedGame)  return { code : ResultCode.Success }
+            await this.firstUserFinishesGame(game, isFirstUser, userId, answerStatus, dateOfAutoFinishGame);
         }
 
         // user answers last question and finishes the game
@@ -88,37 +108,59 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
         return { code: ResultCode.Failed };
     }
 
-    private async firstUserFinishesGame(game: GameType, isFirstUser: boolean, userId: string, answerStatus: string){
+    private async firstUserFinishesGame(game: GameType, isFirstUser: boolean, userId: string, answerStatus: string,
+        dateOfAutoFinishGame: string ){
         const updatedGame = await this.gamesRepository.sendLastAnswerOfFirstUSer(game.id, isFirstUser, userId, answerStatus);
         process.nextTick(() => {
-            this.autoFinishGame(game, isFirstUser, userId) // Call the delay function that works after 10 seconds
+            this.autoFinishGame(game, isFirstUser, dateOfAutoFinishGame, userId); // Call the delay function that works after 10 seconds
         })
 
         if(updatedGame)  return { code : ResultCode.Success }
     }
 
-    private async autoFinishGame(game: GameType, isFirstUser: boolean, userId: string){
-        await new Promise<void>(resolve => setTimeout(async () => {
+
+    private async autoFinishGame(game: GameType, isFirstUser: boolean, dateOfAutoFinishGame: string, userId: string){
+        await new Promise<void>(resolve => { 
+            setTimeout(async () => {
             const lateUserId = isFirstUser ? game.secondUserId : game.firstUserId;
 
-            const amountOfAnswers = await this.gamesQueryRepository.getAmountOfAnswer(lateUserId!, game.id);
-            const lackOfAnswers = 5 - amountOfAnswers;
+            let amountOfAnswers = await this.gamesQueryRepository.getAmountOfAnswer(lateUserId!, game.id);
+            if(amountOfAnswers == 5){
+                resolve();
+                return;
+            }
             
-            console.log('This message must be sent after 10 seconds.', 'Amount of answers of second user:', amountOfAnswers);
+            // getting questions for game
+            const questions = await this.questionsQueryRepo.getQuestionsOfGame(game.id);
+
+            // adding auto answers with status "Incorrect"
+            for(let i = amountOfAnswers, j = amountOfAnswers + 1; i < 6; i++, j++){
+                if(questions[i]){
+                    await this.createAutoAnswer(game.id, lateUserId!, questions[i].id, j, dateOfAutoFinishGame);
+                }
+            }
+
+            // auto finish the game
+            const gameToFinish = await this.gamesQueryRepository.findActiveGame(userId);
+            const finishedGameBody = this.formFinishedGameBody("Incorrect", lateUserId!, gameToFinish!, dateOfAutoFinishGame);
+            const finishedGame = await this.gamesRepository.finishGame(finishedGameBody);
+
             resolve();
-        }, 10000));
+        }, 10000)});
     }
 
-    private formFinishedGameBody(answerStatus: string, userId: string, game: GameType): GameType{
+    private formFinishedGameBody(answerStatus: string, userId: string, game: GameType, dateFinishGame?: string): GameType{
         let { firstUserId, secondUserId, winnerId, loserId, firstUserScore, secondUserScore } = game;
         const isFirstUser = userId == game.firstUserId ? true : false;
         const finishGameDate = new Date().toISOString();
 
         if(isFirstUser){
             answerStatus === "Correct" ? ++firstUserScore : null;
+            // adding extra point if need
             secondUserScore !== 0 ? ++secondUserScore : null;
         }else{
             answerStatus === "Correct" ? ++secondUserScore : null;
+            // adding extra point if need
             firstUserScore !== 0 ? ++firstUserScore : null;
         }
 
@@ -137,7 +179,7 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
             status: "Finished",
             pairCreatedDate: game.pairCreatedDate,
             startGameDate: game.startGameDate,
-            finishGameDate,
+            finishGameDate: dateFinishGame ? dateFinishGame : finishGameDate,
             winnerId,
             loserId,
             firstUserScore,
