@@ -60,7 +60,7 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
     private async updateGameData(amountOfAnswers: number, answerStatus: string, userId: string, game: GameType): Promise<Result> {
         const isFirstUser = userId == game.firstUserId ? true : false;
         
-        // user havent finish game yet
+        // user haven't finish game yet
         if(amountOfAnswers <= 4){
             if(answerStatus == "Incorrect"){ 
                  return { code : ResultCode.Success }
@@ -72,8 +72,10 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
         
         // user answers last question
         if(!game.firstFinishedUserId){
-            const updatedGame = await this.gamesRepository.firstUserFinishesGame(game.id, isFirstUser, userId, answerStatus);
-            if(updatedGame)  return { code : ResultCode.Success }
+            await this.firstUserFinishesGame(game, isFirstUser, userId, answerStatus);
+            
+            // const updatedGame = await this.gamesRepository.sendLastAnswerOfFirstUSer(game.id, isFirstUser, userId, answerStatus);
+            // if(updatedGame)  return { code : ResultCode.Success }
         }
 
         // user answers last question and finishes the game
@@ -84,6 +86,27 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
         }
 
         return { code: ResultCode.Failed };
+    }
+
+    private async firstUserFinishesGame(game: GameType, isFirstUser: boolean, userId: string, answerStatus: string){
+        const updatedGame = await this.gamesRepository.sendLastAnswerOfFirstUSer(game.id, isFirstUser, userId, answerStatus);
+        process.nextTick(() => {
+            this.autoFinishGame(game, isFirstUser, userId) // Call the delay function that works after 10 seconds
+        })
+
+        if(updatedGame)  return { code : ResultCode.Success }
+    }
+
+    private async autoFinishGame(game: GameType, isFirstUser: boolean, userId: string){
+        await new Promise<void>(resolve => setTimeout(async () => {
+            const lateUserId = isFirstUser ? game.secondUserId : game.firstUserId;
+
+            const amountOfAnswers = await this.gamesQueryRepository.getAmountOfAnswer(lateUserId!, game.id);
+            const lackOfAnswers = 5 - amountOfAnswers;
+            
+            console.log('This message must be sent after 10 seconds.', 'Amount of answers of second user:', amountOfAnswers);
+            resolve();
+        }, 10000));
     }
 
     private formFinishedGameBody(answerStatus: string, userId: string, game: GameType): GameType{

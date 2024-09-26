@@ -1,8 +1,6 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { GamesQueryRepository } from "../../repo/games.query.repository";
-import { UserOutputModel } from "../../../users/api/models/output/user.output.model";
-import { GameType, InitialStatistic, loginsDictionary, topUsersDictionary } from "../../types/types";
-import { Result, ResultCode } from "../../../../common/types/types";
+import { GameType, loginsDictionary, topUsersDictionary } from "../../types/types";
 import { MyStatisticModel, StatisticWithPaginationModel } from "../../api/modules/output/game.output.model";
 import { UsersQueryRepo } from "../../../users/repo/users.query.repository";
 import { StatisticQueryDTO } from "../../api/modules/input/statistic-query.dto";

@@ -64,7 +64,7 @@ export class GamesRepository {
         return result[1] === 1;
     }
 
-    async firstUserFinishesGame(gameId: string, isFirstUser: boolean, userId: string, answerStatus: string): Promise<boolean>{
+    async sendLastAnswerOfFirstUSer(gameId: string, isFirstUser: boolean, userId: string, answerStatus: string): Promise<boolean>{
         // Define the column to update based on isFirstUser
         const scoreColumn = isFirstUser ? "firstUserScore" : "secondUserScore";
         const correctAnswer = answerStatus === "Correct" ? true : false;
