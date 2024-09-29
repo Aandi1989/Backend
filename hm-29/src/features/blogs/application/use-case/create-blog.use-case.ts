@@ -3,10 +3,12 @@ import { CreateBlogModel } from "../../api/models/input/create-blog.input.model"
 import { BlogsRepository } from "../../repo/blogs.repository";
 import { BlogType } from "../../types/types";
 import {v4 as uuidv4} from 'uuid';
+import { UserOutputModel } from "../../../users/api/models/output/user.output.model";
 
 
 export class CreateBlogCommand {
-    constructor(public data: CreateBlogModel){}
+    constructor(public data: CreateBlogModel,
+                public user?: UserOutputModel){}
 }
 
 @CommandHandler(CreateBlogCommand)
@@ -20,7 +22,8 @@ export class CreateblogUseCase implements ICommandHandler<CreateBlogCommand>{
             description: command.data.description,
             websiteUrl: command.data.websiteUrl,
             createdAt: new Date().toISOString(),
-            isMembership: false
+            isMembership: false,
+            ownerId: command.user?.id ? command.user?.id : undefined
         };
         const createdBlog = await this.blogsRepository.createBlog(newBlog)
         return createdBlog;

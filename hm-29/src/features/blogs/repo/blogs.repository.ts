@@ -10,13 +10,22 @@ export class BlogsRepository {
     constructor(@InjectDataSource() protected dataSourse: DataSource) { }
 
     async createBlog(newBlog: BlogType): Promise<BlogType> {
-        const { id, name, description, websiteUrl, createdAt, isMembership } = newBlog;
+        const { id, name, description, websiteUrl, createdAt, isMembership , ownerId } = newBlog;
+
+        let queryFields = `"id", "name", "description", "websiteUrl", "createdAt", "isMembership"`;
+        let queryValues = `'${id}', '${name}', '${description}', '${websiteUrl}', '${createdAt}', '${isMembership}'`;
+
+        if (ownerId) {
+            queryFields += `, "ownerId"`;
+            queryValues += `, '${ownerId}'`;
+        }
+
         const query = `
-            INSERT INTO public."Blogs"(
-                "id", "name", "description", "websiteUrl", "createdAt", "isMembership")
-                VALUES ('${id}', '${name}', '${description}', '${websiteUrl}', '${createdAt}', '${isMembership}')
-                RETURNING *;
+        INSERT INTO public."Blogs"(${queryFields})
+        VALUES (${queryValues})
+        RETURNING "id", "name", "description", "websiteUrl", "createdAt", "isMembership" ;
         `;
+
         const result = await this.dataSourse.query(query);
         return result[0];
     }
@@ -32,6 +41,17 @@ export class BlogsRepository {
         const result = await this.dataSourse.query(query, [id]);
         return result[1] === 1;
     }
+
+    async bindBlog(blogId: string, userId: string){
+        const query = `
+            UPDATE public."Blogs"
+            SET "ownerId" = $1
+            WHERE "id" = $2
+        `;
+        const result = await this.dataSourse.query(query, [userId, blogId])
+        return result[1] === 1;
+    }
+
     async deleteBlog(id: string): Promise<boolean> {
         const query = 
             `DELETE FROM public."Blogs"

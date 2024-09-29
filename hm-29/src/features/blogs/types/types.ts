@@ -5,6 +5,13 @@ export class BlogType  {
     websiteUrl: string
     createdAt: string
     isMembership: boolean
+    ownerId?: string
+    blogOwnerInfo?: BlogOwnerInfoType
+}
+
+class BlogOwnerInfoType {
+    userId: string | null
+    userLogin: string | null
 }
 
 export type BlogQueryType = {

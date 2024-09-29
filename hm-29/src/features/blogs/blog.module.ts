@@ -11,13 +11,20 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { JwtService } from "../../common/services/jwt-service";
 import { UsersModule } from "../users/user.module";
 import { PostsModule } from "../posts/post.module";
+import { BloggerController } from "./api/blogs.blogger.controller";
+import { UpdateOwnBlogUseCase } from "./application/use-case/update-own-blog.use-case";
+import { DeleteOwnBlogUseCase } from "./application/use-case/delete-own-blog.use-case";
+import { UpdateOwnPostUseCase } from "./application/use-case/update-own-post.use-case";
+import { DeleteOwnPostUseCase } from "./application/use-case/delete-own-post.use-case";
+import { GetSaBlogsUseCase } from "./application/use-case/get-SAblogs.use-case";
 
 @Module({
     imports:[ TypeOrmModule.forFeature(), CqrsModule, UsersModule, PostsModule],
     providers:[BlogsRepository, BlogsQueryRepo, CreateblogUseCase, DeleteBlogUseCase, UpdateBlogUseCase,
-        JwtService
+        UpdateOwnBlogUseCase, DeleteOwnBlogUseCase, UpdateOwnPostUseCase, DeleteOwnPostUseCase, 
+        GetSaBlogsUseCase ,JwtService
     ],
-    controllers:[BlogsController, BlogsSAController],
+    controllers:[BlogsController, BlogsSAController, BloggerController],
     exports: [BlogsRepository]
 })
 export class BlogsModule {}

@@ -9,7 +9,7 @@ import { CreateBlogCommand } from "../application/use-case/create-blog.use-case"
 import { DeleteBlogCommand } from "../application/use-case/delete-blog.use-case";
 import { UpdateBlogCommand } from "../application/use-case/update-blog.use-case";
 import { CreatePostForBlogModel } from "./models/input/create-post-for-blog.model";
-import { Response, Request } from 'express';
+import { Request } from 'express';
 import { UpdatePostForBlogModel } from "./models/input/update-post.input";
 import { AccessUserId } from "../../../common/guards/accessUserId";
 import { BasicAuthGuard } from "../../../common/guards/basicAuth";
@@ -22,78 +22,91 @@ import { DeletePostCommand } from "../../posts/application/use-cases/delete-post
 import { UpdatePostCommand } from "../../posts/application/use-cases/update-post.use-case";
 import { PostsQueryRepo } from "../../posts/repo/posts.query.repository";
 import { PostType, PostQueryType } from "../../posts/types/types";
+import { BindBlogParams } from "./models/input/bind-blog.params.model";
+import { BlogsRepository } from "../repo/blogs.repository";
+import { GetSaBlogsCommand } from "../application/use-case/get-SAblogs.use-case";
 
 @Controller(RouterPaths.blogsSA)
 export class BlogsSAController {
     constructor(protected blogsQueryRepo: BlogsQueryRepo,
                 protected postsQueryRepo: PostsQueryRepo,
+                protected blogsRepository: BlogsRepository,
                 private commandBus: CommandBus){}
     @UseGuards(BasicAuthGuard)
     @Get()
     async getBlogs(@Query() query: Partial<BlogQueryType>): Promise<BlogsWithQueryOutputModel>{
-        return await this.blogsQueryRepo.getBlogs(blogQueryParams(query));
+        const queryModified = blogQueryParams(query);
+        return await this.commandBus.execute(new GetSaBlogsCommand(queryModified));
     }
-    @UseGuards(BasicAuthGuard)
-    @Post()
-    async createBlog (@Req() req: Request, @Body() body: CreateBlogModel): Promise<BlogType>{
-        return await this.commandBus.execute(new CreateBlogCommand(body));
-    }
+
     @UseGuards(BasicAuthGuard)
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204)
-    @Put(':id')
-    async updateBlog(@Param('id') blogId: string, @Body() body: CreateBlogModel){
-        const isUpdated = await this.commandBus.execute(new UpdateBlogCommand( blogId, body));
-        if(isUpdated) return;  
-        throw new NotFoundException('Blog not found');
+    @Put(':id/bind-with-user/:userId')
+    async bindBlog(@Param() params: BindBlogParams){
+        const result = await this.blogsRepository.bindBlog(params.id, params.userId);
+        if(result) return;
+        throw new BadRequestException();
     }
-    @UseGuards(BasicAuthGuard)
-    @HttpCode(HTTP_STATUSES.NO_CONTENT_204)
-    @Delete(':id')
-    async deleteBlog(@Param('id') blogId: string){
-        const isDeleted = await this.commandBus.execute(new DeleteBlogCommand(blogId))
-        if(isDeleted) return;
-        throw new NotFoundException('Blog not found');
-    }
-    @UseGuards(BasicAuthGuard)
-    @Post(`:id/${RouterPaths.posts}`)
-    async createPostForBlog(@Param('id') blogId: string, @Body() body: CreatePostForBlogModel): Promise<PostType | null>{
-        const foundBlog = await this.blogsQueryRepo.findBlogById(blogId);
-        if(!foundBlog) throw new NotFoundException();
-        return await this.commandBus.execute(new CreatePostForBlogCommand(body, blogId));
-    }
-    @UseGuards(AccessUserId)
-    @Get(`:id/${RouterPaths.posts}`)
-    async getPostsForBlog(@Req() req: Request, @Param('id') blogId: string, 
-        @Query() query:Partial<PostQueryType>): Promise<PostsWithQueryOutputModel>{
-        const foundBlog = await this.blogsQueryRepo.findBlogById(blogId);
-        if(!foundBlog) throw new NotFoundException('Blog not found');
-        return await this.postsQueryRepo.getPostsByBlogId(blogId,postQueryParams(query), req.userId!);
-    } 
+    // @UseGuards(BasicAuthGuard)
+    // @Post()
+    // async createBlog (@Req() req: Request, @Body() body: CreateBlogModel): Promise<BlogType>{
+    //     return await this.commandBus.execute(new CreateBlogCommand(body));
+    // }
+    // @UseGuards(BasicAuthGuard)
+    // @HttpCode(HTTP_STATUSES.NO_CONTENT_204)
+    // @Put(':id')
+    // async updateBlog(@Param('id') blogId: string, @Body() body: CreateBlogModel){
+    //     const isUpdated = await this.commandBus.execute(new UpdateBlogCommand( blogId, body));
+    //     if(isUpdated) return;  
+    //     throw new NotFoundException('Blog not found');
+    // }
+    // @UseGuards(BasicAuthGuard)
+    // @HttpCode(HTTP_STATUSES.NO_CONTENT_204)
+    // @Delete(':id')
+    // async deleteBlog(@Param('id') blogId: string){
+    //     const isDeleted = await this.commandBus.execute(new DeleteBlogCommand(blogId))
+    //     if(isDeleted) return;
+    //     throw new NotFoundException('Blog not found');
+    // }
+    // @UseGuards(BasicAuthGuard)
+    // @Post(`:id/${RouterPaths.posts}`)
+    // async createPostForBlog(@Param('id') blogId: string, @Body() body: CreatePostForBlogModel): Promise<PostType | null>{
+    //     const foundBlog = await this.blogsQueryRepo.findBlogById(blogId);
+    //     if(!foundBlog) throw new NotFoundException();
+    //     return await this.commandBus.execute(new CreatePostForBlogCommand(body, blogId));
+    // }
+    // @UseGuards(AccessUserId)
+    // @Get(`:id/${RouterPaths.posts}`)
+    // async getPostsForBlog(@Req() req: Request, @Param('id') blogId: string, 
+    //     @Query() query:Partial<PostQueryType>): Promise<PostsWithQueryOutputModel>{
+    //     const foundBlog = await this.blogsQueryRepo.findBlogById(blogId);
+    //     if(!foundBlog) throw new NotFoundException('Blog not found');
+    //     return await this.postsQueryRepo.getPostsByBlogId(blogId,postQueryParams(query), req.userId!);
+    // } 
     
-    @UseGuards(BasicAuthGuard)
-    @HttpCode(HTTP_STATUSES.NO_CONTENT_204)
-    @Put(':blogId/posts/:postId')
-    async updatePost(@Param('blogId') blogId: string, @Param('postId') postId: string, @Body() body: UpdatePostForBlogModel){
-        // @ts-ignore
-        const result = await this.commandBus.execute(new CheckPostCommand(blogId, postId));
-        if(result.code === ResultCode.NotFound) throw new NotFoundException();
+    // @UseGuards(BasicAuthGuard)
+    // @HttpCode(HTTP_STATUSES.NO_CONTENT_204)
+    // @Put(':blogId/posts/:postId')
+    // async updatePost(@Param('blogId') blogId: string, @Param('postId') postId: string, @Body() body: UpdatePostForBlogModel){
+ //      // @ts-ignore    //     const result = await this.commandBus.execute(new CheckPostCommand(blogId, postId));
+    //     if(result.code === ResultCode.NotFound) throw new NotFoundException();
        
-        // if(result.code === ResultCode.Forbidden) throw new ForbiddenException();
-        const isUpdated = await this.commandBus.execute(new UpdatePostCommand(postId, body));
-        if(isUpdated) return true;
-        throw new BadRequestException();
-    }
-    @UseGuards(BasicAuthGuard)
-    @HttpCode(HTTP_STATUSES.NO_CONTENT_204)
-    @Delete(':blogId/posts/:postId')
-    async deletePost(@Param('blogId') blogId: string, @Param('postId') postId: string,){
-         // @ts-ignore
-        const result = await this.commandBus.execute(new CheckPostCommand(blogId, postId));
-        if(result.code === ResultCode.NotFound) throw new NotFoundException();
+    //     // if(result.code === ResultCode.Forbidden) throw new ForbiddenException();
+    //     const isUpdated = await this.commandBus.execute(new UpdatePostCommand(postId, body));
+    //     if(isUpdated) return true;
+    //     throw new BadRequestException();
+    // }
+    // @UseGuards(BasicAuthGuard)
+    // @HttpCode(HTTP_STATUSES.NO_CONTENT_204)
+    // @Delete(':blogId/posts/:postId')
+    // async deletePost(@Param('blogId') blogId: string, @Param('postId') postId: string,){
+    //      // @ts-ignore
+    //     const result = await this.commandBus.execute(new CheckPostCommand(blogId, postId));
+    //     if(result.code === ResultCode.NotFound) throw new NotFoundException();
        
-        // if(result.code === ResultCode.Forbidden) throw new ForbiddenException();
-        const isDeleted = await this.commandBus.execute(new DeletePostCommand(postId))
-        if(isDeleted) return true;
-        throw new BadRequestException();
-    }
+    //     // if(result.code === ResultCode.Forbidden) throw new ForbiddenException();
+    //     const isDeleted = await this.commandBus.execute(new DeletePostCommand(postId))
+    //     if(isDeleted) return true;
+    //     throw new BadRequestException();
+    // }
 }

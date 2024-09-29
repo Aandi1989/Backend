@@ -40,6 +40,7 @@ export class BlogsQueryRepo {
             items: blogs
         };
     }
+
     async findBlogById(id: string): Promise<BlogType> {
         const query =
             `SELECT * 
