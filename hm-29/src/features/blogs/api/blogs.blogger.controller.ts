@@ -42,13 +42,13 @@ export class BloggerController {
         const result = await this.commandBus.execute(new UpdateOwnBlogCommand( blogId, body, req.user!));
         if(result.code == ResultCode.Forbidden) throw new ForbiddenException();
         if(result.code == ResultCode.Success)  return; 
-        throw new BadRequestException();
+        throw new NotFoundException();
     }
 
     @UseGuards(AuthGuard)
     @Get()
-    async getBlogs(@Query() query: Partial<BlogQueryType>): Promise<BlogsWithQueryOutputModel>{
-        return await this.blogsQueryRepo.getBlogs(blogQueryParams(query));
+    async getBlogs(@Req() req: Request, @Query() query: Partial<BlogQueryType>): Promise<BlogsWithQueryOutputModel>{
+        return await this.blogsQueryRepo.getBloggerBlogs(blogQueryParams(query), req.user.id);
     }
 
     @UseGuards(AuthGuard) 
