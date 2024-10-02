@@ -15,7 +15,7 @@ export const RouterPaths = {
   blogger:'blogger/blogs',
   posts: 'posts',
   blogs: 'blogs',
-  users: 'sa/users',
+  usersSA: 'sa/users',
   comments: 'comments',
   auth: 'auth',
   security: 'security',

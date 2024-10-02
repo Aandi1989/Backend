@@ -1,5 +1,4 @@
 import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, Put, Query, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
-import { UsersService } from '../application/users.service';
 import { UserQueryType } from '../types/types';
 import { UsersQueryRepo } from '../repo/users.query.repository';
 import { Response } from 'express';
@@ -12,10 +11,14 @@ import { DeleteUserCommand } from '../application/use-cases/delete-user.use-case
 import { BasicAuthGuard } from '../../../common/guards/basicAuth';
 import { userQueryParams } from '../../../common/helpers/queryStringModifiers';
 import { RouterPaths } from '../../../common/utils/utils';
+import { UserBanParams } from './models/input/user-id.dto';
+import { BanUserModel } from './models/input/ban-user.input.model';
+import { UsersRepository } from '../repo/users.repository';
 
-@Controller(RouterPaths.users)
+@Controller(RouterPaths.usersSA)
 export class UsersController {
   constructor(protected usersQueryRepo: UsersQueryRepo,
+              protected usersRepository: UsersRepository,
               private commandBus: CommandBus) { }
  
   @UseGuards(BasicAuthGuard)
@@ -35,6 +38,14 @@ export class UsersController {
     const isDeleted = await this.commandBus.execute(new DeleteUserCommand(userId));
     if(isDeleted) return;
     throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+  }
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Put(':id/ban')
+  async banUser(@Param() params: UserBanParams, @Body() body: BanUserModel){
+    const isUpdated = await this.usersRepository.banUser(params.id, body);
+    if(isUpdated) return;
+    throw new BadRequestException();
   }
 }
 

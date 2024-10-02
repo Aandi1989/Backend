@@ -4,6 +4,7 @@ import { UserOutputModel } from '../api/models/output/user.output.model';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { Result, ResultCode } from '../../../common/types/types';
+import { BanUserModel } from '../api/models/input/ban-user.input.model';
 
 
 @Injectable()
@@ -25,6 +26,23 @@ export class UsersRepository {
     const result = await this.dataSourse.query(query);
     const userOutput = this._mapDBAccountToUserOutputType(result[0]);
     return { code: ResultCode.Success, data: userOutput }
+  }
+  async banUser(userId: string, body: BanUserModel){
+    const { isBanned, banReason } = body;
+    
+    const banDate = isBanned ? `'${new Date().toISOString()}'` : 'NULL';
+    const reason = isBanned ? `'${banReason}'` : 'NULL';
+
+    const sql = `
+        UPDATE public."Users"
+        SET "isBanned" = ${isBanned},
+            "banDate" = ${banDate},
+            "banReason" = ${reason}
+        WHERE id = $1
+    `;
+
+    const result = await this.dataSourse.query(sql, [userId]);
+    return result[1] === 1;
   }
   async deleteUser(id: string): Promise<boolean> {
     const query =
