@@ -48,7 +48,7 @@ export class AuthController {
     @Post('login')
     async login (@Req() req: Request, @Body() body: AuthBodyModel, @Res() res: Response):Promise<LoginOutputModel>{
         const user = await this.commandBus.execute(new CheckCredentialsCommand(body));
-        if(user){
+        if(user && !user.isBanned){
             const accessToken = await this.jwtService.createAccessToken(user.id);
             const { refreshToken }  = await this.jwtService.createRefreshToken(user.id);
             const deviceName = req.headers['user-agent'];

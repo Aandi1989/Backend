@@ -14,11 +14,13 @@ import { RouterPaths } from '../../../common/utils/utils';
 import { UserBanParams } from './models/input/user-id.dto';
 import { BanUserModel } from './models/input/ban-user.input.model';
 import { UsersRepository } from '../repo/users.repository';
+import { SecurityRepository } from '../../security/repo/security.repository';
 
 @Controller(RouterPaths.usersSA)
 export class UsersController {
   constructor(protected usersQueryRepo: UsersQueryRepo,
               protected usersRepository: UsersRepository,
+              protected securityRepository: SecurityRepository,
               private commandBus: CommandBus) { }
  
   @UseGuards(BasicAuthGuard)
@@ -43,6 +45,7 @@ export class UsersController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Put(':id/ban')
   async banUser(@Param() params: UserBanParams, @Body() body: BanUserModel){
+    const deletedSessions = await this.securityRepository.revokeAllSessions(params.id);
     const isUpdated = await this.usersRepository.banUser(params.id, body);
     if(isUpdated) return;
     throw new BadRequestException();

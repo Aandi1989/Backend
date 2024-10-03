@@ -50,6 +50,14 @@ export class SecurityRepository {
        const result = await this.dataSourse.query(query);
        return result;
     }
+    async revokeAllSessions(userId: string){
+        const query = `
+            DELETE FROM public."Sessions"
+            WHERE "userId" = $1
+        `;
+        const result = await this.dataSourse.query(query, [userId])
+        return result;
+    }
     async addRequest(request: ApiCallModel){
         const { ip, url, date } = request;
         const query = `

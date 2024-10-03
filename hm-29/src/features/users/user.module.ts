@@ -7,9 +7,10 @@ import { CreateUserUseCase } from "./application/use-cases/create-user.use-case"
 import { DeleteUserUseCase } from "./application/use-cases/delete-user.use-case";
 import { UsersRepository } from "./repo/users.repository";
 import { JwtService } from "../../common/services/jwt-service";
+import { SessionsModule } from "../security/session.module";
 
 @Module({
-    imports:[ TypeOrmModule.forFeature(), CqrsModule],
+    imports:[ TypeOrmModule.forFeature(), SessionsModule, CqrsModule],
     providers:[UsersQueryRepo, UsersRepository, CreateUserUseCase, DeleteUserUseCase, JwtService],
     controllers:[UsersController],
     exports: [UsersQueryRepo, UsersRepository, TypeOrmModule.forFeature()]
