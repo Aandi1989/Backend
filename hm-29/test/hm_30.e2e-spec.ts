@@ -239,8 +239,8 @@ describe('hm-30 test (e2e)', () => {
 
       it('+ POST create second post for second user', async () => {
         const res = await request(httpServer)
-        .post(`/${RouterPaths.blogger}/${firstUserBlogId}/posts`)
-        .set('Authorization', `Bearer ${firstAccessToken}`)
+        .post(`/${RouterPaths.blogger}/${secondUserBlogId}/posts`)
+        .set('Authorization', `Bearer ${secondAccessToken}`)
         .send({
           "title": "Second Post of Second Blogger",
           "shortDescription": "Super description",
@@ -755,7 +755,7 @@ describe('hm-30 test (e2e)', () => {
       const res = await request(httpServer)
       .put(`/comments/${firstCommentFirstUserId}/like-status`)
       .set('Authorization', `Bearer ${fourthAccessToken}`)
-      .send({likeStatus: "Like"})
+      .send({likeStatus: "Dislike"})
       .expect(HTTP_STATUSES.NO_CONTENT_204)
     })
 
@@ -763,7 +763,7 @@ describe('hm-30 test (e2e)', () => {
       const res = await request(httpServer)
       .put(`/comments/${firstCommentSecondUserId}/like-status`)
       .set('Authorization', `Bearer ${fourthAccessToken}`)
-      .send({likeStatus: "Like"})
+      .send({likeStatus: "Dislike"})
       .expect(HTTP_STATUSES.NO_CONTENT_204)
     })
 
@@ -771,17 +771,17 @@ describe('hm-30 test (e2e)', () => {
       const res = await request(httpServer)
       .put(`/comments/${firstCommentThirdUserId}/like-status`)
       .set('Authorization', `Bearer ${fourthAccessToken}`)
-      .send({likeStatus: "Like"})
+      .send({likeStatus: "Dislike"})
       .expect(HTTP_STATUSES.NO_CONTENT_204)
     })
 
 
 
       afterAll( async () => {
-        // console.log("firstAccessToken-->", firstAccessToken);
-        // console.log("secondAccessToken-->", secondAccessToken);
-        // console.log("thirdAccessToken-->", thirdAccessToken);
-        // console.log("fourthAccessToken-->", fourthAccessToken);
+        console.log("firstAccessToken-->", firstAccessToken);
+        console.log("secondAccessToken-->", secondAccessToken);
+        console.log("thirdAccessToken-->", thirdAccessToken);
+        console.log("fourthAccessToken-->", fourthAccessToken);
         await app.close();
       })
 })

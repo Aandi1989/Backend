@@ -18,16 +18,29 @@ export class PostType  {
     blogId: string
     blogName?: string
     createdAt: string
-    extendedLikesInfo: {
-        likesCount: number
-        dislikesCount: number
-        myStatus: myStatus
-        newestLikes: {
-            addedAt: string
-            userId: string
-            login: string
-        }[]
-    }
+    extendedLikesInfo: ExtendedLikeInfoType
+}
+
+export type PostExtLikeInfoDict = Record<string, ExtendedLikeInfoType>
+
+type ExtendedLikeInfoType = {
+    likesCount: number
+    dislikesCount: number
+    myStatus: myStatus
+    newestLikes: NewestLikeType[]
+}
+
+type NewestLikeType = {
+        addedAt: string
+        userId: string
+        login: string
+}
+export type IntermedLikeType = {
+    addedAt: string
+    userId: string
+    login: string
+    postId: string
+    status: string
 }
 
 export type DBPostType = {
@@ -39,16 +52,7 @@ export type DBPostType = {
     blogId: string,
     blogName?: string,
     createdAt: string
-    extendedLikesInfo: {
-        likesCount: number
-        dislikesCount: number
-        myStatus: myStatus
-        newestLikes: {
-            addedAt: string
-            userId: string
-            login: string
-        }[]
-    }
+    extendedLikesInfo: ExtendedLikeInfoType
 }
 
 export type PostQueryType = {

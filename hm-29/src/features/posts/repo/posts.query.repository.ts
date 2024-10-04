@@ -4,6 +4,7 @@ import { DataSource } from "typeorm";
 import { PostsWithQueryOutputModel } from "../api/models/output/post.output.model";
 import { PostQueryOutputType, PostType } from "../types/types";
 import { postsOutputModel } from "../../../common/helpers/postsOutputModel";
+import { likeExtraInfoMapper } from "../../../common/helpers/likeExtraInfoMapper";
 
 
 @Injectable()
@@ -25,8 +26,20 @@ export class PostsQueryRepo {
         const mainQuery = `
             WITH DistinctPosts AS (
                 SELECT posts.*, 
-                    (SELECT COUNT(*) FROM public."LikesPosts" WHERE "postId" = posts."id" AND "status" = 'Like') as "likesCount",
-                    (SELECT COUNT(*) FROM public."LikesPosts" WHERE "postId" = posts."id" AND "status" = 'Dislike') as "dislikesCount", `
+                    (SELECT COUNT(*) 
+                        FROM public."LikesPosts" as likes
+                        LEFT JOIN public."Users" as users
+                            ON likes."userId" = users."id"
+                        WHERE "postId" = posts."id" 
+                            AND "status" = 'Like'
+                            AND users."isBanned" = false) as "likesCount",
+                    (SELECT COUNT(*) 
+                        FROM public."LikesPosts" as likes
+                        LEFT JOIN public."Users" as users
+                            ON likes."userId" = users."id"
+                        WHERE "postId" = posts."id" 
+                            AND "status" = 'Dislike'
+                            AND users."isBanned" = false) as "dislikesCount", `
                     +(userId ? `(SELECT likes."status"
                                         FROM public."LikesPosts" as likes
                                          WHERE likes."userId" = '${userId}' AND posts."id" = likes."postId") as "myStatus"` 
@@ -48,6 +61,7 @@ export class PostsQueryRepo {
             ON DistinctPosts."id" = likes."postId" AND likes.row_num <= 3
             LEFT JOIN public."Users" as users 
             ON likes."userId" = users."id"
+            WHERE users."isBanned" = false
             ORDER BY DistinctPosts."${sortBy}" ${sortDir}, likes."createdAt" DESC
         `;
         
@@ -63,7 +77,62 @@ export class PostsQueryRepo {
             items: outputPosts
         }; 
     }
+    //                                                                     Promise<PostsWithQueryOutputModel>
+    async getPostsUpdated(query: PostQueryOutputType, userId: string = ''):Promise<any>{
+        const { pageNumber, pageSize, sortBy, sortDirection } = query;
+        const sortDir = sortDirection === "asc" ? "ASC" : "DESC";
+        const offset = (pageNumber - 1) * pageSize;
+        const postIds: string[] = [];
+
+        const totalCountQuery = `
+            SELECT COUNT(*)
+            FROM public."Posts" as posts
+            LEFT JOIN public."Blogs" as blogs
+                ON posts."blogId" = blogs."id"
+            LEFT JOIN public."Users" as users
+                ON blogs."ownerId" = users."id"
+            WHERE users."isBanned" = false
+        `;
+
+        const totalCountResult = await this.dataSourse.query(totalCountQuery);
+        const totalCount = parseInt(totalCountResult[0].count);
+        
+        const postQuery = `
+            SELECT p."id", p."title", p."shortDescription", p."content", p."blogId", p."blogName", p."createdAt"
+            FROM public."Posts" as p
+            LEFT JOIN public."Blogs" as blogs
+                ON p."blogId" = blogs."id"
+            LEFT JOIN public."Users" as users
+                ON blogs."ownerId" = users."id"
+            WHERE users."isBanned" = false
+            ORDER BY p."${sortBy}" ${sortDir}
+            LIMIT $1 OFFSET $2
+        `;
+
+        const posts = await this.dataSourse.query(postQuery, [pageSize, offset]);
+        posts.forEach(post => postIds.push(post.id));
+
+        // console.log('posts-->', posts);
+        // console.log('postIds-->', postIds);
+
+        const likesQuery = `
+            SELECT likes."createdAt" as "addedAt", likes."userId", users."login", likes."postId", likes."status"
+            FROM public."LikesPosts" as likes
+            LEFT JOIN public."Users" as users
+                ON likes."userId" = users."id"
+            WHERE likes."postId" = ANY($1) AND users."isBanned" = false
+            ORDER BY likes."createdAt" DESC
+        `;
+        const likes = await this.dataSourse.query(likesQuery, [postIds]);
+        const likesOutput = likeExtraInfoMapper(likes, userId);
+        // console.dir(likesOutput, {depth: null});
+        // console.log('likesQuery-->', likesQuery);
+        // console.log('likes-->', likes);
+        return totalCount;
+    } 
+
     async getPostById(id: string, userId: string = ''): Promise<PostType | null> {
+        // return only one row 
         const query =`
                     SELECT posts.*,
                     likes."userId",
@@ -98,6 +167,48 @@ export class PostsQueryRepo {
                     WHERE posts."id" = $1
                    
         `;
+
+        // doesn't work if there are no likes for post
+        // const query = `
+        //     WITH DistinctPosts AS (
+        //         SELECT posts.*, 
+        //             (SELECT COUNT(*) 
+        //                 FROM public."LikesPosts" as likes
+        //                 LEFT JOIN public."Users" as users
+        //                     ON likes."userId" = users."id"
+        //                 WHERE "postId" = posts."id" 
+        //                     AND "status" = 'Like'
+        //                     AND users."isBanned" = false) as "likesCount",
+        //             (SELECT COUNT(*) 
+        //                 FROM public."LikesPosts" as likes
+        //                 LEFT JOIN public."Users" as users
+        //                     ON likes."userId" = users."id"
+        //                 WHERE "postId" = posts."id" 
+        //                     AND "status" = 'Dislike'
+        //                     AND users."isBanned" = false) as "dislikesCount", `
+        //             +(userId ? `(SELECT likes."status"
+        //                                 FROM public."LikesPosts" as likes
+        //                                  WHERE likes."userId" = '${userId}' AND posts."id" = likes."postId") as "myStatus"` 
+        //                              : ` 'None' as "myStatus" `) +
+        //         ` FROM public."Posts" as posts
+        //     )
+        //     SELECT DistinctPosts.*,
+        //             likes."userId",
+        //             users."login",
+        //             likes."createdAt" as "addedAt" 
+        //     FROM DistinctPosts 
+        //     LEFT JOIN (
+        //         SELECT *, ROW_NUMBER() OVER (PARTITION BY "postId" ORDER BY "createdAt" DESC) as row_num
+        //         FROM public."LikesPosts"
+        //         WHERE "status" = 'Like'
+        //     ) as likes 
+        //     ON DistinctPosts."id" = likes."postId" AND likes.row_num <= 3
+        //     LEFT JOIN public."Users" as users 
+        //     ON likes."userId" = users."id"
+        //     WHERE users."isBanned" = false AND DistinctPosts."id" = $1
+        //     ORDER BY likes."createdAt" DESC
+        // `;
+
            
         const result = await this.dataSourse.query(query, [id]);
         const outputPost = postsOutputModel(result)[0];

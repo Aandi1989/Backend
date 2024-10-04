@@ -18,21 +18,32 @@ export class CommentsQueryRepo {
         const totalCountQuery = `
             SELECT COUNT(*)
             FROM public."Comments" as comments
-            WHERE comments."postId" = $1
+            LEFT JOIN public."Users" as users
+                ON comments."userId" = users."id"
+            WHERE comments."postId" = $1 AND users."isBanned" = false
         `;
         const totalCountResult = await this.dataSourse.query(totalCountQuery, [postId]);
         const totalCount = parseInt(totalCountResult[0].count);
+
 
         const mainRequest = `
                 SELECT 
                 comments.*,
                 users."login" as "userLogin",
                 (SELECT COUNT(*) 
-                FROM public."LikesComments" 
-                WHERE "commentId" = comments."id" AND "status" = 'Like') as "likesCount",
+                FROM public."LikesComments" as likes
+                LEFT JOIN public."Users" as users
+                    ON likes."userId" = users."id"
+                WHERE "commentId" = comments."id" 
+                    AND "status" = 'Like' 
+                    AND users."isBanned" = false) as "likesCount",
                 (SELECT COUNT(*) 
-                FROM public."LikesComments" 
-                WHERE "commentId" = comments."id" AND "status" = 'Dislike') as "dislikesCount",
+                FROM public."LikesComments" as likes
+                LEFT JOIN public."Users" as users
+                    ON likes."userId" = users."id"
+                WHERE "commentId" = comments."id" 
+                    AND "status" = 'Dislike'
+                    AND users."isBanned" = false) as "dislikesCount",
                 ` +(userId ? `(SELECT likes."status"
                             FROM public."LikesComments" as likes
                             WHERE likes."userId" = '${userId}' AND comments."id" = likes."commentId") as "myStatus"` 
@@ -40,7 +51,7 @@ export class CommentsQueryRepo {
             ` FROM public."Comments" as comments
             LEFT JOIN public."Users" as users
                 ON comments."userId" = users."id"
-            WHERE comments."postId" = $3
+            WHERE comments."postId" = $3 AND users."isBanned" = false
             ORDER BY comments."${sortBy}" ${sortDir}
             LIMIT $1 OFFSET $2
         `;
