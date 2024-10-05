@@ -72,11 +72,15 @@ export class CommentsQueryRepo {
                 comments.*,
                 users."login" as "userLogin",
                 (SELECT COUNT(*) 
-                FROM public."LikesComments" 
-                WHERE "commentId" = comments."id" AND "status" = 'Like') as "likesCount",
+                FROM public."LikesComments" as likes
+                LEFT JOIN public."Users" as users
+                    ON likes."userId" = users."id"
+                WHERE "commentId" = comments."id" AND "status" = 'Like' AND users."isBanned" = false) as "likesCount",
                 (SELECT COUNT(*) 
-                FROM public."LikesComments" 
-                WHERE "commentId" = comments."id" AND "status" = 'Dislike') as "dislikesCount",
+                FROM public."LikesComments" as likes
+                LEFT JOIN public."Users" as users
+                    ON likes."userId" = users."id"
+                WHERE "commentId" = comments."id" AND "status" = 'Dislike' AND users."isBanned" = false) as "dislikesCount",
                 ` +(userId ? `(SELECT likes."status"
                             FROM public."LikesComments" as likes
                             WHERE likes."userId" = '${userId}' AND comments."id" = likes."commentId") as "myStatus"` 
@@ -84,7 +88,7 @@ export class CommentsQueryRepo {
                ` FROM public."Comments" as comments
                LEFT JOIN public."Users" as users
                 ON comments."userId" = users."id"
-            WHERE comments."id" = $1`;
+            WHERE comments."id" = $1 AND users."isBanned" = false`;
         const result = await this.dataSourse.query(query, [id]);
         const outputComment = commentsOutputModel(result)[0]
 

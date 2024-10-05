@@ -8,8 +8,8 @@ export class UserOutputModel  {
 
   type BanInfo = {
     isBanned: boolean,
-    banDate: string,
-    banReason: string
+    banDate: string | null,
+    banReason: string | null
   }
   
   export class UsersWithQueryOutputModel  {

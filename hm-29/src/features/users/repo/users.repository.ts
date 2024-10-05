@@ -60,7 +60,12 @@ export class UsersRepository {
       id: user.id,
       login: user.login,
       email: user.email,
-      createdAt: user.createdAt
+      createdAt: user.createdAt,
+      banInfo: {
+        banDate: null,
+        banReason: null,
+        isBanned: false
+      }
     }
   }
 }

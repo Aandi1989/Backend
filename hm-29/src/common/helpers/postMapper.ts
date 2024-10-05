@@ -11,7 +11,15 @@ export function postMapper(posts: PostSQL[], likes: PostExtLikeInfoDict): PostTy
             blogId: post.blogId,
             blogName: post.blogName,
             createdAt: post.createdAt,
-            extendedLikesInfo: likes[post.id] ? likes[post.id] : {}
+            extendedLikesInfo: 
+                likes[post.id] 
+                ? likes[post.id] 
+                : {
+                    likesCount: 0,
+                    dislikesCount: 0,
+                    myStatus: 'None',
+                    newestLikes: []
+                  }
         }
         outputPosts.push(outputPost);
     })
