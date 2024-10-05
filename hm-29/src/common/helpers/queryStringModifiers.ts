@@ -20,6 +20,7 @@ export const userQueryParams = (
     // we use that method to avoid sql injection cause we cant use name of column as param $1 in postgres
     sortBy: query.sortBy && allowedSortByValues.includes(query.sortBy) ? query.sortBy : "createdAt",
     sortDirection: query.sortDirection ? query.sortDirection : 'desc',
+    banStatus: query.banStatus ? query.banStatus : 'all'
   };
 };
 

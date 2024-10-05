@@ -18,7 +18,7 @@ export class PostType  {
     blogId: string
     blogName?: string
     createdAt: string
-    extendedLikesInfo: ExtendedLikeInfoType
+    extendedLikesInfo: ExtendedLikeInfoType | {}
 }
 
 export type PostExtLikeInfoDict = Record<string, ExtendedLikeInfoType>

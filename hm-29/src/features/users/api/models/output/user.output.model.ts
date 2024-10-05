@@ -3,7 +3,14 @@ export class UserOutputModel  {
     login: string
     email: string
     createdAt: string
+    banInfo?: BanInfo
   };
+
+  type BanInfo = {
+    isBanned: boolean,
+    banDate: string,
+    banReason: string
+  }
   
   export class UsersWithQueryOutputModel  {
     pagesCount: number

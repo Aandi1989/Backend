@@ -1,4 +1,5 @@
 export type UserQueryType = {
+  banStatus: string | null;
   searchLoginTerm: string | null;
   searchEmailTerm: string | null;
   sortBy: UserSortBy;
@@ -8,6 +9,7 @@ export type UserQueryType = {
 };
 
 export type UserQueryOutputType = {
+  banStatus: string | null;
   searchLoginTerm: string | null;
   searchEmailTerm: string | null;
   sortBy: UserSortBy;
@@ -29,6 +31,9 @@ export class UserSQL {
   recoveryCode?: string
   recCodeExpDate?: Date
   recCodeConfirmed?: boolean
+  isBanned: boolean
+  banDate: string
+  banReason: string
 }
 
 

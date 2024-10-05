@@ -28,7 +28,7 @@ export class PostsController{
     @Get()
     //                                                                                  PostsWithQueryOutputModel
     async getPosts(@Req() req: Request, @Query() query: Partial<PostQueryType>): Promise<any>{
-        return await this.postsQueryRepo.getPostsUpdated(postQueryParams(query), req.userId!);
+        return await this.postsQueryRepo.getPosts(postQueryParams(query), req.userId!);
     }
     @UseGuards(AccessUserId)
     @Get(':id')

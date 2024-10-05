@@ -11,16 +11,23 @@ export class UsersQueryRepo {
   constructor(@InjectDataSource() protected dataSourse: DataSource) { }
 
   async getUsers(query: UserQueryOutputType): Promise<UsersWithQueryOutputModel> {
-    const { pageNumber, pageSize, searchLoginTerm, searchEmailTerm, sortBy, sortDirection } = query;
+    const { pageNumber, pageSize, searchLoginTerm, searchEmailTerm, sortBy, sortDirection, banStatus } = query;
     const sortDir = sortDirection === "asc" ? "ASC" : "DESC";
     const offset = (pageNumber - 1) * pageSize;
     const searchLoginParam = searchLoginTerm ? `%${searchLoginTerm}%` : `%%`;
     const searchEmailParam = searchEmailTerm ? `%${searchEmailTerm}%` : `%%`;
 
+    let banStatusCondition = "";
+    if (banStatus === 'banned') {
+        banStatusCondition = ' AND "isBanned" = true';
+    } else if (banStatus === 'notBanned') {
+        banStatusCondition = ' AND "isBanned" = false';
+    } 
+
     const totalCountQuery = `
               SELECT COUNT(*)
               FROM public."Users"
-              WHERE login ILIKE $1 OR email ILIKE $2
+              WHERE (login ILIKE $1 OR email ILIKE $2) ${banStatusCondition}
           `;
 
     const totalCountResult = await this.dataSourse.query(totalCountQuery, [searchLoginParam, searchEmailParam]);
@@ -30,7 +37,7 @@ export class UsersQueryRepo {
     // postgres doesnt allow use as params names of columns that is why we validate sortBy in function blogQueryParams
     const mainQuery = `
       SELECT * FROM public."Users"
-      WHERE login ILIKE $1 OR email ILIKE $2
+      WHERE (login ILIKE $1 OR email ILIKE $2) ${banStatusCondition}
       ORDER BY "${sortBy}" ${sortDir}
       LIMIT $3
       OFFSET $4
@@ -93,7 +100,12 @@ export class UsersQueryRepo {
       id: user.id,
       login: user.login,
       email: user.email,
-      createdAt: user.createdAt
+      createdAt: user.createdAt,
+      banInfo: {
+        isBanned: user.isBanned,
+        banDate: user.banDate,
+        banReason: user.banReason
+      }
     }
   }
 }
