@@ -6,6 +6,7 @@ export class BlogType  {
     createdAt: string
     isMembership: boolean
     ownerId?: string
+    isBanned?: boolean
     blogOwnerInfo?: BlogOwnerInfoType
 }
 

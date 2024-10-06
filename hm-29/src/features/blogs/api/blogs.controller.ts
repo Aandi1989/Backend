@@ -24,7 +24,7 @@ export class BlogsController {
     @Get(':id')
     async getBlog(@Param('id') blogId: string): Promise<BlogType>{
         const foundBlog = await this.blogsQueryRepo.findBlogWithoutOwnerIdById(blogId);
-        if(!foundBlog) throw new NotFoundException('Blog not found');
+        if(!foundBlog || foundBlog.isBanned) throw new NotFoundException('Blog not found');
         return foundBlog;
     }
     @UseGuards(AccessUserId)
@@ -32,7 +32,7 @@ export class BlogsController {
     async getPostsForBlog(@Req() req: Request, @Param('id') blogId: string, 
         @Query() query:Partial<PostQueryType>): Promise<PostsWithQueryOutputModel>{
         const foundBlog = await this.blogsQueryRepo.findBlogById(blogId);
-        if(!foundBlog) throw new NotFoundException('Blog not found');
+        if(!foundBlog || foundBlog.isBanned) throw new NotFoundException('Blog not found');
         return await this.postsQueryRepo.getPostsByBlogId(blogId,postQueryParams(query), req.userId!);
     } 
 }

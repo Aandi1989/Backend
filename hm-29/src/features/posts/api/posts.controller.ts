@@ -27,14 +27,15 @@ export class PostsController{
                 protected blogsQueryRepo: BlogsQueryRepo,
                 private commandBus: CommandBus){}
     @UseGuards(AccessUserId)
-    @Get()
-    //                                                                                  PostsWithQueryOutputModel
-    async getPosts(@Req() req: Request, @Query() query: Partial<PostQueryType>): Promise<any>{
+    @Get()                                                                                
+    async getPosts(@Req() req: Request, @Query() query: Partial<PostQueryType>): Promise<PostsWithQueryOutputModel>{
         return await this.postsQueryRepo.getPosts(postQueryParams(query), req.userId!);
     }
     @UseGuards(AccessUserId)
     @Get(':id')
     async getPost(@Req() req: Request, @Param('id') postId: string): Promise<PostType | null> {
+        const blog = await this.blogsQueryRepo.findBlogByPostId(postId);
+        if(blog && blog.isBanned) throw new NotFoundException();
         const foundPost = await this.postsQueryRepo.getPostById(postId, req.userId!);
         if (!foundPost) throw new NotFoundException('Post not found');
         return foundPost;

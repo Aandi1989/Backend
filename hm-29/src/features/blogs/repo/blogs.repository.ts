@@ -5,6 +5,7 @@ import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 import { BanUserModel } from "../../users/api/models/input/ban-user.input.model";
 import { BanBlogForUserModel } from "../api/models/input/ban-blog-for-user.input";
+import { BanBlogModel } from "../api/models/input/ban-blog.input";
 
 
 @Injectable()
@@ -51,6 +52,17 @@ export class BlogsRepository {
             WHERE "id" = $2
         `;
         const result = await this.dataSourse.query(query, [userId, blogId])
+        return result[1] === 1;
+    }
+
+    async banBlog(id: string, body: BanBlogModel){
+        const { isBanned } = body;
+        const query = `
+            UPDATE public."Blogs"
+            SET "isBanned" = '${isBanned}'
+            WHERE "id" = $1 
+        `;
+        const result = await this.dataSourse.query(query, [id])
         return result[1] === 1;
     }
 

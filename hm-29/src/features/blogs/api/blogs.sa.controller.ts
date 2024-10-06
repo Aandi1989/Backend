@@ -25,6 +25,8 @@ import { PostType, PostQueryType } from "../../posts/types/types";
 import { BindBlogParams } from "./models/input/bind-blog.params.model";
 import { BlogsRepository } from "../repo/blogs.repository";
 import { GetSaBlogsCommand } from "../application/use-case/get-SAblogs.use-case";
+import { UserBanParams } from "../../users/api/models/input/user-id.dto";
+import { BanBlogModel } from "./models/input/ban-blog.input";
 
 @Controller(RouterPaths.blogsSA)
 export class BlogsSAController {
@@ -47,66 +49,13 @@ export class BlogsSAController {
         if(result) return;
         throw new BadRequestException();
     }
-    // @UseGuards(BasicAuthGuard)
-    // @Post()
-    // async createBlog (@Req() req: Request, @Body() body: CreateBlogModel): Promise<BlogType>{
-    //     return await this.commandBus.execute(new CreateBlogCommand(body));
-    // }
-    // @UseGuards(BasicAuthGuard)
-    // @HttpCode(HTTP_STATUSES.NO_CONTENT_204)
-    // @Put(':id')
-    // async updateBlog(@Param('id') blogId: string, @Body() body: CreateBlogModel){
-    //     const isUpdated = await this.commandBus.execute(new UpdateBlogCommand( blogId, body));
-    //     if(isUpdated) return;  
-    //     throw new NotFoundException('Blog not found');
-    // }
-    // @UseGuards(BasicAuthGuard)
-    // @HttpCode(HTTP_STATUSES.NO_CONTENT_204)
-    // @Delete(':id')
-    // async deleteBlog(@Param('id') blogId: string){
-    //     const isDeleted = await this.commandBus.execute(new DeleteBlogCommand(blogId))
-    //     if(isDeleted) return;
-    //     throw new NotFoundException('Blog not found');
-    // }
-    // @UseGuards(BasicAuthGuard)
-    // @Post(`:id/${RouterPaths.posts}`)
-    // async createPostForBlog(@Param('id') blogId: string, @Body() body: CreatePostForBlogModel): Promise<PostType | null>{
-    //     const foundBlog = await this.blogsQueryRepo.findBlogById(blogId);
-    //     if(!foundBlog) throw new NotFoundException();
-    //     return await this.commandBus.execute(new CreatePostForBlogCommand(body, blogId));
-    // }
-    // @UseGuards(AccessUserId)
-    // @Get(`:id/${RouterPaths.posts}`)
-    // async getPostsForBlog(@Req() req: Request, @Param('id') blogId: string, 
-    //     @Query() query:Partial<PostQueryType>): Promise<PostsWithQueryOutputModel>{
-    //     const foundBlog = await this.blogsQueryRepo.findBlogById(blogId);
-    //     if(!foundBlog) throw new NotFoundException('Blog not found');
-    //     return await this.postsQueryRepo.getPostsByBlogId(blogId,postQueryParams(query), req.userId!);
-    // } 
     
-    // @UseGuards(BasicAuthGuard)
-    // @HttpCode(HTTP_STATUSES.NO_CONTENT_204)
-    // @Put(':blogId/posts/:postId')
-    // async updatePost(@Param('blogId') blogId: string, @Param('postId') postId: string, @Body() body: UpdatePostForBlogModel){
- //      // @ts-ignore    //     const result = await this.commandBus.execute(new CheckPostCommand(blogId, postId));
-    //     if(result.code === ResultCode.NotFound) throw new NotFoundException();
-       
-    //     // if(result.code === ResultCode.Forbidden) throw new ForbiddenException();
-    //     const isUpdated = await this.commandBus.execute(new UpdatePostCommand(postId, body));
-    //     if(isUpdated) return true;
-    //     throw new BadRequestException();
-    // }
-    // @UseGuards(BasicAuthGuard)
-    // @HttpCode(HTTP_STATUSES.NO_CONTENT_204)
-    // @Delete(':blogId/posts/:postId')
-    // async deletePost(@Param('blogId') blogId: string, @Param('postId') postId: string,){
-    //      // @ts-ignore
-    //     const result = await this.commandBus.execute(new CheckPostCommand(blogId, postId));
-    //     if(result.code === ResultCode.NotFound) throw new NotFoundException();
-       
-    //     // if(result.code === ResultCode.Forbidden) throw new ForbiddenException();
-    //     const isDeleted = await this.commandBus.execute(new DeletePostCommand(postId))
-    //     if(isDeleted) return true;
-    //     throw new BadRequestException();
-    // }
+    @UseGuards(BasicAuthGuard)
+    @HttpCode(HTTP_STATUSES.NO_CONTENT_204)
+    @Put(':id/ban')
+    async banBlog(@Param() params: UserBanParams, @Body() body: BanBlogModel){
+        const result = await this.blogsRepository.banBlog(params.id, body);
+        if(result) return;
+        throw new NotFoundException();
+    }
 }

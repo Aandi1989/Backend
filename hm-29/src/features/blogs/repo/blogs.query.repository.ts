@@ -16,7 +16,7 @@ export class BlogsQueryRepo {
         const totalCountQuery = `
             SELECT COUNT(*)
             FROM public."Blogs"
-            WHERE name ILIKE $1
+            WHERE name ILIKE $1 AND "isBanned" = false
         `;
         
         const totalCountResult = await this.dataSourse.query(totalCountQuery, [searchTermParam]);
@@ -24,7 +24,7 @@ export class BlogsQueryRepo {
         // postgres doesnt allow use as params names of columns that is why we validate sortBy in function blogQueryParams
         const mainQuery = `
             SELECT * FROM public."Blogs"
-            WHERE name ILIKE $1
+            WHERE name ILIKE $1 AND "isBanned" = false
             ORDER BY "${sortBy}" ${sortDir}
             LIMIT $2
             OFFSET $3
@@ -87,6 +87,18 @@ export class BlogsQueryRepo {
         return result[0];
     }
 
+    async findBlogByPostId(postId: string){
+        const query = `
+            SELECT *
+            FROM public."Posts" as p
+            LEFT JOIN public."Blogs" as b
+                ON b."id" = p."blogId"
+            WHERE p."id" = $1
+        `;
+        const result = await this.dataSourse.query(query, [postId]);
+        return result[0];
+    }
+
     async findBlogWithoutOwnerIdById(id: string): Promise<BlogType> {
         const query =
             `SELECT "id", "name", "description", "websiteUrl", "createdAt", "isMembership"
@@ -94,5 +106,16 @@ export class BlogsQueryRepo {
             WHERE blogs."id" = $1`;
         const result = await this.dataSourse.query(query, [id]);
         return result[0];
+    }
+
+    async isBannedBlog(userId: string, blogId: string){
+        const query = `
+            SELECT COUNT(*)
+            FROM public."BlogBans"
+            WHERE "userId" = '${userId}' AND "blogId" = '${blogId}'
+        `;
+        const result = await this.dataSourse.query(query);
+        const isBanned = parseInt(result[0].count) ? true : false;
+        return isBanned;
     }
 }

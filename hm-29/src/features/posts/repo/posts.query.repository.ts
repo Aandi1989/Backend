@@ -25,7 +25,7 @@ export class PostsQueryRepo {
                 ON posts."blogId" = blogs."id"
             LEFT JOIN public."Users" as users
                 ON blogs."ownerId" = users."id"
-            WHERE users."isBanned" = false
+            WHERE users."isBanned" = false AND blogs."isBanned" = false
         `;
 
         const totalCountResult = await this.dataSourse.query(totalCountQuery);
@@ -38,7 +38,7 @@ export class PostsQueryRepo {
                 ON p."blogId" = blogs."id"
             LEFT JOIN public."Users" as users
                 ON blogs."ownerId" = users."id"
-            WHERE users."isBanned" = false
+            WHERE users."isBanned" = false AND blogs."isBanned" = false
             ORDER BY p."${sortBy}" ${sortDir}
             LIMIT $1 OFFSET $2
         `;
