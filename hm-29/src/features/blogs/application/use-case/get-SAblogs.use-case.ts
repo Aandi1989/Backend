@@ -22,7 +22,7 @@ export class GetSaBlogsUseCase implements ICommandHandler<GetSaBlogsCommand> {
         let logins: loginsDictionary = {};
 
         const blogsWithPagination: BlogsWithQueryOutputModel = await this.blogsQueryRepo.getBlogs(command.query);
-        
+
         blogsWithPagination.items.forEach(blog => {
             usersIds.add(blog.ownerId);
         })

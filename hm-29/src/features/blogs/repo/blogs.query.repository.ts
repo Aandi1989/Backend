@@ -23,7 +23,8 @@ export class BlogsQueryRepo {
         const totalCount = parseInt(totalCountResult[0].count);
         // postgres doesnt allow use as params names of columns that is why we validate sortBy in function blogQueryParams
         const mainQuery = `
-            SELECT * FROM public."Blogs"
+            SELECT id, name, description, "websiteUrl", "isMembership", "createdAt", "ownerId"
+            FROM public."Blogs"
             WHERE name ILIKE $1 AND "isBanned" = false
             ORDER BY "${sortBy}" ${sortDir}
             LIMIT $2
