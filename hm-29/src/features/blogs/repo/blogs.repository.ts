@@ -3,6 +3,8 @@ import { BlogType } from "../types/types";
 import { CreateBlogModel } from "../api/models/input/create-blog.input.model";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
+import { BanUserModel } from "../../users/api/models/input/ban-user.input.model";
+import { BanBlogForUserModel } from "../api/models/input/ban-blog-for-user.input";
 
 
 @Injectable()
@@ -50,6 +52,48 @@ export class BlogsRepository {
         `;
         const result = await this.dataSourse.query(query, [userId, blogId])
         return result[1] === 1;
+    }
+
+    async banUserForBlog(userId: string, body: BanBlogForUserModel){
+        const { banReason, isBanned, blogId } = body;
+
+        const existingBanQuery = `
+            SELECT * FROM public."BlogBans"
+            WHERE "blogId" = $1 AND "userId" = $2;
+        `;
+
+        const existingBan = await this.dataSourse.query(existingBanQuery, [blogId, userId]);
+
+        if(isBanned){
+            // Optionally update the existing ban if needed
+            if(existingBan.length > 0){
+                const updateBanQuery = `
+                    UPDATE public."BlogBans"
+                    SET "bannedAt" = $1, "banReason" = $2
+                    WHERE "blogId" = $3 AND "userId" = $4
+                    RETURNING *;
+                `;
+                const banDate = new Date().toISOString();
+                await this.dataSourse.query(updateBanQuery, [banDate, banReason, blogId, userId])
+            }else{
+                // Insert new ban
+                const banDate = new Date().toISOString();
+                const banQuery = `
+                    INSERT INTO public."BlogBans"(
+                        "blogId", "userId", "bannedAt", "banReason")
+                    VALUES($1, $2, $3, $4)
+                    RETURNING *;
+                `;
+                await this.dataSourse.query(banQuery, [blogId, userId, banDate, banReason]);
+            }
+        }else{
+            const unbanQuery = `
+                DELETE FROM public."BlogBans"
+                WHERE "blogId" = $1 AND "userId" = $2;
+            `;
+            await this.dataSourse.query(unbanQuery, [blogId, userId]);
+        }
+        return true;
     }
 
     async deleteBlog(id: string): Promise<boolean> {

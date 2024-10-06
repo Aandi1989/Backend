@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { UserQueryOutputType, UserSQL } from '../types/types';
-import { UserAuthOutputModel, UserOutputModel, UsersWithQueryOutputModel } from '../api/models/output/user.output.model';
+import { BannedUsersQueryOutputType, UserQueryOutputType, UserSQL } from '../types/types';
+import { BannedUserInfo, BannedUsersInfoOutputModel, UserAuthOutputModel, UserOutputModel, UsersWithQueryOutputModel } from '../api/models/output/user.output.model';
 import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { Account } from '../entities/account';
@@ -45,6 +45,58 @@ export class UsersQueryRepo {
 
     const users = await this.dataSourse.query(mainQuery, [searchLoginParam, searchEmailParam, pageSize, offset]);
     const pagesCount = Math.ceil(totalCount / pageSize);
+    return {
+      pagesCount: pagesCount,
+      page: pageNumber,
+      pageSize: pageSize,
+      totalCount: totalCount,
+      items: users.map(user => {
+        return this._mapAccountToUserOutputType(user)
+      })
+    };
+  }
+                                                                               
+  async getBannedUsers(query: BannedUsersQueryOutputType, blogId: string): Promise<BannedUsersInfoOutputModel> {
+    const { pageNumber, pageSize, searchLoginTerm, sortBy, sortDirection } = query;
+    const sortDir = sortDirection === "asc" ? "ASC" : "DESC";
+    const offset = (pageNumber - 1) * pageSize;
+    const searchLoginParam = searchLoginTerm ? `%${searchLoginTerm}%` : `%%`;
+
+    const totalCountQuery = `
+              SELECT COUNT(*)
+              FROM public."Users" as u
+              LEFT JOIN public."BlogBans" as bb
+                ON u."id" = bb."userId"
+              WHERE u.login ILIKE $1 AND bb."blogId" = $2 
+          `;
+
+    const totalCountResult = await this.dataSourse.query(totalCountQuery, [searchLoginParam, blogId]);
+    const totalCount = parseInt(totalCountResult[0].count);
+
+
+    // postgres doesnt allow use as params names of columns that is why we validate sortBy in function blogQueryParams
+    const mainQuery = `
+      SELECT u."id", u."login", bb."bannedAt" as "banDate", bb."banReason"
+      FROM public."Users" as u
+      LEFT JOIN public."BlogBans" as bb
+                ON u."id" = bb."userId"
+      WHERE login ILIKE $1 AND bb."blogId" = $2 
+      ORDER BY "${sortBy}" ${sortDir}
+      LIMIT $3 OFFSET $4
+    `;
+
+    const users = await this.dataSourse.query(mainQuery, [searchLoginParam, blogId, pageSize, offset]);
+    const pagesCount = Math.ceil(totalCount / pageSize);
+
+    return {
+      pagesCount: pagesCount,
+      page: pageNumber,
+      pageSize: pageSize,
+      totalCount: totalCount,
+      items: users.map(user => {
+        return this._mapUserForBannedUserInfo(user)
+      })
+    }
     return {
       pagesCount: pagesCount,
       page: pageNumber,
@@ -103,6 +155,17 @@ export class UsersQueryRepo {
       createdAt: user.createdAt,
       banInfo: {
         isBanned: user.isBanned,
+        banDate: user.banDate,
+        banReason: user.banReason
+      }
+    }
+  }
+  _mapUserForBannedUserInfo(user): BannedUserInfo {
+    return {
+      id: user.id,
+      login: user.login,
+      banInfo: {
+        isBanned: true,
         banDate: user.banDate,
         banReason: user.banReason
       }

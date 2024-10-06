@@ -1,7 +1,7 @@
 import { BlogQueryType, BlogQueryOutputType } from 'src/features/blogs/types/types';
 import { CommentQueryType, CommentQueryOutputType } from 'src/features/comments/types/types';
 import { PostQueryOutputType, PostQueryType } from 'src/features/posts/types/types';
-import { UserQueryOutputType, UserQueryType } from 'src/features/users/types/types';
+import { BannedUsersQueryOutputType, BannedUsersQueryType, UserQueryOutputType, UserQueryType } from 'src/features/users/types/types';
 import { QuestionQueryOutputType, QuestionQueryType } from '../../features/question/types/types';
 import { GameQueryOutputType, GameQueryType } from '../../features/game/types/types';
 import { GameQueryDTO } from '../../features/game/api/modules/input/game-query.dto';
@@ -21,6 +21,20 @@ export const userQueryParams = (
     sortBy: query.sortBy && allowedSortByValues.includes(query.sortBy) ? query.sortBy : "createdAt",
     sortDirection: query.sortDirection ? query.sortDirection : 'desc',
     banStatus: query.banStatus ? query.banStatus : 'all'
+  };
+};
+
+export const bannedUsersQueryParams = (
+  query: Partial<BannedUsersQueryType>,
+): BannedUsersQueryOutputType => {
+  const allowedSortByValues = ['id', 'login', 'email', 'createdAt'];
+  return {
+    pageNumber: query.pageNumber ? +query.pageNumber : 1,
+    pageSize: query.pageSize ? +query.pageSize : 10,
+    searchLoginTerm: query.searchLoginTerm ? query.searchLoginTerm : null,
+    // we use that method to avoid sql injection cause we cant use name of column as param $1 in postgres
+    sortBy: query.sortBy && allowedSortByValues.includes(query.sortBy) ? query.sortBy : "createdAt",
+    sortDirection: query.sortDirection ? query.sortDirection : 'desc',
   };
 };
 

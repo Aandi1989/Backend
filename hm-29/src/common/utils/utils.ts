@@ -12,7 +12,7 @@ export enum HTTP_STATUSES {
 
 export const RouterPaths = {
   blogsSA:'sa/blogs',
-  blogger:'blogger/blogs',
+  blogger:'blogger',
   posts: 'posts',
   blogs: 'blogs',
   usersSA: 'sa/users',

@@ -8,10 +8,26 @@ export type UserQueryType = {
   pageSize: string;
 };
 
+export type BannedUsersQueryType = {
+  searchLoginTerm: string | null;
+  sortBy: UserSortBy;
+  sortDirection: sortDirectionType;
+  pageNumber: string;
+  pageSize: string;
+}
+
 export type UserQueryOutputType = {
   banStatus: string | null;
   searchLoginTerm: string | null;
   searchEmailTerm: string | null;
+  sortBy: UserSortBy;
+  sortDirection: sortDirectionType;
+  pageNumber: number;
+  pageSize: number;
+};
+
+export type BannedUsersQueryOutputType = {
+  searchLoginTerm: string | null;
   sortBy: UserSortBy;
   sortDirection: sortDirectionType;
   pageNumber: number;

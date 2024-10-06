@@ -11,10 +11,11 @@ import { PostsController } from "./api/posts.controller";
 import { JwtService } from "../../common/services/jwt-service";
 import { CommentsModule } from "../comments/comment.module";
 import { UsersModule } from "../users/user.module";
+import { BlogsModule } from "../blogs/blog.module";
 
 @Module({
     imports:[ TypeOrmModule.forFeature(), forwardRef(() => LikesModule), UsersModule, 
-        CommentsModule ,CqrsModule],
+        CommentsModule, forwardRef(() => BlogsModule), CqrsModule],
     providers:[PostsQueryRepo, PostsRepository, CreatePostForBlogUseCase, 
         DeletePostUseCase, UpdatePostUseCase, JwtService
      ],

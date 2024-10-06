@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, NotFoundException, Param, Post, Put, Query, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, ForbiddenException, Get, HttpCode, NotFoundException, Param, Post, Put, Query, Req, UseGuards } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { Request } from 'express';
 import { CommentsQueryRepo } from "../../comments/repo/comments.query.repository";
@@ -17,12 +17,14 @@ import { RouterPaths, HTTP_STATUSES } from "../../../common/utils/utils";
 import { CreateCommentModel } from "../../comments/api/models/input/create-comment.input.model";
 import { CommentsWithQueryOutputModel, CommentOutputModel } from "../../comments/api/models/output/comment.output.model";
 import { CreateCommentCommand } from "../../comments/application/use-case/create-comment.use-case";
+import { BlogsQueryRepo } from "../../blogs/repo/blogs.query.repository";
 
 
 @Controller(RouterPaths.posts)
 export class PostsController{
     constructor(protected postsQueryRepo: PostsQueryRepo,
                 protected commentsQueryRepo: CommentsQueryRepo,
+                protected blogsQueryRepo: BlogsQueryRepo,
                 private commandBus: CommandBus){}
     @UseGuards(AccessUserId)
     @Get()
@@ -51,6 +53,8 @@ export class PostsController{
         @Body() body: CreateCommentModel): Promise<CommentOutputModel>{
         const post = await this.postsQueryRepo.getPostById(postId);
         if(!post) throw new NotFoundException();
+        const isBannedBlog = await this.blogsQueryRepo.isBannedBlog(req.user.id, post.blogId);
+        if(isBannedBlog) throw new ForbiddenException();
         return await this.commandBus.execute(new CreateCommentCommand(postId, body.content, req.user!))
     }
     @UseGuards(AuthGuard)

@@ -25,6 +25,6 @@ import { GetSaBlogsUseCase } from "./application/use-case/get-SAblogs.use-case";
         GetSaBlogsUseCase ,JwtService
     ],
     controllers:[BlogsController, BlogsSAController, BloggerController],
-    exports: [BlogsRepository]
+    exports: [BlogsRepository, BlogsQueryRepo]
 })
 export class BlogsModule {}

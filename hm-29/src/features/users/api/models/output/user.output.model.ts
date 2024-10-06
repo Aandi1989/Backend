@@ -11,6 +11,20 @@ export class UserOutputModel  {
     banDate: string | null,
     banReason: string | null
   }
+
+  export type BannedUserInfo = {
+    id: string,
+    login: string,
+    banInfo: BanInfo
+  }
+
+  export class BannedUsersInfoOutputModel {
+    pagesCount: number
+    page: number
+    pageSize: number
+    totalCount: number
+    items: BannedUserInfo[]
+  }
   
   export class UsersWithQueryOutputModel  {
     pagesCount: number
