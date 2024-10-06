@@ -104,8 +104,10 @@ export class BlogsRepository {
         return result[1] === 1;
     }
     async deleteAllData() {
-        const query = `DELETE FROM public."Blogs"`;
-        const result = await this.dataSourse.query(query);
+        const queryBlogs = `DELETE FROM public."Blogs"`;
+        const queryBlogBans = `DELETE FROM public."BlogBans"`;
+        const resultBlogBans = await this.dataSourse.query(queryBlogBans);
+        const resultBlogs = await this.dataSourse.query(queryBlogs);
     }
 }
 

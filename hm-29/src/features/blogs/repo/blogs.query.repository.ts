@@ -95,15 +95,4 @@ export class BlogsQueryRepo {
         const result = await this.dataSourse.query(query, [id]);
         return result[0];
     }
-
-    async isBannedBlog(userId: string, blogId: string){
-        const query = `
-            SELECT COUNT(*)
-            FROM public."BlogBans"
-            WHERE "userId" = '${userId}' AND "blogId" = '${blogId}'
-        `;
-        const result = await this.dataSourse.query(query);
-        const isBanned = parseInt(result[0].count) ? true : false;
-        return isBanned;
-    }
 }

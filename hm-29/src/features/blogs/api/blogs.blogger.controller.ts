@@ -25,6 +25,7 @@ import { BlogsRepository } from "../repo/blogs.repository";
 import { BanBlogForUserModel } from "./models/input/ban-blog-for-user.input";
 import { BannedUsersQueryType } from "../../users/types/types";
 import { UsersQueryRepo } from "../../users/repo/users.query.repository";
+import { BannedUsersInfoOutputModel } from "../../users/api/models/output/user.output.model";
 
 
 
@@ -112,6 +113,8 @@ export class BloggerController {
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204)
     @Put('users/:id/ban')
     async banUserForBlog(@Req() req: Request, @Param() params: UserBanParams, @Body() body: BanBlogForUserModel){
+        const user = await this.usersQueryRepo.getUserById(params.id);
+        if(!user) throw new NotFoundException();
         const blog = await this.blogsQueryRepo.findBlogById(body.blogId);
         if(blog && blog.ownerId != req.user.id) throw new ForbiddenException();
         const result = await this.blogsRepository.banUserForBlog(params.id, body);
@@ -121,10 +124,10 @@ export class BloggerController {
     @UseGuards(AuthGuard)
     @Get('users/blog/:id')
     async getBannedUsersForBlog(@Req() req: Request, @Param() params: UserBanParams,
-        @Query() query: Partial<BannedUsersQueryType>):Promise<any>{
-        console.log(query)
-        let result = await this.usersQueryRepo.getBannedUsers(bannedUsersQueryParams(query), params.id);
-        return  result;
+        @Query() query: Partial<BannedUsersQueryType>):Promise<BannedUsersInfoOutputModel>{
+        const blog = await this.blogsQueryRepo.findBlogById(params.id);
+        if(!blog) throw new NotFoundException();
+        if(blog.ownerId != req.user.id) throw new ForbiddenException();
+        return await this.usersQueryRepo.getBannedUsers(bannedUsersQueryParams(query), params.id);
     }
-
 }

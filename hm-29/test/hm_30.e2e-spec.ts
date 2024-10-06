@@ -145,7 +145,7 @@ describe('hm-30 test (e2e)', () => {
 
       it('+ POST create blog by first user', async () => {
         const res = await request(httpServer)
-        .post(`/${RouterPaths.blogger}`)
+        .post(`/${RouterPaths.blogger}/blogs`)
         .set('Authorization', `Bearer ${firstAccessToken}`)
         .send({
             "name":"First Blogger",
@@ -158,7 +158,7 @@ describe('hm-30 test (e2e)', () => {
 
       it('+ POST create blog by second user', async () => {
         const res = await request(httpServer)
-        .post(`/${RouterPaths.blogger}`)
+        .post(`/${RouterPaths.blogger}/blogs`)
         .set('Authorization', `Bearer ${secondAccessToken}`)
         .send({
             "name":"Second Blogger",
@@ -171,7 +171,7 @@ describe('hm-30 test (e2e)', () => {
 
       it('+ POST create blog by third user', async () => {
         const res = await request(httpServer)
-        .post(`/${RouterPaths.blogger}`)
+        .post(`/${RouterPaths.blogger}/blogs`)
         .set('Authorization', `Bearer ${thirdAccessToken}`)
         .send({
             "name":"Third Blogger",
@@ -184,7 +184,7 @@ describe('hm-30 test (e2e)', () => {
 
       it('+ POST create blog by fourth user', async () => {
         const res = await request(httpServer)
-        .post(`/${RouterPaths.blogger}`)
+        .post(`/${RouterPaths.blogger}/blogs`)
         .set('Authorization', `Bearer ${fourthAccessToken}`)
         .send({
             "name":"Fourth Blogger",
@@ -197,7 +197,7 @@ describe('hm-30 test (e2e)', () => {
 
      it('+ POST create first post for first user', async () => {
         const res = await request(httpServer)
-        .post(`/${RouterPaths.blogger}/${firstUserBlogId}/posts`)
+        .post(`/${RouterPaths.blogger}/blogs/${firstUserBlogId}/posts`)
         .set('Authorization', `Bearer ${firstAccessToken}`)
         .send({
           "title": "First Post of First Blogger",
@@ -211,7 +211,7 @@ describe('hm-30 test (e2e)', () => {
 
       it('+ POST create second post for first user', async () => {
         const res = await request(httpServer)
-        .post(`/${RouterPaths.blogger}/${firstUserBlogId}/posts`)
+        .post(`/${RouterPaths.blogger}/blogs/${firstUserBlogId}/posts`)
         .set('Authorization', `Bearer ${firstAccessToken}`)
         .send({
           "title": "Second Post of First Blogger",
@@ -225,7 +225,7 @@ describe('hm-30 test (e2e)', () => {
 
         it('+ POST create first post for second user', async () => {
           const res = await request(httpServer)
-          .post(`/${RouterPaths.blogger}/${secondUserBlogId}/posts`)
+          .post(`/${RouterPaths.blogger}/blogs/${secondUserBlogId}/posts`)
           .set('Authorization', `Bearer ${secondAccessToken}`)
           .send({
             "title": "First Post of Second Blogger",
@@ -239,7 +239,7 @@ describe('hm-30 test (e2e)', () => {
 
       it('+ POST create second post for second user', async () => {
         const res = await request(httpServer)
-        .post(`/${RouterPaths.blogger}/${secondUserBlogId}/posts`)
+        .post(`/${RouterPaths.blogger}/blogs/${secondUserBlogId}/posts`)
         .set('Authorization', `Bearer ${secondAccessToken}`)
         .send({
           "title": "Second Post of Second Blogger",
@@ -253,7 +253,7 @@ describe('hm-30 test (e2e)', () => {
 
       it('+ POST create first post for third user', async () => {
         const res = await request(httpServer)
-        .post(`/${RouterPaths.blogger}/${thirdUserBlogId}/posts`)
+        .post(`/${RouterPaths.blogger}/blogs/${thirdUserBlogId}/posts`)
         .set('Authorization', `Bearer ${thirdAccessToken}`)
         .send({
           "title": "First Post of Third Blogger",
@@ -267,7 +267,7 @@ describe('hm-30 test (e2e)', () => {
 
     it('+ POST create second post for third user', async () => {
       const res = await request(httpServer)
-      .post(`/${RouterPaths.blogger}/${thirdUserBlogId}/posts`)
+      .post(`/${RouterPaths.blogger}/blogs/${thirdUserBlogId}/posts`)
       .set('Authorization', `Bearer ${thirdAccessToken}`)
       .send({
         "title": "Second Post of Third Blogger",
@@ -281,7 +281,7 @@ describe('hm-30 test (e2e)', () => {
 
     it('+ POST create first post for fourth user', async () => {
       const res = await request(httpServer)
-      .post(`/${RouterPaths.blogger}/${fourthUserBlogId}/posts`)
+      .post(`/${RouterPaths.blogger}/blogs/${fourthUserBlogId}/posts`)
       .set('Authorization', `Bearer ${fourthAccessToken}`)
       .send({
         "title": "First Post of Fourth Blogger",
@@ -295,7 +295,7 @@ describe('hm-30 test (e2e)', () => {
 
   it('+ POST create second post for fouth user', async () => {
     const res = await request(httpServer)
-    .post(`/${RouterPaths.blogger}/${fourthUserBlogId}/posts`)
+    .post(`/${RouterPaths.blogger}/blogs/${fourthUserBlogId}/posts`)
     .set('Authorization', `Bearer ${fourthAccessToken}`)
     .send({
       "title": "Second Post of Fourth Blogger",
