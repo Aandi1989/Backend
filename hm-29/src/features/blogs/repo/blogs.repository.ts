@@ -57,11 +57,23 @@ export class BlogsRepository {
 
     async banBlog(id: string, body: BanBlogModel){
         const { isBanned } = body;
-        const query = `
+        const banDate = new Date().toISOString();
+        
+
+        const unbanQuery = `
             UPDATE public."Blogs"
-            SET "isBanned" = '${isBanned}'
+            SET "isBanned" = '${isBanned}', "banDate" = NULL
             WHERE "id" = $1 
         `;
+
+        const banQuery = `
+            UPDATE public."Blogs"
+            SET "isBanned" = '${isBanned}', "banDate" = '${banDate}'
+            WHERE "id" = $1 
+        `;
+
+        const query = isBanned ? banQuery : unbanQuery;
+
         const result = await this.dataSourse.query(query, [id])
         return result[1] === 1;
     }

@@ -51,7 +51,7 @@ export class BlogsQueryRepo {
         const totalCountQuery = `
             SELECT COUNT(*)
             FROM public."Blogs"
-            WHERE name ILIKE $1 AND "isBanned" = false
+            WHERE name ILIKE $1
         `;
         
         const totalCountResult = await this.dataSourse.query(totalCountQuery, [searchTermParam]);
@@ -59,11 +59,11 @@ export class BlogsQueryRepo {
         // postgres doesnt allow use as params names of columns that is why we validate sortBy in function blogQueryParams
         const mainQuery = `
             SELECT b.id, b.name, b.description, b."websiteUrl", b."isMembership",
-                b."createdAt", b."ownerId", u."isBanned", u."banDate"
+                b."createdAt", b."ownerId", b."isBanned", b."banDate"
             FROM public."Blogs" as b
             LEFT JOIN public."Users" as u
                 ON b."ownerId" = u."id" 
-            WHERE b.name ILIKE $1 AND b."isBanned" = false
+            WHERE b.name ILIKE $1
             ORDER BY "${sortBy}" ${sortDir}
             LIMIT $2
             OFFSET $3
