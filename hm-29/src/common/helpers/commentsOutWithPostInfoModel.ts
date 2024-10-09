@@ -8,21 +8,21 @@ export function commentsOutputWithPostInfoModel(arr){
             commentWithLikes = {
             id: comment.id,
             content: comment.content,
+            createdAt: comment.createdAt,
             commentatorInfo:{
               userId: comment.userId,
               userLogin: comment.userLogin,
             },
-            createdAt: comment.createdAt,
             likesInfo: {
                 likesCount: comment.likesCount ? parseInt(comment.likesCount) : 0,
                 dislikesCount: comment.dislikesCount ? parseInt(comment.dislikesCount) : 0,
                 myStatus: comment.myStatus ? comment.myStatus : 'None',
             },
             postInfo: {
-                id: comment.postId,
-                title: comment.title,
                 blogId: comment.blogId,
-                blogName: comment.blogName
+                blogName: comment.blogName,
+                title: comment.title,
+                id: comment.postId,
             }
         }
         result.push(commentWithLikes);

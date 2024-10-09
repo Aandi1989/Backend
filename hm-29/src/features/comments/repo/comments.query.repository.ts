@@ -120,7 +120,7 @@ export class CommentsQueryRepo {
         const mainRequest = `
                 SELECT 
                 comments.*,
-                posts."title", posts."blogId", blogs."name" as "blogName",
+                posts."title", posts."blogId", posts."blogName",
                 users."login" as "userLogin",
                 (SELECT COUNT(*) 
                 FROM public."LikesComments" as likes
@@ -145,8 +145,6 @@ export class CommentsQueryRepo {
                 ON comments."userId" = users."id"
             LEFT JOIN public."Posts" as posts
                 ON posts."id" = comments."postId"
-            LEFT JOIN public."Blogs" as blogs
-                ON posts."blogId" = blogs."id"
             WHERE users."isBanned" = false
             ORDER BY comments."${sortBy}" ${sortDir}
             LIMIT $1 OFFSET $2
