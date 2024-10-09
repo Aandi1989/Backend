@@ -23,9 +23,47 @@ export class BlogsQueryRepo {
         const totalCount = parseInt(totalCountResult[0].count);
         // postgres doesnt allow use as params names of columns that is why we validate sortBy in function blogQueryParams
         const mainQuery = `
-            SELECT id, name, description, "websiteUrl", "isMembership", "createdAt", "ownerId"
+            SELECT id, name, description, "websiteUrl", "isMembership", "createdAt"
             FROM public."Blogs"
             WHERE name ILIKE $1 AND "isBanned" = false
+            ORDER BY "${sortBy}" ${sortDir}
+            LIMIT $2
+            OFFSET $3
+        `;
+
+        const blogs = await this.dataSourse.query(mainQuery, [searchTermParam, pageSize, offset]);
+        const pagesCount = Math.ceil(totalCount / pageSize);
+        return {
+            pagesCount: pagesCount,
+            page: pageNumber,
+            pageSize: pageSize,
+            totalCount: totalCount,
+            items: blogs
+        };
+    }
+
+    async getSaBlogs(query: BlogQueryOutputType): Promise<BlogsWithQueryOutputModel> {
+        const { pageNumber, pageSize, searchNameTerm, sortBy, sortDirection } = query;
+        const sortDir = sortDirection === "asc" ? "ASC" : "DESC";
+        const offset = (pageNumber - 1) * pageSize;
+        const searchTermParam = searchNameTerm ? `%${searchNameTerm}%` : `%%`;
+
+        const totalCountQuery = `
+            SELECT COUNT(*)
+            FROM public."Blogs"
+            WHERE name ILIKE $1 AND "isBanned" = false
+        `;
+        
+        const totalCountResult = await this.dataSourse.query(totalCountQuery, [searchTermParam]);
+        const totalCount = parseInt(totalCountResult[0].count);
+        // postgres doesnt allow use as params names of columns that is why we validate sortBy in function blogQueryParams
+        const mainQuery = `
+            SELECT b.id, b.name, b.description, b."websiteUrl", b."isMembership",
+                b."createdAt", b."ownerId", u."isBanned", u."banDate"
+            FROM public."Blogs" as b
+            LEFT JOIN public."Users" as u
+                ON b."ownerId" = u."id" 
+            WHERE b.name ILIKE $1 AND b."isBanned" = false
             ORDER BY "${sortBy}" ${sortDir}
             LIMIT $2
             OFFSET $3
@@ -104,7 +142,8 @@ export class BlogsQueryRepo {
         const query =
             `SELECT "id", "name", "description", "websiteUrl", "createdAt", "isMembership"
             FROM public."Blogs" as blogs
-            WHERE blogs."id" = $1`;
+            WHERE blogs."id" = $1 AND "isBanned" = false`
+        ;
         const result = await this.dataSourse.query(query, [id]);
         return result[0];
     }

@@ -3,7 +3,7 @@ import { UserOutputModel } from "../../../users/api/models/output/user.output.mo
 import { Result, ResultCode } from "../../../../common/types/types";
 import { UsersQueryRepo } from "../../../users/repo/users.query.repository";
 import { BlogsQueryRepo } from "../../repo/blogs.query.repository";
-import { BlogQueryOutputType, BlogType } from "../../types/types";
+import { BlogQueryOutputType, BlogSaType, BlogType } from "../../types/types";
 import { BlogsWithQueryOutputModel } from "../../api/models/output/blog.output.model";
 import { blogQueryParams } from "../../../../common/helpers/queryStringModifiers";
 import { loginsDictionary } from "../../../game/types/types";
@@ -21,7 +21,7 @@ export class GetSaBlogsUseCase implements ICommandHandler<GetSaBlogsCommand> {
         const usersIds = new Set();
         let logins: loginsDictionary = {};
 
-        const blogsWithPagination: BlogsWithQueryOutputModel = await this.blogsQueryRepo.getBlogs(command.query);
+        const blogsWithPagination: BlogsWithQueryOutputModel = await this.blogsQueryRepo.getSaBlogs(command.query);
 
         blogsWithPagination.items.forEach(blog => {
             usersIds.add(blog.ownerId);
@@ -35,7 +35,7 @@ export class GetSaBlogsUseCase implements ICommandHandler<GetSaBlogsCommand> {
             return obj;
         }, {});
 
-        const blogsWithBloggerInfo: BlogType[] = blogsWithPagination.items.map((blog: BlogType) => {
+        const blogsWithBloggerInfo: BlogType[] = blogsWithPagination.items.map((blog: BlogSaType) => {
             return{
                 id: blog.id,
                 name: blog.name,
@@ -50,6 +50,10 @@ export class GetSaBlogsUseCase implements ICommandHandler<GetSaBlogsCommand> {
                 } : { 
                     userId: null,
                     userLogin: null
+                },
+                banInfo: {
+                    isBanned: blog.isBanned,
+                    banDate: blog.banDate 
                 }
             }
         })

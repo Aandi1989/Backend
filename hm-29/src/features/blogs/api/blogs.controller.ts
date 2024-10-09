@@ -24,7 +24,7 @@ export class BlogsController {
     @Get(':id')
     async getBlog(@Param('id') blogId: string): Promise<BlogType>{
         const foundBlog = await this.blogsQueryRepo.findBlogWithoutOwnerIdById(blogId);
-        if(!foundBlog || foundBlog.isBanned) throw new NotFoundException('Blog not found');
+        if(!foundBlog) throw new NotFoundException('Blog not found');
         return foundBlog;
     }
     @UseGuards(AccessUserId)

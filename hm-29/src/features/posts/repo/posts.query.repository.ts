@@ -39,7 +39,7 @@ export class PostsQueryRepo {
             LEFT JOIN public."Users" as users
                 ON blogs."ownerId" = users."id"
             WHERE users."isBanned" = false AND blogs."isBanned" = false
-            ORDER BY p."${sortBy}" ${sortDir}, p"createdAt" ASC
+            ORDER BY p."${sortBy}" ${sortDir}, p."createdAt" ASC
             LIMIT $1 OFFSET $2
         `;
 

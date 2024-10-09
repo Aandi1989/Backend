@@ -8,11 +8,28 @@ export class BlogType  {
     ownerId?: string
     isBanned?: boolean
     blogOwnerInfo?: BlogOwnerInfoType
+    banInfo?: BanInfoType
 }
 
+export type BlogSaType = {
+    id: string
+    name: string
+    description: string
+    websiteUrl: string
+    createdAt: string
+    isMembership: boolean
+    ownerId: string
+    isBanned: boolean
+    banDate: string | null
+}
 class BlogOwnerInfoType {
     userId: string | null
     userLogin: string | null
+}
+
+type BanInfoType = {
+    isBanned: boolean,
+    banDate: string | null
 }
 
 export type BlogQueryType = {
