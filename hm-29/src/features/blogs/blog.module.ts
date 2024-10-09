@@ -17,9 +17,10 @@ import { DeleteOwnBlogUseCase } from "./application/use-case/delete-own-blog.use
 import { UpdateOwnPostUseCase } from "./application/use-case/update-own-post.use-case";
 import { DeleteOwnPostUseCase } from "./application/use-case/delete-own-post.use-case";
 import { GetSaBlogsUseCase } from "./application/use-case/get-SAblogs.use-case";
+import { CommentsModule } from "../comments/comment.module";
 
 @Module({
-    imports:[ TypeOrmModule.forFeature(), CqrsModule, UsersModule, PostsModule],
+    imports:[ TypeOrmModule.forFeature(), CqrsModule, UsersModule, PostsModule, CommentsModule],
     providers:[BlogsRepository, BlogsQueryRepo, CreateblogUseCase, DeleteBlogUseCase, UpdateBlogUseCase,
         UpdateOwnBlogUseCase, DeleteOwnBlogUseCase, UpdateOwnPostUseCase, DeleteOwnPostUseCase, 
         GetSaBlogsUseCase ,JwtService

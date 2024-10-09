@@ -10,7 +10,7 @@ import { CreateBlogModel } from "./models/input/create-blog.input.model";
 import { Request } from 'express';
 import { UpdateOwnBlogCommand } from "../application/use-case/update-own-blog.use-case";
 import { ResultCode } from "../../../common/types/types";
-import { bannedUsersQueryParams, blogQueryParams, postQueryParams } from "../../../common/helpers/queryStringModifiers";
+import { bannedUsersQueryParams, blogQueryParams, commentQueryParams, postQueryParams } from "../../../common/helpers/queryStringModifiers";
 import { BlogsWithQueryOutputModel } from "./models/output/blog.output.model";
 import { DeleteOwnBlogCommand } from "../application/use-case/delete-own-blog.use-case";
 import { CreatePostForBlogCommand } from "../../posts/application/use-cases/create-post-for-blog.use-case";
@@ -26,6 +26,9 @@ import { BanBlogForUserModel } from "./models/input/ban-blog-for-user.input";
 import { BannedUsersQueryType } from "../../users/types/types";
 import { UsersQueryRepo } from "../../users/repo/users.query.repository";
 import { BannedUsersInfoOutputModel } from "../../users/api/models/output/user.output.model";
+import { CommentQueryType } from "../../comments/types/types";
+import { CommentsWithQueryOutputModel } from "../../comments/api/models/output/comment.output.model";
+import { CommentsQueryRepo } from "../../comments/repo/comments.query.repository";
 
 
 
@@ -35,6 +38,7 @@ export class BloggerController {
                 protected blogsQueryRepo: BlogsQueryRepo,
                 protected blogsRepository: BlogsRepository,
                 protected postsQueryRepo: PostsQueryRepo,
+                protected commentsQueryRepo: CommentsQueryRepo,
                 protected usersQueryRepo: UsersQueryRepo){}
     @UseGuards(AuthGuard)
     @HttpCode(HTTP_STATUSES.CREATED_201)
@@ -129,5 +133,13 @@ export class BloggerController {
         if(!blog) throw new NotFoundException();
         if(blog.ownerId != req.user.id) throw new ForbiddenException();
         return await this.usersQueryRepo.getBannedUsers(bannedUsersQueryParams(query), params.id);
+    }
+
+    @UseGuards(AuthGuard)
+    @Get('blogs/comments')
+    async getCommentsForAllBloggerPosts(@Req() req: Request,
+        @Query() query: Partial<CommentQueryType>): Promise<CommentsWithQueryOutputModel>{
+        return await this.commentsQueryRepo.getCommentsForAllBloggerPosts(commentQueryParams(query), req.user!.id);
+        
     }
 }

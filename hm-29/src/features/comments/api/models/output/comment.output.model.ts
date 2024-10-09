@@ -21,4 +21,10 @@ export class CommentOutputModel  {
         dislikesCount: number
         myStatus: myStatus
     }
+    postInfo?:{
+        id: string
+        title: string
+        blogId: string
+        blogName: string
+    }
 }
