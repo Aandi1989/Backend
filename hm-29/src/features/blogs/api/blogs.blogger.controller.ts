@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, HttpCode, NotFoundException, Param, Post, Put, Query, Req, UseGuards } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, HttpCode, NotFoundException, Param, Post, Put, Query, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { HTTP_STATUSES, RouterPaths } from "../../../common/utils/utils";
 import { CommandBus } from "@nestjs/cqrs";       
 import { PostsQueryRepo } from "../../posts/repo/posts.query.repository";
@@ -29,6 +29,11 @@ import { BannedUsersInfoOutputModel } from "../../users/api/models/output/user.o
 import { CommentQueryType } from "../../comments/types/types";
 import { CommentsWithQueryOutputModel } from "../../comments/api/models/output/comment.output.model";
 import { CommentsQueryRepo } from "../../comments/repo/comments.query.repository";
+import * as fs from 'node:fs';
+import { readFile, writeFile } from 'node:fs';
+import * as path from 'node:path';
+import { FileInterceptor } from "@nestjs/platform-express";
+import { UploadImageCommand } from "../application/use-case/save-blog-image.use-case";
 
 
 
@@ -141,5 +146,13 @@ export class BloggerController {
         @Query() query: Partial<CommentQueryType>): Promise<CommentsWithQueryOutputModel>{
         return await this.commentsQueryRepo.getCommentsForAllBloggerPosts(commentQueryParams(query), req.user!.id);
         
+    }
+
+    @UseGuards(AuthGuard)
+    @Post('blogs/:id/images/main')
+    @UseInterceptors(FileInterceptor('file'))
+    async uploadBlogImage(@UploadedFile() file, @Req() req: Request, @Param() params: UserBanParams){
+        const result = await this.commandBus.execute(new UploadImageCommand(file, params.id));
+        return result;
     }
 }
