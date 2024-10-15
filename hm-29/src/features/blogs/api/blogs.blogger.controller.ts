@@ -34,6 +34,7 @@ import { readFile, writeFile } from 'node:fs';
 import * as path from 'node:path';
 import { FileInterceptor } from "@nestjs/platform-express";
 import { UploadImageCommand } from "../application/use-case/save-blog-image.use-case";
+import { DeleteImageCommand } from "../application/use-case/delete-blog-image.use-case";
 
 
 
@@ -153,6 +154,7 @@ export class BloggerController {
     @UseInterceptors(FileInterceptor('file'))
     async uploadBlogImage(@UploadedFile() file, @Req() req: Request, @Param() params: UserBanParams){
         const result = await this.commandBus.execute(new UploadImageCommand(file, params.id));
+        // const result = await this.commandBus.execute(new DeleteImageCommand('string'));  /*will successfully delete image from s3*/
         return result;
     }
 }

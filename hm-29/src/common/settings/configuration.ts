@@ -45,6 +45,10 @@ enum Environments {
         EXPIRE_ACCESS_TOKEN_TIME: environmentVariables.EXPIRE_ACCESS_TOKEN_TIME!,
         EXPIRE_REFRESH_TOKEN_TIME: environmentVariables.EXPIRE_REFRESH_TOKEN_TIME!,
       },
+      yandexCloud:{
+        YANDEX_SECRET_ACCESS_KEY: environmentVariables.YANDEX_SECRET_ACCESS_KEY!,
+        YANDEX_ACCESS_KEY_ID: environmentVariables.YANDEX_ACCESS_KEY_ID!,
+      },
   
       environmentSettings: {
         currentEnv: currentEnvironment,

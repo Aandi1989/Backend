@@ -19,12 +19,13 @@ import { DeleteOwnPostUseCase } from "./application/use-case/delete-own-post.use
 import { GetSaBlogsUseCase } from "./application/use-case/get-SAblogs.use-case";
 import { CommentsModule } from "../comments/comment.module";
 import { UploadImageUseCase } from "./application/use-case/save-blog-image.use-case";
+import { DeleteImageUseCase } from "./application/use-case/delete-blog-image.use-case";
 
 @Module({
     imports:[ TypeOrmModule.forFeature(), CqrsModule, UsersModule, PostsModule, CommentsModule],
     providers:[BlogsRepository, BlogsQueryRepo, CreateblogUseCase, DeleteBlogUseCase, UpdateBlogUseCase,
         UpdateOwnBlogUseCase, DeleteOwnBlogUseCase, UpdateOwnPostUseCase, DeleteOwnPostUseCase, 
-        GetSaBlogsUseCase, UploadImageUseCase, JwtService
+        GetSaBlogsUseCase, UploadImageUseCase, DeleteImageUseCase, JwtService
     ],
     controllers:[BlogsController, BlogsSAController, BloggerController],
     exports: [BlogsRepository, BlogsQueryRepo]
