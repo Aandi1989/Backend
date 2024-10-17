@@ -1,6 +1,4 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { CreateBlogModel } from "../../api/models/input/create-blog.input.model";
-import { BlogsRepository } from "../../repo/blogs.repository";
 import { UserOutputModel } from "../../../users/api/models/output/user.output.model";
 import { BlogsQueryRepo } from "../../repo/blogs.query.repository";
 import { Result, ResultCode } from "../../../../common/types/types";

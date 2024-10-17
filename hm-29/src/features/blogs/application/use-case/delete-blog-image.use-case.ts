@@ -2,7 +2,7 @@ import { ICommand } from "@nestjs/cqrs";
 import { Express } from 'express';
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import config from '../../../../common/settings/configuration'
+import { S3Service } from "../../../../common/services/s3-service";
 
 
 export class DeleteImageCommand implements ICommand {
@@ -14,19 +14,7 @@ export class DeleteImageCommand implements ICommand {
 
 @CommandHandler(DeleteImageCommand)
 export class DeleteImageUseCase implements ICommandHandler<DeleteImageCommand> {
-    s3Client: S3Client;
-    constructor(){
-        const REGION = 'us-east-1';
-        // Create an Amazon S3 service client object.
-        this.s3Client = new S3Client ({
-            region: REGION,
-            endpoint: 'https://storage.yandexcloud.net',
-            credentials: {
-                secretAccessKey: config().yandexCloud.YANDEX_SECRET_ACCESS_KEY,
-                accessKeyId: config().yandexCloud.YANDEX_ACCESS_KEY_ID
-            }
-        })
-    }
+    constructor(protected s3Service: S3Service){}
 
     async execute(command: DeleteImageCommand){
         const bucketParams = {
@@ -36,7 +24,7 @@ export class DeleteImageUseCase implements ICommandHandler<DeleteImageCommand> {
         }
         const s3command = new DeleteObjectCommand(bucketParams);
         try{
-            const data = await this.s3Client.send(s3command);
+            const data = await this.s3Service.getClient().send(s3command);
             return data;
         }catch(error){
             console.log('Error trying to upload image:', error)

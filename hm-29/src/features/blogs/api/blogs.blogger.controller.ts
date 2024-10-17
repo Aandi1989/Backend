@@ -33,7 +33,7 @@ import * as fs from 'node:fs';
 import { readFile, writeFile } from 'node:fs';
 import * as path from 'node:path';
 import { FileInterceptor } from "@nestjs/platform-express";
-import { UploadImageCommand } from "../application/use-case/save-blog-image.use-case";
+import { UploadImageCommand } from "../application/use-case/upload-blog-image.use-case";
 import { DeleteImageCommand } from "../application/use-case/delete-blog-image.use-case";
 
 
