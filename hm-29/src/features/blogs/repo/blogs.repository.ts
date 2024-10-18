@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { BlogType } from "../types/types";
+import { BlogType, ImageType } from "../types/types";
 import { CreateBlogModel } from "../api/models/input/create-blog.input.model";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
@@ -127,6 +127,30 @@ export class BlogsRepository {
         const result = await this.dataSourse.query(query, [id]);
         return result[1] === 1;
     }
+
+    async upsertBlogWallpaper(image: ImageType){
+        const { id, blogId, url, width, height, fileSize, imageType } = image;
+        const query = `
+            INSERT INTO public."BlogImages" (
+                id, "blogId", url, width, height, "fileSize", "imageType") 
+            VALUES ('${id}', '${blogId}', '${url}', ${width}, ${height}, ${fileSize}, '${imageType}')
+            ON CONFLICT ("blogId", "imageType") 
+            DO UPDATE SET 
+                url = EXCLUDED.url,
+                width = EXCLUDED.width,
+                height = EXCLUDED.height,
+                "fileSize" = EXCLUDED."fileSize"
+            RETURNING id;
+        `;
+        try{
+            const result = await this.dataSourse.query(query);
+            return result.length > 0;
+        }catch(error){
+            console.log('Error upserting blog wallpaper:', error);
+            return false;
+        }
+    }
+
     async deleteAllData() {
         const queryBlogs = `DELETE FROM public."Blogs"`;
         const queryBlogBans = `DELETE FROM public."BlogBans"`;

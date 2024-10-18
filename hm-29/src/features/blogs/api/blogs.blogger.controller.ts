@@ -33,8 +33,9 @@ import * as fs from 'node:fs';
 import { readFile, writeFile } from 'node:fs';
 import * as path from 'node:path';
 import { FileInterceptor } from "@nestjs/platform-express";
-import { UploadImageCommand } from "../application/use-case/upload-blog-image.use-case";
 import { DeleteImageCommand } from "../application/use-case/delete-blog-image.use-case";
+import { WallpaperValidationPipe } from "../../../common/pipes/wallpaper-validation-pipe";
+import { UploadBlogWallpaperCommand } from "../application/use-case/upload-blog-wallpaper.use-case";
 
 
 
@@ -150,11 +151,13 @@ export class BloggerController {
     }
 
     @UseGuards(AuthGuard)
-    @Post('blogs/:id/images/main')
+    @Post('blogs/:id/images/wallpaper')
     @UseInterceptors(FileInterceptor('file'))
-    async uploadBlogImage(@UploadedFile() file, @Req() req: Request, @Param() params: UserBanParams){
-        const result = await this.commandBus.execute(new UploadImageCommand(file, params.id));
+    async uploadBlogImage(@UploadedFile(new WallpaperValidationPipe()) file, @Req() req: Request, @Param() params: UserBanParams){
+        const result = await this.commandBus.execute(new UploadBlogWallpaperCommand(file, params.id, req.user.id));
         // const result = await this.commandBus.execute(new DeleteImageCommand('string'));  /*will successfully delete image from s3*/
-        return result;
+        if(result.code == ResultCode.Forbidden) throw new ForbiddenException();
+        if(result.code == ResultCode.Success)  return result.data; 
+        throw new NotFoundException();
     }
 }

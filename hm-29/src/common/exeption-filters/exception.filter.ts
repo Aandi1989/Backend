@@ -20,9 +20,20 @@ export class HttpExceptionFilter implements ExceptionFilter {
         const responseBody: any = exception.getResponse();
 
         if(responseBody.error){
-            responseBody.message.forEach((m) => {
-            errorResponse.errorsMessages.push(m)
-          });
+            // Check if responseBody.message is an array
+            if (Array.isArray(responseBody.message)) {
+              responseBody.message.forEach((m) => {
+                errorResponse.errorsMessages.push(m);
+              });
+            } else if (typeof responseBody.message === 'string') {
+              // If it's a string, push it directly
+              errorResponse.errorsMessages.push(responseBody.message);
+            }
+
+
+          //   responseBody.message.forEach((m) => {
+          //   errorResponse.errorsMessages.push(m)
+          // });
           response.status(status).json(errorResponse)
         }
 

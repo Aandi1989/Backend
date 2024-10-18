@@ -158,4 +158,14 @@ export class BlogsQueryRepo {
         const isBanned = parseInt(result[0].count) ? true : false;
         return isBanned;
     }
+
+    async getBlogMainImages(blogId: string){
+        const query = `
+            SELECT url, width, height, "fileSize"
+            FROM public."BlogImages"
+            WHERE "blogId" = '${blogId}' AND "imageType" IN ('original', 'middle', 'small'); 
+        `;
+        const result = await this.dataSourse.query(query);
+        return result;
+    }
 }

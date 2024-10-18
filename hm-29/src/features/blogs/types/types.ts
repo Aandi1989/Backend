@@ -52,3 +52,13 @@ export type BlogQueryOutputType = {
 type BlogSortBy = "id" | "name" | "description" | "websiteUrl" | "createdAt" | "isMembership";
 
 type sortDirectionType = "asc" | "desc";
+
+export type ImageType = {
+    id: string,
+    blogId: string,
+    url: string,
+    width: number,
+    height: number,
+    fileSize: number,
+    imageType: string
+}
