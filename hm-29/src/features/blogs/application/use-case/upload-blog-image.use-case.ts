@@ -5,42 +5,80 @@ import { BadRequestException } from "@nestjs/common";
 import { PutObjectCommand, PutObjectCommandOutput, S3Client } from "@aws-sdk/client-s3";
 import { S3Service } from "../../../../common/services/s3-service";
 import * as sharp from 'sharp';
+import { v4 as uuidv4 } from 'uuid';
+import { BlogsQueryRepo } from "../../repo/blogs.query.repository";
+import { BlogsRepository } from "../../repo/blogs.repository";
+import { ResultCode } from "../../../../common/types/types";
+import { ImageType } from "../../types/types";
 
 
-export class UploadBlogWallpaperCommand implements ICommand {
+export class UploadBlogImageCommand implements ICommand {
     constructor(
         public readonly file: Express.Multer.File, 
-        public readonly blogId: string
+        public readonly blogId: string,
+        public readonly userId: string
     ) {}
 }
 
 
-@CommandHandler(UploadBlogWallpaperCommand)
-export class UploadBlogWallpaperUseCase implements ICommandHandler<UploadBlogWallpaperCommand> {
-    constructor(protected s3Service: S3Service){}
+@CommandHandler(UploadBlogImageCommand)
+export class UploadBlogImageUseCase implements ICommandHandler<UploadBlogImageCommand> {
+    constructor(protected s3Service: S3Service,
+                protected blogsQueryRepo: BlogsQueryRepo,
+                protected blogsRepository: BlogsRepository,
+    ){}
 
-    async execute(command: UploadBlogWallpaperCommand){
-        const { file, blogId } = command;
+    async execute(command: UploadBlogImageCommand){
+        const { file, blogId, userId } = command;
 
-        // Check if file was uploaded
         if (!file) throw new BadRequestException('No file uploaded');
 
-        const key = `content/blogs/${blogId}/images/${blogId}_image.png`;
+        const blog = await this.blogsQueryRepo.findBlogById(blogId);
+        if(!blog) return { code: ResultCode.Failed };
+        if(blog && blog.ownerId !== userId) return { code: ResultCode.Forbidden };
 
-        const mediumImageBuffer = await sharp(file.buffer)
-            .resize(20,80)
-            .toBuffer();
-
-        const mediumImageSize = Buffer.byteLength(mediumImageBuffer);
-
-        const uploadResult: PutObjectCommandOutput = await this.uploadToS3(key, mediumImageBuffer, 'image/png');
-        return { 
-                    url: `https://incubatorproject.storage.yandexcloud.net/${key}`, 
-                    fileId: uploadResult.ETag,
-                    filiSize: file.size,
-                    fileSizeAfterResizing: mediumImageSize,
-                };
+        // image original size 
+        const keyOriginal = `content/blogs/${blogId}/images/original.png`;
+        const metadataOriginal = await sharp(file.buffer).metadata();      
+        const uploadOriginalResult: PutObjectCommandOutput = await this.uploadToS3(keyOriginal, file.buffer, 'image/png');
+        if(uploadOriginalResult.$metadata.httpStatusCode != 200) return { code: ResultCode.Failed };
         
+        const url = `https://incubatorproject.storage.yandexcloud.net/${keyOriginal}`;
+        const image = this.createImage(blogId, url, metadataOriginal.width!, 
+            metadataOriginal.height!, file.size, 'original');
+        const insertedImageDb = await this.blogsRepository.upsertBlogImage(image);
+        if(!insertedImageDb) return { code: ResultCode.Failed };
+
+        // image middle size
+
+
+        // const mediumImageBuffer = await sharp(file.buffer)
+        //     .resize(20,80)
+        //     .toBuffer();
+
+        // const mediumImageSize = Buffer.byteLength(mediumImageBuffer);
+
+        // const uploadResult: PutObjectCommandOutput = await this.uploadToS3(key, mediumImageBuffer, 'image/png');
+        // return { 
+        //             url: `https://incubatorproject.storage.yandexcloud.net/${key}`, 
+        //             fileId: uploadResult.ETag,
+        //             filiSize: file.size,
+        //             fileSizeAfterResizing: mediumImageSize,
+        //         };
+        
+    }
+
+    private createImage(blogId: string, url: string, width: number, 
+        height: number, fileSize: number, imageType: string ):ImageType{
+        return {
+            id: uuidv4(),
+            blogId,
+            url,
+            width,
+            height,
+            fileSize,
+            imageType
+        }
     }
 
     private async uploadToS3(key: string, buffer: Buffer, contentType: string): Promise<PutObjectCommandOutput> {

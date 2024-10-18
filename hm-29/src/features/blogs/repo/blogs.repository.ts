@@ -128,7 +128,7 @@ export class BlogsRepository {
         return result[1] === 1;
     }
 
-    async upsertBlogWallpaper(image: ImageType){
+    async upsertBlogImage(image: ImageType){
         const { id, blogId, url, width, height, fileSize, imageType } = image;
         const query = `
             INSERT INTO public."BlogImages" (

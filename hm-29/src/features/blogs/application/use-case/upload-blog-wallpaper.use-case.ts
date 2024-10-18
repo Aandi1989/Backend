@@ -44,7 +44,7 @@ export class UploadBlogWallpaperUseCase implements ICommandHandler<UploadBlogWal
         
         const url = `https://incubatorproject.storage.yandexcloud.net/${key}`;
         const image = this.createImage(blogId, url, metadata.width!, metadata.height!, file.size);
-        const insertedImageDb = await this.blogsRepository.upsertBlogWallpaper(image);
+        const insertedImageDb = await this.blogsRepository.upsertBlogImage(image);
         if(!insertedImageDb) return { code: ResultCode.Failed };
 
         const mainImages = await this.blogsQueryRepo.getBlogMainImages(blogId);
@@ -60,7 +60,7 @@ export class UploadBlogWallpaperUseCase implements ICommandHandler<UploadBlogWal
         }
 
         return {code: ResultCode.Success, data: resultObject};
-        
+
         // if(uploadResult.$metadata.httpStatusCode === 200){
         //     return { 
         //         url: `https://incubatorproject.storage.yandexcloud.net/${key}`, 

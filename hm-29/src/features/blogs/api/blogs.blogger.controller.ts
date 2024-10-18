@@ -153,9 +153,19 @@ export class BloggerController {
     @UseGuards(AuthGuard)
     @Post('blogs/:id/images/wallpaper')
     @UseInterceptors(FileInterceptor('file'))
-    async uploadBlogImage(@UploadedFile(new WallpaperValidationPipe()) file, @Req() req: Request, @Param() params: UserBanParams){
+    async uploadBlogWallpaper(@UploadedFile(new WallpaperValidationPipe()) file, @Req() req: Request, @Param() params: UserBanParams){
         const result = await this.commandBus.execute(new UploadBlogWallpaperCommand(file, params.id, req.user.id));
         // const result = await this.commandBus.execute(new DeleteImageCommand('string'));  /*will successfully delete image from s3*/
+        if(result.code == ResultCode.Forbidden) throw new ForbiddenException();
+        if(result.code == ResultCode.Success)  return result.data; 
+        throw new NotFoundException();
+    }
+
+    @UseGuards(AuthGuard)
+    @Post('blogs/:id/images/main')
+    @UseInterceptors(FileInterceptor('file'))
+    async uploadBlogImage(@UploadedFile(new WallpaperValidationPipe()) file, @Req() req: Request, @Param() params: UserBanParams){
+        const result = await this.commandBus.execute(new UploadBlogWallpaperCommand(file, params.id, req.user.id));
         if(result.code == ResultCode.Forbidden) throw new ForbiddenException();
         if(result.code == ResultCode.Success)  return result.data; 
         throw new NotFoundException();
