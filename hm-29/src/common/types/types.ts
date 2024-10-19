@@ -28,3 +28,10 @@ export type ErrorType = {
     message: string
     field: string
 }
+
+export type ImageInfoType = {
+    url: string
+    width: number
+    height: number
+    fileSize: number
+}

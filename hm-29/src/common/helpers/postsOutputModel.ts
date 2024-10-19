@@ -18,6 +18,9 @@ export function postsOutputModel(arr){
                 dislikesCount: post.dislikesCount ? parseInt(post.dislikesCount) : 0,
                 myStatus: post.myStatus ? post.myStatus : 'None',
                 newestLikes: []
+            },
+            images:{
+                main:[]
             }
         }
         result.push(postWithLikes);

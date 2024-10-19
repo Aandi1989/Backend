@@ -1,3 +1,5 @@
+import { ImageInfoType } from "../../../common/types/types"
+
 export class BlogType  {
     id: string
     name: string
@@ -9,6 +11,23 @@ export class BlogType  {
     isBanned?: boolean
     blogOwnerInfo?: BlogOwnerInfoType
     banInfo?: BanInfoType
+}
+
+export class BlogWithImagesType {
+    id: string
+    name: string
+    description: string
+    websiteUrl: string
+    createdAt: string
+    isMembership: boolean
+    ownerId?: string
+    isBanned?: boolean
+    blogOwnerInfo?: BlogOwnerInfoType
+    banInfo?: BanInfoType
+    images: {
+        wallpaper?: ImageInfoType | null
+        main?: ImageInfoType[]
+    }
 }
 
 export type BlogSaType = {

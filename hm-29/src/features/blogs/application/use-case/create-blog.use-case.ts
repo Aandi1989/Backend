@@ -4,6 +4,7 @@ import { BlogsRepository } from "../../repo/blogs.repository";
 import { BlogType } from "../../types/types";
 import {v4 as uuidv4} from 'uuid';
 import { UserOutputModel } from "../../../users/api/models/output/user.output.model";
+import { blogCreatedWithImages } from "../../../../common/helpers/blogMappers";
 
 
 export class CreateBlogCommand {
@@ -16,6 +17,7 @@ export class CreateblogUseCase implements ICommandHandler<CreateBlogCommand>{
     constructor(protected blogsRepository: BlogsRepository) { }
   
     async execute(command: CreateBlogCommand): Promise<BlogType> {
+        let createBlogOutputModel;
         const newBlog = {
             id: uuidv4(),
             name: command.data.name,
@@ -26,6 +28,11 @@ export class CreateblogUseCase implements ICommandHandler<CreateBlogCommand>{
             ownerId: command.user?.id ? command.user?.id : undefined
         };
         const createdBlog = await this.blogsRepository.createBlog(newBlog)
-        return createdBlog;
+        
+        if(createdBlog){
+            createBlogOutputModel = blogCreatedWithImages(createdBlog);
+        }
+
+        return createBlogOutputModel;
     }
   }

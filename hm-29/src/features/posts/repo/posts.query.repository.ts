@@ -3,7 +3,6 @@ import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 import { PostsWithQueryOutputModel } from "../api/models/output/post.output.model";
 import { PostQueryOutputType, PostType } from "../types/types";
-import { postsOutputModel } from "../../../common/helpers/postsOutputModel";
 import { likeExtraInfoMapper } from "../../../common/helpers/likeExtraInfoMapper";
 import { postMapper } from "../../../common/helpers/postMapper";
 
