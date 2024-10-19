@@ -168,4 +168,14 @@ export class BlogsQueryRepo {
         const result = await this.dataSourse.query(query);
         return result;
     }
+
+    async getBlogWallpaperImage(blogId: string){
+        const query = `
+            SELECT url, width, height, "fileSize"
+            FROM public."BlogImages"
+            WHERE "blogId" = '${blogId}' AND "imageType" = 'wallpaper';
+        `;
+        const result = await this.dataSourse.query(query);
+        return result;
+    }
 }

@@ -57,7 +57,7 @@ export class UploadBlogWallpaperUseCase implements ICommandHandler<UploadBlogWal
                 fileSize: file.size 
             },
             "main": mainImages
-        }
+        };
 
         return {code: ResultCode.Success, data: resultObject};
 

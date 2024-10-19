@@ -50,7 +50,41 @@ export class UploadBlogImageUseCase implements ICommandHandler<UploadBlogImageCo
         if(!insertedImageDb) return { code: ResultCode.Failed };
 
         // image middle size
+        const keyMiddle = `content/blogs/${blogId}/images/middle.png`;
+        const imageBufferMiddle = await sharp(file.buffer).resize(100, 100).toBuffer();
+        const imageSizeMiddle = Buffer.byteLength(imageBufferMiddle);
+        const uploadMiddleResult: PutObjectCommandOutput = await this.uploadToS3(keyMiddle, imageBufferMiddle, 'image/png');
+        if(uploadMiddleResult.$metadata.httpStatusCode != 200) return { code: ResultCode.Failed };
+        
+        const urlMiddle = `https://incubatorproject.storage.yandexcloud.net/${keyMiddle}`;
+        const imageMiddle = this.createImage(blogId, urlMiddle, 100, 100, imageSizeMiddle, 'middle');
+        const insertedMiddleImageDb = await this.blogsRepository.upsertBlogImage(imageMiddle);
+        if(!insertedMiddleImageDb) return { code: ResultCode.Failed };
 
+        // image small size
+        const keySmall = `content/blogs/${blogId}/images/small.png`;
+        const imageBufferSmall = await sharp(file.buffer).resize(50, 50).toBuffer();
+        const imageSizeSmall = Buffer.byteLength(imageBufferSmall);
+        const uploadSmallResult: PutObjectCommandOutput = await this.uploadToS3(keySmall, imageBufferSmall, 'image/png');
+        if(uploadSmallResult.$metadata.httpStatusCode != 200) return { code: ResultCode.Failed };
+
+        const urlSmall = `https://incubatorproject.storage.yandexcloud.net/${keySmall}`;
+        const imageSmall = this.createImage(blogId, urlSmall, 50, 50, imageSizeSmall, 'small');
+        const insertedSmallImageDb = await this.blogsRepository.upsertBlogImage(imageSmall);
+        if(!insertedSmallImageDb) return { code: ResultCode.Failed };
+
+        const wallpaperImage = await this.blogsQueryRepo.getBlogWallpaperImage(blogId);
+
+        const resultObject = {
+            "wallpaper": wallpaperImage,
+            "main": [
+                {url, width: metadataOriginal.width!, height: metadataOriginal.height!, fileSize: file.size},
+                {url: urlMiddle, width: 100, height: 100, fileSize: imageSizeMiddle},
+                {url: urlSmall, width: 50, height: 50, fileSize: imageSizeSmall}
+            ]
+        };
+
+        return { code: ResultCode.Success, data: resultObject };
 
         // const mediumImageBuffer = await sharp(file.buffer)
         //     .resize(20,80)

@@ -36,6 +36,8 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { DeleteImageCommand } from "../application/use-case/delete-blog-image.use-case";
 import { WallpaperValidationPipe } from "../../../common/pipes/wallpaper-validation-pipe";
 import { UploadBlogWallpaperCommand } from "../application/use-case/upload-blog-wallpaper.use-case";
+import { BlogImageValidationPipe } from "../../../common/pipes/blogImage-validation-pipe";
+import { UploadBlogImageCommand } from "../application/use-case/upload-blog-image.use-case";
 
 
 
@@ -164,8 +166,8 @@ export class BloggerController {
     @UseGuards(AuthGuard)
     @Post('blogs/:id/images/main')
     @UseInterceptors(FileInterceptor('file'))
-    async uploadBlogImage(@UploadedFile(new WallpaperValidationPipe()) file, @Req() req: Request, @Param() params: UserBanParams){
-        const result = await this.commandBus.execute(new UploadBlogWallpaperCommand(file, params.id, req.user.id));
+    async uploadBlogImage(@UploadedFile(new BlogImageValidationPipe()) file, @Req() req: Request, @Param() params: UserBanParams){
+        const result = await this.commandBus.execute(new UploadBlogImageCommand(file, params.id, req.user.id));
         if(result.code == ResultCode.Forbidden) throw new ForbiddenException();
         if(result.code == ResultCode.Success)  return result.data; 
         throw new NotFoundException();
