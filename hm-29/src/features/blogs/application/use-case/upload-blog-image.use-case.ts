@@ -37,69 +37,121 @@ export class UploadBlogImageUseCase implements ICommandHandler<UploadBlogImageCo
         if(!blog) return { code: ResultCode.Failed };
         if(blog && blog.ownerId !== userId) return { code: ResultCode.Forbidden };
 
-        // image original size 
-        const keyOriginal = `content/blogs/${blogId}/images/original.png`;
-        const metadataOriginal = await sharp(file.buffer).metadata();      
-        const uploadOriginalResult: PutObjectCommandOutput = await this.uploadToS3(keyOriginal, file.buffer, 'image/png');
-        if(uploadOriginalResult.$metadata.httpStatusCode != 200) return { code: ResultCode.Failed };
-        
-        const url = `https://incubatorproject.storage.yandexcloud.net/${keyOriginal}`;
-        const image = this.createImage(blogId, url, metadataOriginal.width!, 
-            metadataOriginal.height!, file.size, 'original');
-        const insertedImageDb = await this.blogsRepository.upsertBlogImage(image);
-        if(!insertedImageDb) return { code: ResultCode.Failed };
+        //Image types and their dimensions
+        const imageConfigs = [
+            { sizeName: 'original', width: null, height: null }, // original size
+            { sizeName: 'middle', width: 100, height: 100 },
+            { sizeName: 'small', width: 50, height: 50 },
+        ];
 
-        // image middle size
-        const keyMiddle = `content/blogs/${blogId}/images/middle.png`;
-        const imageBufferMiddle = await sharp(file.buffer).resize(100, 100).toBuffer();
-        const imageSizeMiddle = Buffer.byteLength(imageBufferMiddle);
-        const uploadMiddleResult: PutObjectCommandOutput = await this.uploadToS3(keyMiddle, imageBufferMiddle, 'image/png');
-        if(uploadMiddleResult.$metadata.httpStatusCode != 200) return { code: ResultCode.Failed };
-        
-        const urlMiddle = `https://incubatorproject.storage.yandexcloud.net/${keyMiddle}`;
-        const imageMiddle = this.createImage(blogId, urlMiddle, 100, 100, imageSizeMiddle, 'middle');
-        const insertedMiddleImageDb = await this.blogsRepository.upsertBlogImage(imageMiddle);
-        if(!insertedMiddleImageDb) return { code: ResultCode.Failed };
+        const uploadResults = await Promise.all(imageConfigs.map(config => 
+            this.processAndUploadImage(file, blogId, config.sizeName, config.width, config.height)
+        ));
 
-        // image small size
-        const keySmall = `content/blogs/${blogId}/images/small.png`;
-        const imageBufferSmall = await sharp(file.buffer).resize(50, 50).toBuffer();
-        const imageSizeSmall = Buffer.byteLength(imageBufferSmall);
-        const uploadSmallResult: PutObjectCommandOutput = await this.uploadToS3(keySmall, imageBufferSmall, 'image/png');
-        if(uploadSmallResult.$metadata.httpStatusCode != 200) return { code: ResultCode.Failed };
+        if (uploadResults.some(result => result.uploadFailed)) {
+            return { code: ResultCode.Failed };
+        };
 
-        const urlSmall = `https://incubatorproject.storage.yandexcloud.net/${keySmall}`;
-        const imageSmall = this.createImage(blogId, urlSmall, 50, 50, imageSizeSmall, 'small');
-        const insertedSmallImageDb = await this.blogsRepository.upsertBlogImage(imageSmall);
-        if(!insertedSmallImageDb) return { code: ResultCode.Failed };
+        // Insert into DB
+        for (const result of uploadResults) {
+            const { url, width, height, fileSize, sizeName } = result;
+            const image = this.createImage(blogId, url!, width!, height!, fileSize!, sizeName!);
+            const insertedImageDb = await this.blogsRepository.upsertBlogImage(image);
+            if (!insertedImageDb) return { code: ResultCode.Failed };
+        }
 
+        // Fetch and return result
         const wallpaperImage = await this.blogsQueryRepo.getBlogWallpaperImage(blogId);
 
         const resultObject = {
             "wallpaper": wallpaperImage,
-            "main": [
-                {url, width: metadataOriginal.width!, height: metadataOriginal.height!, fileSize: file.size},
-                {url: urlMiddle, width: 100, height: 100, fileSize: imageSizeMiddle},
-                {url: urlSmall, width: 50, height: 50, fileSize: imageSizeSmall}
-            ]
+            "main": uploadResults.map(result => ({
+                url: result.url,
+                width: result.width,
+                height: result.height,
+                fileSize: result.fileSize
+            }))
         };
 
         return { code: ResultCode.Success, data: resultObject };
+        //=========================================
 
-        // const mediumImageBuffer = await sharp(file.buffer)
-        //     .resize(20,80)
-        //     .toBuffer();
-
-        // const mediumImageSize = Buffer.byteLength(mediumImageBuffer);
-
-        // const uploadResult: PutObjectCommandOutput = await this.uploadToS3(key, mediumImageBuffer, 'image/png');
-        // return { 
-        //             url: `https://incubatorproject.storage.yandexcloud.net/${key}`, 
-        //             fileId: uploadResult.ETag,
-        //             filiSize: file.size,
-        //             fileSizeAfterResizing: mediumImageSize,
-        //         };
+        // image original size 
+        // const keyOriginal = `content/blogs/${blogId}/images/original.png`;
+        // const metadataOriginal = await sharp(file.buffer).metadata();      
+        // const uploadOriginalResult: PutObjectCommandOutput = await this.uploadToS3(keyOriginal, file.buffer, 'image/png');
+        // if(uploadOriginalResult.$metadata.httpStatusCode != 200) return { code: ResultCode.Failed };
         
+        // const url = `https://incubatorproject.storage.yandexcloud.net/${keyOriginal}`;
+        // const image = this.createImage(blogId, url, metadataOriginal.width!, 
+        //     metadataOriginal.height!, file.size, 'original');
+        // const insertedImageDb = await this.blogsRepository.upsertBlogImage(image);
+        // if(!insertedImageDb) return { code: ResultCode.Failed };
+
+        // // image middle size
+        // const keyMiddle = `content/blogs/${blogId}/images/middle.png`;
+        // const imageBufferMiddle = await sharp(file.buffer).resize(100, 100).toBuffer();
+        // const imageSizeMiddle = Buffer.byteLength(imageBufferMiddle);
+        // const uploadMiddleResult: PutObjectCommandOutput = await this.uploadToS3(keyMiddle, imageBufferMiddle, 'image/png');
+        // if(uploadMiddleResult.$metadata.httpStatusCode != 200) return { code: ResultCode.Failed };
+        
+        // const urlMiddle = `https://incubatorproject.storage.yandexcloud.net/${keyMiddle}`;
+        // const imageMiddle = this.createImage(blogId, urlMiddle, 100, 100, imageSizeMiddle, 'middle');
+        // const insertedMiddleImageDb = await this.blogsRepository.upsertBlogImage(imageMiddle);
+        // if(!insertedMiddleImageDb) return { code: ResultCode.Failed };
+
+        // // image small size
+        // const keySmall = `content/blogs/${blogId}/images/small.png`;
+        // const imageBufferSmall = await sharp(file.buffer).resize(50, 50).toBuffer();
+        // const imageSizeSmall = Buffer.byteLength(imageBufferSmall);
+        // const uploadSmallResult: PutObjectCommandOutput = await this.uploadToS3(keySmall, imageBufferSmall, 'image/png');
+        // if(uploadSmallResult.$metadata.httpStatusCode != 200) return { code: ResultCode.Failed };
+
+        // const urlSmall = `https://incubatorproject.storage.yandexcloud.net/${keySmall}`;
+        // const imageSmall = this.createImage(blogId, urlSmall, 50, 50, imageSizeSmall, 'small');
+        // const insertedSmallImageDb = await this.blogsRepository.upsertBlogImage(imageSmall);
+        // if(!insertedSmallImageDb) return { code: ResultCode.Failed };
+
+        // const wallpaperImage = await this.blogsQueryRepo.getBlogWallpaperImage(blogId);
+
+        // const resultObject = {
+        //     "wallpaper": wallpaperImage,
+        //     "main": [
+        //         {url, width: metadataOriginal.width!, height: metadataOriginal.height!, fileSize: file.size},
+        //         {url: urlMiddle, width: 100, height: 100, fileSize: imageSizeMiddle},
+        //         {url: urlSmall, width: 50, height: 50, fileSize: imageSizeSmall}
+        //     ]
+        // };
+
+        // return { code: ResultCode.Success, data: resultObject };        
+    }
+
+    private async processAndUploadImage(file: Express.Multer.File, blogId: string, sizeName: string, width: number | null, height: number | null) {
+        const imageKey = `content/blogs/${blogId}/images/${sizeName}.png`;
+
+        let imageBuffer = file.buffer;
+        let fileSize = file.size;
+
+        if (width && height) {
+            imageBuffer = await sharp(file.buffer).resize(width, height).toBuffer();
+            fileSize = Buffer.byteLength(imageBuffer);
+        }
+
+        const uploadResult: PutObjectCommandOutput = await this.uploadToS3(imageKey, imageBuffer, 'image/png');
+        if (uploadResult.$metadata.httpStatusCode !== 200) {
+            return { uploadFailed: true };
+        }
+
+        const metadata = await sharp(imageBuffer).metadata();
+
+        return {
+            url: `https://incubatorproject.storage.yandexcloud.net/${imageKey}`,
+            width: metadata.width || width,
+            height: metadata.height || height,
+            fileSize,
+            sizeName,
+            uploadFailed: false
+        };
     }
 
     private createImage(blogId: string, url: string, width: number, 

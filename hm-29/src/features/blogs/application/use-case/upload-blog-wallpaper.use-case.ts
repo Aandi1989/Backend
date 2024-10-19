@@ -60,19 +60,6 @@ export class UploadBlogWallpaperUseCase implements ICommandHandler<UploadBlogWal
         };
 
         return {code: ResultCode.Success, data: resultObject};
-
-        // if(uploadResult.$metadata.httpStatusCode === 200){
-        //     return { 
-        //         url: `https://incubatorproject.storage.yandexcloud.net/${key}`, 
-        //         fileId: uuidv4(),
-        //         filiSize: file.size,
-        //         width: metadata.width,
-        //         height: metadata.height,
-        //         imageType: 'wallpaper'
-        //     };
-        // }else{
-        //     return null;
-        // }
     }
 
     private createImage(blogId: string, url: string, width: number, 
