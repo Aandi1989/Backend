@@ -154,7 +154,7 @@ export class PostsQueryRepo {
 
     async getPostForChange(blogId: string, postId: string){
         const query = `
-            SELECT posts.*
+            SELECT posts.*, blogs."ownerId"
             FROM public."Posts" as posts
             LEFT JOIN public."Blogs" as blogs
             ON posts."blogId" = blogs."id"
@@ -163,5 +163,15 @@ export class PostsQueryRepo {
 
         const result = await this.dataSourse.query(query, [postId, blogId]);
         return result[0];
+    }
+
+    async getPostImages(postId: string){
+        const query = `
+            SELECT url, width, height, "fileSize"
+            FROM public."PostImages"
+            WHERE "postId" = $1; 
+        `;
+        const result = await this.dataSourse.query(query, [postId]);
+        return result;
     }
 }

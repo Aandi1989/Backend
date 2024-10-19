@@ -5,6 +5,7 @@ import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { postsOutputModel } from '../../../common/helpers/postsOutputModel';
 import { UpdatePostForBlogModel } from '../../blogs/api/models/input/update-post.input';
+import { ImageType } from '../../blogs/types/types';
 
 
 @Injectable()
@@ -41,6 +42,30 @@ export class PostsRepository {
         const result = await this.dataSourse.query(query, [id]);
         return result[1] === 1;
     }
+
+    async upsertPostImage(image: ImageType){
+        const { id, postId, url, width, height, fileSize, imageType } = image;
+        const query = `
+            INSERT INTO public."PostImages" (
+                id, "postId", url, width, height, "fileSize", "imageType") 
+            VALUES ('${id}', '${postId}', '${url}', ${width}, ${height}, ${fileSize}, '${imageType}')
+            ON CONFLICT ("postId", "imageType") 
+            DO UPDATE SET 
+                url = EXCLUDED.url,
+                width = EXCLUDED.width,
+                height = EXCLUDED.height,
+                "fileSize" = EXCLUDED."fileSize"
+            RETURNING id;
+        `;
+        try{
+            const result = await this.dataSourse.query(query);
+            return result.length > 0;
+        }catch(error){
+            console.log('Error upserting post images:', error);
+            return false;
+        }
+    }
+
     async deleteAllData(){
         const query = `DELETE FROM public."Posts"`;
         const result = await this.dataSourse.query(query);

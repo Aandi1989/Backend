@@ -38,6 +38,9 @@ import { WallpaperValidationPipe } from "../../../common/pipes/wallpaper-validat
 import { UploadBlogWallpaperCommand } from "../application/use-case/upload-blog-wallpaper.use-case";
 import { BlogImageValidationPipe } from "../../../common/pipes/blogImage-validation-pipe";
 import { UploadBlogImageCommand } from "../application/use-case/upload-blog-image.use-case";
+import { PostImageValidationPipe } from "../../../common/pipes/postImage-validation-pipe";
+import { BlogPostParams } from "../../posts/api/models/input/blog-post.params.model";
+import { UploadPostImageCommand } from "../application/use-case/upload-post-image.use-case";
 
 
 
@@ -168,6 +171,17 @@ export class BloggerController {
     @UseInterceptors(FileInterceptor('file'))
     async uploadBlogImage(@UploadedFile(new BlogImageValidationPipe()) file, @Req() req: Request, @Param() params: UserBanParams){
         const result = await this.commandBus.execute(new UploadBlogImageCommand(file, params.id, req.user.id));
+        if(result.code == ResultCode.Forbidden) throw new ForbiddenException();
+        if(result.code == ResultCode.Success)  return result.data; 
+        throw new NotFoundException();
+    }
+
+    @UseGuards(AuthGuard)
+    @Post('blogs/:blogId/posts/:postId/images/main')
+    @UseInterceptors(FileInterceptor('file'))
+    async uploadPostImage(@UploadedFile(new PostImageValidationPipe()) file, @Req() req: Request, @Param() params: BlogPostParams) {
+        const result = await this.commandBus.execute(new UploadPostImageCommand(file, params.blogId, 
+            params.postId, req.user.id));
         if(result.code == ResultCode.Forbidden) throw new ForbiddenException();
         if(result.code == ResultCode.Success)  return result.data; 
         throw new NotFoundException();

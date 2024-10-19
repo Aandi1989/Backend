@@ -22,13 +22,14 @@ import { UploadBlogWallpaperUseCase } from "./application/use-case/upload-blog-w
 import { DeleteImageUseCase } from "./application/use-case/delete-blog-image.use-case";
 import { S3Service } from "../../common/services/s3-service";
 import { UploadBlogImageUseCase } from "./application/use-case/upload-blog-image.use-case";
+import { UploadPostImageUseCase } from "./application/use-case/upload-post-image.use-case";
 
 @Module({
     imports:[ TypeOrmModule.forFeature(), CqrsModule, UsersModule, PostsModule, CommentsModule],
     providers:[BlogsRepository, BlogsQueryRepo, CreateblogUseCase, DeleteBlogUseCase, UpdateBlogUseCase,
         UpdateOwnBlogUseCase, DeleteOwnBlogUseCase, UpdateOwnPostUseCase, DeleteOwnPostUseCase, 
         GetSaBlogsUseCase, UploadBlogWallpaperUseCase, DeleteImageUseCase, UploadBlogImageUseCase,
-        JwtService, S3Service
+        UploadPostImageUseCase, JwtService, S3Service
     ],
     controllers:[BlogsController, BlogsSAController, BloggerController],
     exports: [BlogsRepository, BlogsQueryRepo]

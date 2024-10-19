@@ -55,7 +55,8 @@ type sortDirectionType = "asc" | "desc";
 
 export type ImageType = {
     id: string,
-    blogId: string,
+    blogId?: string,
+    postId?: string;
     url: string,
     width: number,
     height: number,

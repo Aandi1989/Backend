@@ -146,7 +146,7 @@ export class BlogsRepository {
             const result = await this.dataSourse.query(query);
             return result.length > 0;
         }catch(error){
-            console.log('Error upserting blog wallpaper:', error);
+            console.log('Error upserting blog images:', error);
             return false;
         }
     }

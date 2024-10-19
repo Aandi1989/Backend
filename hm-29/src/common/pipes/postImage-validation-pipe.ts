@@ -21,7 +21,7 @@ export class PostImageValidationPipe implements PipeTransform {
         const { width, height } = metadata;
 
         if (width! > 940 || height! > 432) {
-            throw new BadRequestException(`Image must be 156x156px for post image.`);
+            throw new BadRequestException(`Image must be 940x432px for post image.`);
         }
 
         return file;

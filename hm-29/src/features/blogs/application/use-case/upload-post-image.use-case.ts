@@ -6,46 +6,47 @@ import { PutObjectCommand, PutObjectCommandOutput, S3Client } from "@aws-sdk/cli
 import { S3Service } from "../../../../common/services/s3-service";
 import * as sharp from 'sharp';
 import { v4 as uuidv4 } from 'uuid';
-import { BlogsQueryRepo } from "../../repo/blogs.query.repository";
-import { BlogsRepository } from "../../repo/blogs.repository";
 import { ResultCode } from "../../../../common/types/types";
 import { ImageType } from "../../types/types";
+import { PostsRepository } from "../../../posts/repo/posts.repository";
+import { PostsQueryRepo } from "../../../posts/repo/posts.query.repository";
 
 
-export class UploadBlogImageCommand implements ICommand {
+export class UploadPostImageCommand implements ICommand {
     constructor(
         public readonly file: Express.Multer.File, 
         public readonly blogId: string,
+        public readonly postId: string,
         public readonly userId: string
     ) {}
 }
 
 
-@CommandHandler(UploadBlogImageCommand)
-export class UploadBlogImageUseCase implements ICommandHandler<UploadBlogImageCommand> {
+@CommandHandler(UploadPostImageCommand)
+export class UploadPostImageUseCase implements ICommandHandler<UploadPostImageCommand> {
     constructor(protected s3Service: S3Service,
-                protected blogsQueryRepo: BlogsQueryRepo,
-                protected blogsRepository: BlogsRepository,
+                protected postsRepository: PostsRepository,
+                protected postsQueryRepo: PostsQueryRepo
     ){}
 
-    async execute(command: UploadBlogImageCommand){
-        const { file, blogId, userId } = command;
+    async execute(command: UploadPostImageCommand){
+        const { file, blogId, postId, userId } = command;
 
         if (!file) throw new BadRequestException('No file uploaded');
 
-        const blog = await this.blogsQueryRepo.findBlogById(blogId);
-        if(!blog) return { code: ResultCode.Failed };
-        if(blog && blog.ownerId !== userId) return { code: ResultCode.Forbidden };
+        const post = await this.postsQueryRepo.getPostForChange(blogId, postId);
+        if(!post) return { code: ResultCode.Failed };
+        if(post && post.ownerId !== userId) return { code: ResultCode.Forbidden };
 
         //Image types and their dimensions
         const imageConfigs = [
             { sizeName: 'original', width: null, height: null }, // original size
-            { sizeName: 'middle', width: 100, height: 100 },
-            { sizeName: 'small', width: 50, height: 50 },
+            { sizeName: 'middle', width: 620, height: 220 },
+            { sizeName: 'small', width: 310, height: 110 },
         ];
 
         const uploadResults = await Promise.all(imageConfigs.map(config => 
-            this.processAndUploadImage(file, blogId, config.sizeName, config.width, config.height)
+            this.processAndUploadImage(file, postId, config.sizeName, config.width, config.height)
         ));
 
         if (uploadResults.some(result => result.uploadFailed)) {
@@ -55,16 +56,13 @@ export class UploadBlogImageUseCase implements ICommandHandler<UploadBlogImageCo
         // Insert into DB
         for (const result of uploadResults) {
             const { url, width, height, fileSize, sizeName } = result;
-            const image = this.createImage(blogId, url!, width!, height!, fileSize!, sizeName!);
-            const insertedImageDb = await this.blogsRepository.upsertBlogImage(image);
+            const image = this.createImage(postId, url!, width!, height!, fileSize!, sizeName!);
+            const insertedImageDb = await this.postsRepository.upsertPostImage(image);
             if (!insertedImageDb) return { code: ResultCode.Failed };
         }
 
         // Fetch and return result
-        const wallpaperImage = await this.blogsQueryRepo.getBlogWallpaperImage(blogId);
-
         const resultObject = {
-            "wallpaper": wallpaperImage,
             "main": uploadResults.map(result => ({
                 url: result.url,
                 width: result.width,
@@ -73,11 +71,11 @@ export class UploadBlogImageUseCase implements ICommandHandler<UploadBlogImageCo
             }))
         };
 
-        return { code: ResultCode.Success, data: resultObject };     
+        return { code: ResultCode.Success, data: resultObject };      
     }
 
-    private async processAndUploadImage(file: Express.Multer.File, blogId: string, sizeName: string, width: number | null, height: number | null) {
-        const imageKey = `content/blogs/${blogId}/images/${sizeName}.png`;
+    private async processAndUploadImage(file: Express.Multer.File, postId: string, sizeName: string, width: number | null, height: number | null) {
+        const imageKey = `content/posts/${postId}/images/${sizeName}.png`;
 
         let imageBuffer = file.buffer;
         let fileSize = file.size;
@@ -104,11 +102,11 @@ export class UploadBlogImageUseCase implements ICommandHandler<UploadBlogImageCo
         };
     }
 
-    private createImage(blogId: string, url: string, width: number, 
+    private createImage(postId: string, url: string, width: number, 
         height: number, fileSize: number, imageType: string ):ImageType{
         return {
             id: uuidv4(),
-            blogId,
+            postId,
             url,
             width,
             height,

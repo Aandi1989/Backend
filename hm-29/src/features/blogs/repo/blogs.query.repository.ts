@@ -163,9 +163,9 @@ export class BlogsQueryRepo {
         const query = `
             SELECT url, width, height, "fileSize"
             FROM public."BlogImages"
-            WHERE "blogId" = '${blogId}' AND "imageType" IN ('original', 'middle', 'small'); 
+            WHERE "blogId" = $1 AND "imageType" IN ('original', 'middle', 'small'); 
         `;
-        const result = await this.dataSourse.query(query);
+        const result = await this.dataSourse.query(query, [blogId]);
         return result;
     }
 
@@ -173,9 +173,9 @@ export class BlogsQueryRepo {
         const query = `
             SELECT url, width, height, "fileSize"
             FROM public."BlogImages"
-            WHERE "blogId" = '${blogId}' AND "imageType" = 'wallpaper';
+            WHERE "blogId" = $1 AND "imageType" = 'wallpaper';
         `;
-        const result = await this.dataSourse.query(query);
+        const result = await this.dataSourse.query(query, [blogId]);
         return result;
     }
 }
