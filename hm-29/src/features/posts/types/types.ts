@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import { ImageInfoType } from "../../../common/types/types";
 
 export class PostSQL {
     id: string
@@ -8,6 +9,10 @@ export class PostSQL {
     blogId: string
     blogName?: string
     createdAt: string
+    url?: string
+    width?: number
+    height?: number
+    fileSize?: number
 }
 
 export class PostType  {
@@ -21,7 +26,15 @@ export class PostType  {
     extendedLikesInfo: ExtendedLikeInfoType | {}
 }
 
+export class PostWithImagesType extends PostType {
+    images?: {
+        main: ImageInfoType[]
+    }
+}
+
 export type PostExtLikeInfoDict = Record<string, ExtendedLikeInfoType>
+
+export type ImageDict = Record<string, ImageInfoType[]>
 
 type ExtendedLikeInfoType = {
     likesCount: number

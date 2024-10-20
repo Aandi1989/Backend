@@ -5,6 +5,7 @@ import { PostsWithQueryOutputModel } from "../api/models/output/post.output.mode
 import { PostQueryOutputType, PostType } from "../types/types";
 import { likeExtraInfoMapper } from "../../../common/helpers/likeExtraInfoMapper";
 import { postMapper } from "../../../common/helpers/postMapper";
+import { mainImagesMapper } from "../../../common/helpers/imageMapper";
 
 
 @Injectable()
@@ -54,8 +55,15 @@ export class PostsQueryRepo {
             ORDER BY likes."createdAt" DESC
         `;
         const likes = await this.dataSourse.query(likesQuery, [postIds]);
+        const imagesQuery = `
+            SELECT "postId" ,url, width, height, "fileSize"
+            FROM public."PostImages"
+            WHERE "postId" = ANY($1)
+        `;
+        const images = await this.dataSourse.query(imagesQuery, [postIds]);
+        const imagesOutput = mainImagesMapper(images);
         const likesOutput = likeExtraInfoMapper(likes, userId);
-        const postsOutput = postMapper(posts, likesOutput);
+        const postsOutput = postMapper(posts, likesOutput, imagesOutput);
         const pagesCount = Math.ceil(totalCount / pageSize);
 
         return {
@@ -89,8 +97,15 @@ export class PostsQueryRepo {
             ORDER BY likes."createdAt" DESC
         `;
         const likes = await this.dataSourse.query(likesQuery, [id]);
+        const imagesQuery = `
+            SELECT "postId" ,url, width, height, "fileSize"
+            FROM public."PostImages"
+            WHERE "postId" = $1
+        `;
+        const images = await this.dataSourse.query(imagesQuery, [id]);
+        const imagesOutput = mainImagesMapper(images);
         const likesOutput = likeExtraInfoMapper(likes, userId);
-        const postOutput = postMapper(posts, likesOutput)[0];
+        const postOutput = postMapper(posts, likesOutput, imagesOutput)[0];
 
         return postOutput;
     }
@@ -138,8 +153,16 @@ export class PostsQueryRepo {
             ORDER BY likes."createdAt" DESC
         `;
         const likes = await this.dataSourse.query(likesQuery, [postIds]);
+
+        const imagesQuery = `
+            SELECT "postId" ,url, width, height, "fileSize"
+            FROM public."PostImages"
+            WHERE "postId" = ANY($1)
+        `;
+        const images = await this.dataSourse.query(imagesQuery, [postIds]);
+        const imagesOutput = mainImagesMapper(images);
         const likesOutput = likeExtraInfoMapper(likes, userId);
-        const postsOutput = postMapper(posts, likesOutput);
+        const postsOutput = postMapper(posts, likesOutput, imagesOutput);
         const pagesCount = Math.ceil(totalCount / pageSize);
 
         return {

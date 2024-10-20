@@ -29,9 +29,13 @@ export type ErrorType = {
     field: string
 }
 
-export type ImageInfoType = {
+export interface ImageInfoType {
     url: string
     width: number
     height: number
     fileSize: number
+}
+
+export interface ImageWithPostIdType extends ImageInfoType {
+    postId: string
 }

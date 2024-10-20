@@ -3,6 +3,7 @@ import { BlogQueryOutputType, BlogType } from '../types/types';
 import { BlogsWithQueryOutputModel } from '../api/models/output/blog.output.model';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { blogsOutputModel } from '../../../common/helpers/blogsWithImagesOutputModel';
 
 @Injectable()
 export class BlogsQueryRepo {
@@ -23,8 +24,11 @@ export class BlogsQueryRepo {
         const totalCount = parseInt(totalCountResult[0].count);
         // postgres doesnt allow use as params names of columns that is why we validate sortBy in function blogQueryParams
         const mainQuery = `
-            SELECT id, name, description, "websiteUrl", "isMembership", "createdAt"
-            FROM public."Blogs"
+            SELECT b.id, b.name, b.description, b."websiteUrl", b."isMembership", 
+                b."createdAt", bi.url, bi.width, bi.height, bi."fileSize", bi."imageType"
+            FROM public."Blogs" as b
+            LEFT JOIN public."BlogImages" as bi
+                ON b.id = bi."blogId"
             WHERE name ILIKE $1 AND "isBanned" = false
             ORDER BY "${sortBy}" ${sortDir}
             LIMIT $2
@@ -32,13 +36,14 @@ export class BlogsQueryRepo {
         `;
 
         const blogs = await this.dataSourse.query(mainQuery, [searchTermParam, pageSize, offset]);
+        const blogsOutput = blogsOutputModel(blogs);
         const pagesCount = Math.ceil(totalCount / pageSize);
         return {
             pagesCount: pagesCount,
             page: pageNumber,
             pageSize: pageSize,
             totalCount: totalCount,
-            items: blogs
+            items: blogsOutput
         };
     }
 
@@ -97,8 +102,11 @@ export class BlogsQueryRepo {
         const totalCount = parseInt(totalCountResult[0].count);
         // postgres doesnt allow use as params names of columns that is why we validate sortBy in function blogQueryParams
         const mainQuery = `
-            SELECT "id", "name", "description", "websiteUrl", "createdAt", "isMembership" 
-            FROM public."Blogs"
+            SELECT b."id", b."name", b."description", b."websiteUrl", b."createdAt", 
+                b."isMembership", bi.url, bi.width, bi.height, bi."fileSize", bi."imageType"
+            FROM public."Blogs" as b
+            LEFT JOIN public."BlogImages" as bi
+                ON b.id = bi."blogId"
             WHERE name ILIKE $1
             AND "ownerId" = $2
             ORDER BY "${sortBy}" ${sortDir}
@@ -107,13 +115,14 @@ export class BlogsQueryRepo {
         `;
 
         const blogs = await this.dataSourse.query(mainQuery, [searchTermParam, userId, pageSize, offset]);
+        const blogsOutput = blogsOutputModel(blogs);
         const pagesCount = Math.ceil(totalCount / pageSize);
         return {
             pagesCount: pagesCount,
             page: pageNumber,
             pageSize: pageSize,
             totalCount: totalCount,
-            items: blogs
+            items: blogsOutput
         };
     }
 
@@ -140,12 +149,16 @@ export class BlogsQueryRepo {
 
     async findBlogWithoutOwnerIdById(id: string): Promise<BlogType> {
         const query =
-            `SELECT "id", "name", "description", "websiteUrl", "createdAt", "isMembership"
-            FROM public."Blogs" as blogs
-            WHERE blogs."id" = $1 AND "isBanned" = false`
+            `SELECT b."id", b."name", b."description", b."websiteUrl", b."createdAt", 
+                b."isMembership", bi.url, bi.width, bi.height, bi."fileSize", bi."imageType"
+            FROM public."Blogs" as b
+            LEFT JOIN public."BlogImages" as bi
+                ON b.id = bi."blogId"
+            WHERE b."id" = $1 AND b."isBanned" = false`
         ;
         const result = await this.dataSourse.query(query, [id]);
-        return result[0];
+        const blogsOutput = blogsOutputModel(result);
+        return blogsOutput[0];
     }
 
     async isBannedBlog(userId: string, blogId: string){

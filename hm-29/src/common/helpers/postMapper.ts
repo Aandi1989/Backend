@@ -1,9 +1,9 @@
-import { PostExtLikeInfoDict, PostSQL, PostType } from "../../features/posts/types/types";
+import { ImageDict, PostExtLikeInfoDict, PostSQL, PostType, PostWithImagesType } from "../../features/posts/types/types";
 
-export function postMapper(posts: PostSQL[], likes: PostExtLikeInfoDict): PostType[]{
+export function postMapper(posts: PostSQL[], likes: PostExtLikeInfoDict, images: ImageDict): PostType[]{
     const outputPosts: PostType[] = [];
     posts.forEach(post => {
-        let outputPost:PostType  = {
+        let outputPost:PostWithImagesType  = {
             id: post.id,
             title: post.title,
             shortDescription: post.shortDescription,
@@ -19,7 +19,10 @@ export function postMapper(posts: PostSQL[], likes: PostExtLikeInfoDict): PostTy
                     dislikesCount: 0,
                     myStatus: 'None',
                     newestLikes: []
-                  }
+                  },
+            images:{
+                main: images[post.id] ? images[post.id] : []
+            }
         }
         outputPosts.push(outputPost);
     })
