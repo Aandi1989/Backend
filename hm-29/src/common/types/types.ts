@@ -39,3 +39,8 @@ export interface ImageInfoType {
 export interface ImageWithPostIdType extends ImageInfoType {
     postId: string
 }
+
+export interface ImageWithBlogIdType extends ImageInfoType {
+    blogId: string
+    imageType: string
+}

@@ -4,6 +4,8 @@ import { BlogsWithQueryOutputModel } from '../api/models/output/blog.output.mode
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { blogsOutputModel } from '../../../common/helpers/blogsWithImagesOutputModel';
+import { blogImagesMapper } from '../../../common/helpers/imageMapper';
+import { blogsMapper } from '../../../common/helpers/blogMappers';
 
 @Injectable()
 export class BlogsQueryRepo {
@@ -24,19 +26,22 @@ export class BlogsQueryRepo {
         const totalCount = parseInt(totalCountResult[0].count);
         // postgres doesnt allow use as params names of columns that is why we validate sortBy in function blogQueryParams
         const mainQuery = `
-            SELECT b.id, b.name, b.description, b."websiteUrl", b."isMembership", 
-                b."createdAt", bi.url, bi.width, bi.height, bi."fileSize", bi."imageType"
+            SELECT b.id, b.name, b.description, b."websiteUrl", b."isMembership", b."createdAt"
             FROM public."Blogs" as b
-            LEFT JOIN public."BlogImages" as bi
-                ON b.id = bi."blogId"
             WHERE name ILIKE $1 AND "isBanned" = false
             ORDER BY "${sortBy}" ${sortDir}
             LIMIT $2
             OFFSET $3
         `;
-
         const blogs = await this.dataSourse.query(mainQuery, [searchTermParam, pageSize, offset]);
-        const blogsOutput = blogsOutputModel(blogs);
+        
+        const imagesQuery = `
+            SELECT "blogId" ,url, width, height, "fileSize", "imageType"
+            FROM public."BlogImages"
+        `;
+        const images = await this.dataSourse.query(imagesQuery);
+        const imagesOutput = blogImagesMapper(images);
+        const blogsOutput = blogsMapper(blogs, imagesOutput);
         const pagesCount = Math.ceil(totalCount / pageSize);
         return {
             pagesCount: pagesCount,

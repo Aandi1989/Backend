@@ -41,8 +41,8 @@ export class UploadPostImageUseCase implements ICommandHandler<UploadPostImageCo
         //Image types and their dimensions
         const imageConfigs = [
             { sizeName: 'original', width: null, height: null }, // original size
-            { sizeName: 'middle', width: 620, height: 220 },
-            { sizeName: 'small', width: 310, height: 110 },
+            { sizeName: 'middle', width: 300, height: 180 },
+            { sizeName: 'small', width: 149, height: 96 },
         ];
 
         const uploadResults = await Promise.all(imageConfigs.map(config => 

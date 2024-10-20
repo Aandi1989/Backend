@@ -5,22 +5,26 @@ import { Express } from 'express';
 @Injectable()
 export class PostImageValidationPipe implements PipeTransform {
     async transform(file: Express.Multer.File) {
+        const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        if (!allowedMimeTypes.includes(file.mimetype)) {
+            throw new BadRequestException('File type must be png, jpg, or jpeg');
+        }
+
         if (file.size > 100 * 1024) { // 100 KB in bytes
             throw new BadRequestException('File size exceeds 100 KB');
         }
 
-        const metadata = await sharp(file.buffer).metadata();
-        const format = metadata.format;
-
-        const allowedFormats = ['jpeg', 'png', 'jpg'];
-        
-        if (typeof format !== 'string' || !allowedFormats.includes(format)) {
-            throw new BadRequestException('File type must be png, jpg, or jpeg');
+        let metadata;
+        try {
+            metadata = await sharp(file.buffer).metadata();
+        } catch (error) {
+            throw new BadRequestException('Invalid image file');
         }
+        
 
         const { width, height } = metadata;
 
-        if (width! > 940 || height! > 432) {
+        if (width! != 940 || height! != 432) {
             throw new BadRequestException(`Image must be 940x432px for post image.`);
         }
 

@@ -40,8 +40,8 @@ export class UploadBlogImageUseCase implements ICommandHandler<UploadBlogImageCo
         //Image types and their dimensions
         const imageConfigs = [
             { sizeName: 'original', width: null, height: null }, // original size
-            { sizeName: 'middle', width: 100, height: 100 },
-            { sizeName: 'small', width: 50, height: 50 },
+            { sizeName: 'middle', width: 300, height: 180 },
+            { sizeName: 'small', width: 149, height: 96 },
         ];
 
         const uploadResults = await Promise.all(imageConfigs.map(config => 
@@ -64,13 +64,19 @@ export class UploadBlogImageUseCase implements ICommandHandler<UploadBlogImageCo
         const wallpaperImage = await this.blogsQueryRepo.getBlogWallpaperImage(blogId);
 
         const resultObject = {
-            "wallpaper": wallpaperImage,
-            "main": uploadResults.map(result => ({
-                url: result.url,
-                width: result.width,
-                height: result.height,
-                fileSize: result.fileSize
-            }))
+            "wallpaper": wallpaperImage.length ? wallpaperImage : null,
+            // "main": uploadResults.map(result => ({
+            //     url: result.url,
+            //     width: result.width,
+            //     height: result.height,
+            //     fileSize: result.fileSize
+            // }))
+            "main": [{
+                url: uploadResults[0].url,
+                width: uploadResults[0].width,
+                height: uploadResults[0].height,
+                fileSize: uploadResults[0].fileSize,
+            }]
         };
 
         return { code: ResultCode.Success, data: resultObject };     

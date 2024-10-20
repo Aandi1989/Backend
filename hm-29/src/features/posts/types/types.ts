@@ -36,6 +36,13 @@ export type PostExtLikeInfoDict = Record<string, ExtendedLikeInfoType>
 
 export type ImageDict = Record<string, ImageInfoType[]>
 
+export type BlogImageDict = Record<string, BlogMainImageInfoType>
+
+type BlogMainImageInfoType = {
+    wallpaper: ImageInfoType | null,
+    main: ImageInfoType[]
+}
+
 type ExtendedLikeInfoType = {
     likesCount: number
     dislikesCount: number

@@ -1,5 +1,5 @@
-import { ImageDict } from "../../features/posts/types/types";
-import { ImageWithPostIdType } from "../types/types";
+import { BlogImageDict, ImageDict } from "../../features/posts/types/types";
+import { ImageWithBlogIdType, ImageWithPostIdType } from "../types/types";
 
 export function mainImagesMapper(images: ImageWithPostIdType[]){
     let imagesInfo: ImageDict = {};
@@ -19,6 +19,35 @@ export function mainImagesMapper(images: ImageWithPostIdType[]){
                     width: image.width,
                     height: image.height,
                     fileSize: image.fileSize
+            })
+        }
+    })
+    return imagesInfo;
+}
+
+export function blogImagesMapper(images: ImageWithBlogIdType[]){
+    let imagesInfo: BlogImageDict = {};
+    images.forEach(image => {
+        if(!imagesInfo[image.blogId]){
+            imagesInfo[image.blogId] = {
+                wallpaper: null,
+                main: []
+            }
+        }
+
+        if(image.imageType == 'wallpaper'){
+            imagesInfo[image.blogId].wallpaper = {
+                url: image.url,
+                width: image.width,
+                height: image.height,
+                fileSize: image.fileSize
+            }
+        }else{
+            imagesInfo[image.blogId].main.push({
+                url: image.url,
+                width: image.width,
+                height: image.height,
+                fileSize: image.fileSize
             })
         }
     })
