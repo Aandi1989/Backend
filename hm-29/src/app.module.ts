@@ -14,6 +14,7 @@ import { PostsModule } from './features/posts/post.module';
 import { QuestionsModule } from './features/question/question.module';
 import { SessionsModule } from './features/security/session.module';
 import { UsersModule } from './features/users/user.module';
+import { TelegramModule } from './features/telegram/telegram.module';
 
 
 @Module({
@@ -50,6 +51,7 @@ import { UsersModule } from './features/users/user.module';
     DeleteAllModule,
     QuestionsModule,
     GameModule,
+    TelegramModule,
   ]
 })
 export class AppModule { }

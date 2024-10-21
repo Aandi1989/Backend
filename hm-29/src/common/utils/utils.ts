@@ -19,6 +19,7 @@ export const RouterPaths = {
   comments: 'comments',
   auth: 'auth',
   security: 'security',
+  telegram: 'integrations/telegram',
   testingAllData: 'testing/all-data',
 
   quizQuestion: 'sa/quiz/questions',

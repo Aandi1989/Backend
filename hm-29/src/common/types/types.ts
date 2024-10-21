@@ -40,6 +40,16 @@ export interface ImageWithPostIdType extends ImageInfoType {
     postId: string
 }
 
+export type TelegramUpdateMessage = {
+    message: {
+        from: {
+            id: number,
+            first_name: string;
+        },
+        text: string
+    }
+}
+
 export interface ImageWithBlogIdType extends ImageInfoType {
     blogId: string
     imageType: string

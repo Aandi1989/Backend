@@ -49,6 +49,9 @@ enum Environments {
         YANDEX_SECRET_ACCESS_KEY: environmentVariables.YANDEX_SECRET_ACCESS_KEY!,
         YANDEX_ACCESS_KEY_ID: environmentVariables.YANDEX_ACCESS_KEY_ID!,
       },
+      telegramApi:{
+        TELEGRAM_API: environmentVariables.TELEGRAM_API!,
+      },
   
       environmentSettings: {
         currentEnv: currentEnvironment,

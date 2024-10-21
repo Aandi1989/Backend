@@ -41,6 +41,9 @@ import { UploadBlogImageCommand } from "../application/use-case/upload-blog-imag
 import { PostImageValidationPipe } from "../../../common/pipes/postImage-validation-pipe";
 import { BlogPostParams } from "../../posts/api/models/input/blog-post.params.model";
 import { UploadPostImageCommand } from "../application/use-case/upload-post-image.use-case";
+import axios from "axios";
+import config from '../../../common/settings/configuration';
+
 
 
 
@@ -58,7 +61,7 @@ export class BloggerController {
     async createBlog (@Req() req: Request, @Body() body: CreateBlogModel): Promise<BlogType>{
         return await this.commandBus.execute(new CreateBlogCommand(body, req.user!));
     }
-
+    
     @UseGuards(AuthGuard) 
     @HttpCode(HTTP_STATUSES.NO_CONTENT_204)
     @Put('blogs/:id')
