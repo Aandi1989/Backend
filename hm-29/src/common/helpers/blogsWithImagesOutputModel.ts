@@ -1,7 +1,6 @@
 export function blogsOutputModel(arr){
     let result : any = [];
     let addedBlogs = {};
-    const mainImageType = ['original', 'middle', 'small'];
 
     for(const blog of arr){
         let blogWithImages = addedBlogs[blog.id]
@@ -29,7 +28,7 @@ export function blogsOutputModel(arr){
                 fileSize: blog.fileSize
             }
         }
-        if(blog.imageType && mainImageType.includes(blog.imageType)){
+        if(blog.imageType == "original"){
             blogWithImages.images.main.push({
                 url: blog.url,
                 width: blog.width,

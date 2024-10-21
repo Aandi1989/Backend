@@ -42,7 +42,7 @@ export function blogImagesMapper(images: ImageWithBlogIdType[]){
                 height: image.height,
                 fileSize: image.fileSize
             }
-        }else{
+        }else if(image.imageType == 'original'){
             imagesInfo[image.blogId].main.push({
                 url: image.url,
                 width: image.width,

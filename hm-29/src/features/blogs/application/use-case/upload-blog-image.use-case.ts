@@ -65,12 +65,6 @@ export class UploadBlogImageUseCase implements ICommandHandler<UploadBlogImageCo
 
         const resultObject = {
             "wallpaper": wallpaperImage.length ? wallpaperImage : null,
-            // "main": uploadResults.map(result => ({
-            //     url: result.url,
-            //     width: result.width,
-            //     height: result.height,
-            //     fileSize: result.fileSize
-            // }))
             "main": [{
                 url: uploadResults[0].url,
                 width: uploadResults[0].width,
