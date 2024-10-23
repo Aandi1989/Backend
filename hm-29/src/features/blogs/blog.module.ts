@@ -23,13 +23,18 @@ import { DeleteImageUseCase } from "./application/use-case/delete-blog-image.use
 import { S3Service } from "../../common/services/s3-service";
 import { UploadBlogImageUseCase } from "./application/use-case/upload-blog-image.use-case";
 import { UploadPostImageUseCase } from "./application/use-case/upload-post-image.use-case";
+import { SubscribeBlogUseCase } from "./application/use-case/subscribe-blog.use-case";
+import { UnsubscribeBlogUseCase } from "./application/use-case/unsubscribe-blog.use-case";
+import { PostNotificationUseCase } from "./application/use-case/post-notification.use-case";
+import { TelegramService } from "../../common/services/telegram-service";
 
 @Module({
     imports:[ TypeOrmModule.forFeature(), CqrsModule, UsersModule, PostsModule, CommentsModule],
     providers:[BlogsRepository, BlogsQueryRepo, CreateblogUseCase, DeleteBlogUseCase, UpdateBlogUseCase,
         UpdateOwnBlogUseCase, DeleteOwnBlogUseCase, UpdateOwnPostUseCase, DeleteOwnPostUseCase, 
         GetSaBlogsUseCase, UploadBlogWallpaperUseCase, DeleteImageUseCase, UploadBlogImageUseCase,
-        UploadPostImageUseCase, JwtService, S3Service
+        UploadPostImageUseCase, SubscribeBlogUseCase, UnsubscribeBlogUseCase, PostNotificationUseCase,
+        TelegramService, JwtService, S3Service
     ],
     controllers:[BlogsController, BlogsSAController, BloggerController],
     exports: [BlogsRepository, BlogsQueryRepo]

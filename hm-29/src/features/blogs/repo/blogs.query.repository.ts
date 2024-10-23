@@ -196,4 +196,16 @@ export class BlogsQueryRepo {
         const result = await this.dataSourse.query(query, [blogId]);
         return result;
     }
+
+    async getBlogSubscribers(blogId: string){
+        const sql = `
+            SELECT bs."userId", u."telegram_id"
+            FROM public."BlogSubscribers" as bs
+            LEFT JOIN public."Users" as u
+                ON  bs."userId" = u."id"
+            WHERE bs."blogId" = '${blogId}'
+        `;
+        const result = await this.dataSourse.query(sql);
+        return result;
+    }
 }

@@ -6,10 +6,11 @@ import { TelegramController } from "./api/telegram.controller";
 import { UsersModule } from "../users/user.module";
 import { UsersQueryRepo } from "../users/repo/users.query.repository";
 import { TelegramService } from "../../common/services/telegram-service";
+import { HandleTelegramUpdatesUseCase } from "./application/use-cases/handle-telegram-updates.use-cases";
 
 @Module({
     imports:[ TypeOrmModule.forFeature(), CqrsModule, UsersModule],
-    providers:[ UsersQueryRepo, JwtService, TelegramService],
+    providers:[ UsersQueryRepo, JwtService, TelegramService, HandleTelegramUpdatesUseCase],
     controllers:[TelegramController],
     exports: []
 })

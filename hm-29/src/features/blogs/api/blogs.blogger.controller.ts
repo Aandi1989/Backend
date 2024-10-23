@@ -41,8 +41,7 @@ import { UploadBlogImageCommand } from "../application/use-case/upload-blog-imag
 import { PostImageValidationPipe } from "../../../common/pipes/postImage-validation-pipe";
 import { BlogPostParams } from "../../posts/api/models/input/blog-post.params.model";
 import { UploadPostImageCommand } from "../application/use-case/upload-post-image.use-case";
-import axios from "axios";
-import config from '../../../common/settings/configuration';
+import { PostNotificationCommand } from "../application/use-case/post-notification.use-case";
 
 
 
@@ -95,7 +94,9 @@ export class BloggerController {
         const foundBlog = await this.blogsQueryRepo.findBlogById(blogId);
         if(!foundBlog) throw new NotFoundException();
         if(foundBlog.ownerId != req.user!.id) throw new ForbiddenException();
-        return await this.commandBus.execute(new CreatePostForBlogCommand(body, blogId));
+        const createdPost = await this.commandBus.execute(new CreatePostForBlogCommand(body, blogId));
+        if(createdPost) await this.commandBus.execute(new PostNotificationCommand(blogId, createdPost.blogName));
+        return createdPost;
     }
 
     @UseGuards(AuthGuard)

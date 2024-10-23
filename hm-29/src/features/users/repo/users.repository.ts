@@ -44,6 +44,25 @@ export class UsersRepository {
     const result = await this.dataSourse.query(sql, [userId]);
     return result[1] === 1;
   }
+  async saveTelegramActivationCode(userId: string, code: string){
+    const sql = `
+      UPDATE public."Users"
+      SET "telegramCode" = '${code}'
+      WHERE id = '${userId}'
+    `;
+
+    const result = await this.dataSourse.query(sql);
+    return result[1] === 1;
+  }
+  async saveUserTelegramId(userId: string, telegramId: number){
+    const sql = `
+      UPDATE public."Users"
+      SET "telegram_id" = '${telegramId}'
+      WHERE id = '${userId}'
+    `;
+    const result = await this.dataSourse.query(sql);
+    return result[1] === 1;
+  }
   async deleteUser(id: string): Promise<boolean> {
     const query =
       `DELETE FROM public."Users"

@@ -1,4 +1,3 @@
-// src/common/services/s3.service.ts
 import { Injectable } from '@nestjs/common';
 import config from '../settings/configuration';
 import axios, { AxiosInstance } from 'axios';
@@ -11,7 +10,7 @@ export class TelegramService {
 
     constructor() {
         this.token = config().telegramApi.TELEGRAM_API;
-        this.serveoUrl = 'https://0a37b9215bebf8809af690e822ae0386.serveo.net'; /*url of serveo*/
+        this.serveoUrl = 'https://01180a8d966aef.lhr.life'; /*url of serveo*/
         this.axiosInstance = axios.create({
             baseURL:`https://api.telegram.org/bot${this.token}/`,
         });

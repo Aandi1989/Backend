@@ -8,10 +8,13 @@ import { DeleteUserUseCase } from "./application/use-cases/delete-user.use-case"
 import { UsersRepository } from "./repo/users.repository";
 import { JwtService } from "../../common/services/jwt-service";
 import { SessionsModule } from "../security/session.module";
+import { SaveUserTelegramIdUseCase } from "./application/use-cases/save-telegram-id.use-case";
+import { SaveTelegramCodeUseCase } from "./application/use-cases/save-telegram-code.use-case";
 
 @Module({
     imports:[ TypeOrmModule.forFeature(), SessionsModule, CqrsModule],
-    providers:[UsersQueryRepo, UsersRepository, CreateUserUseCase, DeleteUserUseCase, JwtService],
+    providers:[UsersQueryRepo, UsersRepository, CreateUserUseCase, DeleteUserUseCase,
+        SaveUserTelegramIdUseCase, SaveTelegramCodeUseCase ,JwtService],
     controllers:[UsersController],
     exports: [UsersQueryRepo, UsersRepository, TypeOrmModule.forFeature()]
 })

@@ -151,6 +151,24 @@ export class BlogsRepository {
         }
     }
 
+    async subscribeBlog(userId: string, blogId: string){
+        const sql = `
+            INSERT INTO public."BlogSubscribers"("userId", "blogId")
+            VALUES($1, $2);
+        `;
+        const result = await this.dataSourse.query(sql, [userId, blogId]);
+        return result;
+    }
+
+    async unsubscribeBlog(userId: string, blogId: string){
+        const sql = `
+            DELETE FROM public."BlogSubscribers"
+            WHERE "userId" = $1 AND "blogId" = $2
+        `;
+        const result = await this.dataSourse.query(sql, [userId, blogId]);
+        return result;
+    }
+
     async deleteAllData() {
         const queryBlogs = `DELETE FROM public."Blogs"`;
         const queryBlogBans = `DELETE FROM public."BlogBans"`;

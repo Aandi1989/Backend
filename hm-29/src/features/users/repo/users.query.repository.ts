@@ -97,15 +97,6 @@ export class UsersQueryRepo {
         return this._mapUserForBannedUserInfo(user)
       })
     }
-    return {
-      pagesCount: pagesCount,
-      page: pageNumber,
-      pageSize: pageSize,
-      totalCount: totalCount,
-      items: users.map(user => {
-        return this._mapAccountToUserOutputType(user)
-      })
-    };
   }
   async getUserById(id: string): Promise<UserOutputModel | null> {
     const query =
@@ -139,6 +130,15 @@ export class UsersQueryRepo {
       `;
     const result = await this.dataSourse.query(query, [ids]);
     return result;
+  }
+  async getUserByTelegramCode(code: string){
+    const sql = `
+      SELECT *
+      FROM public."Users"
+      WHERE "telegramCode" = '${code}'
+    `;
+    const result = await this.dataSourse.query(sql);
+    return result[0];
   }
   _mapAccountToUserAuthType(user: Account): UserAuthOutputModel {
     return {
