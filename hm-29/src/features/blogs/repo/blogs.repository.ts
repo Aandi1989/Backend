@@ -153,8 +153,12 @@ export class BlogsRepository {
 
     async subscribeBlog(userId: string, blogId: string){
         const sql = `
-            INSERT INTO public."BlogSubscribers"("userId", "blogId")
-            VALUES($1, $2);
+            INSERT INTO public."BlogSubscribers"("userId", "blogId", "status")
+            VALUES($1, $2, 'Subscribed')
+            ON CONFLICT ("userId", "blogId")
+            DO UPDATE SET
+                status = EXCLUDED.status
+            RETURNING *;
         `;
         const result = await this.dataSourse.query(sql, [userId, blogId]);
         return result;
@@ -162,7 +166,8 @@ export class BlogsRepository {
 
     async unsubscribeBlog(userId: string, blogId: string){
         const sql = `
-            DELETE FROM public."BlogSubscribers"
+            UPDATE public."BlogSubscribers"
+            SET "status" = 'Unsubscribed'
             WHERE "userId" = $1 AND "blogId" = $2
         `;
         const result = await this.dataSourse.query(sql, [userId, blogId]);

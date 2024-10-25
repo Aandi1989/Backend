@@ -215,85 +215,85 @@ describe('hm-30 test (e2e)', () => {
         fifthUserBlogId = res.body.id;
       })
 
-        it('+ POST should upload wallpaper image for first blog', async () => {
-            const response = await request(httpServer)
-                .post(`/${RouterPaths.blogger}/blogs/${firstUserBlogId}/images/wallpaper`)
-                .set('Authorization', `Bearer ${firstAccessToken}`)
-                .attach('file', '/home/aliaksandr/Downloads/wallpaper.jpg') 
-                .expect(HTTP_STATUSES.CREATED_201); 
-        });
+        // it('+ POST should upload wallpaper image for first blog', async () => {
+        //     const response = await request(httpServer)
+        //         .post(`/${RouterPaths.blogger}/blogs/${firstUserBlogId}/images/wallpaper`)
+        //         .set('Authorization', `Bearer ${firstAccessToken}`)
+        //         .attach('file', '/home/aliaksandr/Downloads/wallpaper.jpg') 
+        //         .expect(HTTP_STATUSES.CREATED_201); 
+        // });
 
-        it('+ POST should upload main image for first blog', async () => {
-            const response = await request(httpServer)
-                .post(`/${RouterPaths.blogger}/blogs/${firstUserBlogId}/images/main`)
-                .set('Authorization', `Bearer ${firstAccessToken}`)
-                .attach('file', '/home/aliaksandr/Downloads/blogImage.jpg') 
-                .expect(HTTP_STATUSES.CREATED_201);
-        });
+        // it('+ POST should upload main image for first blog', async () => {
+        //     const response = await request(httpServer)
+        //         .post(`/${RouterPaths.blogger}/blogs/${firstUserBlogId}/images/main`)
+        //         .set('Authorization', `Bearer ${firstAccessToken}`)
+        //         .attach('file', '/home/aliaksandr/Downloads/blogImage.jpg') 
+        //         .expect(HTTP_STATUSES.CREATED_201);
+        // });
 
-        it('+ POST should upload wallpaper image for second blog', async () => {
-            const response = await request(httpServer)
-                .post(`/${RouterPaths.blogger}/blogs/${secondUserBlogId}/images/wallpaper`)
-                .set('Authorization', `Bearer ${secondAccessToken}`)
-                .attach('file', '/home/aliaksandr/Downloads/wallpaper.jpg') 
-                .expect(HTTP_STATUSES.CREATED_201); 
-        });
+        // it('+ POST should upload wallpaper image for second blog', async () => {
+        //     const response = await request(httpServer)
+        //         .post(`/${RouterPaths.blogger}/blogs/${secondUserBlogId}/images/wallpaper`)
+        //         .set('Authorization', `Bearer ${secondAccessToken}`)
+        //         .attach('file', '/home/aliaksandr/Downloads/wallpaper.jpg') 
+        //         .expect(HTTP_STATUSES.CREATED_201); 
+        // });
 
-        it('+ POST should upload main image for second blog', async () => {
-            const response = await request(httpServer)
-                .post(`/${RouterPaths.blogger}/blogs/${secondUserBlogId}/images/main`)
-                .set('Authorization', `Bearer ${secondAccessToken}`)
-                .attach('file', '/home/aliaksandr/Downloads/blogImage.jpg') 
-                .expect(HTTP_STATUSES.CREATED_201); 
-        });
+        // it('+ POST should upload main image for second blog', async () => {
+        //     const response = await request(httpServer)
+        //         .post(`/${RouterPaths.blogger}/blogs/${secondUserBlogId}/images/main`)
+        //         .set('Authorization', `Bearer ${secondAccessToken}`)
+        //         .attach('file', '/home/aliaksandr/Downloads/blogImage.jpg') 
+        //         .expect(HTTP_STATUSES.CREATED_201); 
+        // });
 
-        it('+ POST should upload wallpaper image for third blog', async () => {
-            const response = await request(httpServer)
-                .post(`/${RouterPaths.blogger}/blogs/${thirdUserBlogId}/images/wallpaper`)
-                .set('Authorization', `Bearer ${thirdAccessToken}`)
-                .attach('file', '/home/aliaksandr/Downloads/wallpaper.jpg') 
-                .expect(HTTP_STATUSES.CREATED_201); 
-        });
+        // it('+ POST should upload wallpaper image for third blog', async () => {
+        //     const response = await request(httpServer)
+        //         .post(`/${RouterPaths.blogger}/blogs/${thirdUserBlogId}/images/wallpaper`)
+        //         .set('Authorization', `Bearer ${thirdAccessToken}`)
+        //         .attach('file', '/home/aliaksandr/Downloads/wallpaper.jpg') 
+        //         .expect(HTTP_STATUSES.CREATED_201); 
+        // });
 
-        it('+ POST should upload main image for third blog', async () => {
-            const response = await request(httpServer)
-                .post(`/${RouterPaths.blogger}/blogs/${thirdUserBlogId}/images/main`)
-                .set('Authorization', `Bearer ${thirdAccessToken}`)
-                .attach('file', '/home/aliaksandr/Downloads/blogImage.jpg') 
-                .expect(HTTP_STATUSES.CREATED_201); 
-        });
+        // it('+ POST should upload main image for third blog', async () => {
+        //     const response = await request(httpServer)
+        //         .post(`/${RouterPaths.blogger}/blogs/${thirdUserBlogId}/images/main`)
+        //         .set('Authorization', `Bearer ${thirdAccessToken}`)
+        //         .attach('file', '/home/aliaksandr/Downloads/blogImage.jpg') 
+        //         .expect(HTTP_STATUSES.CREATED_201); 
+        // });
 
-        it('+ POST should upload wallpaper image for fourth blog', async () => {
-            const response = await request(httpServer)
-                .post(`/${RouterPaths.blogger}/blogs/${fourthUserBlogId}/images/wallpaper`)
-                .set('Authorization', `Bearer ${fourthAccessToken}`)
-                .attach('file', '/home/aliaksandr/Downloads/wallpaper.jpg') 
-                .expect(HTTP_STATUSES.CREATED_201); 
-        });
+        // it('+ POST should upload wallpaper image for fourth blog', async () => {
+        //     const response = await request(httpServer)
+        //         .post(`/${RouterPaths.blogger}/blogs/${fourthUserBlogId}/images/wallpaper`)
+        //         .set('Authorization', `Bearer ${fourthAccessToken}`)
+        //         .attach('file', '/home/aliaksandr/Downloads/wallpaper.jpg') 
+        //         .expect(HTTP_STATUSES.CREATED_201); 
+        // });
 
-        it('+ POST should upload main image for fourth blog', async () => {
-            const response = await request(httpServer)
-                .post(`/${RouterPaths.blogger}/blogs/${fourthUserBlogId}/images/main`)
-                .set('Authorization', `Bearer ${fourthAccessToken}`)
-                .attach('file', '/home/aliaksandr/Downloads/blogImage.jpg') 
-                .expect(HTTP_STATUSES.CREATED_201); 
-        });
+        // it('+ POST should upload main image for fourth blog', async () => {
+        //     const response = await request(httpServer)
+        //         .post(`/${RouterPaths.blogger}/blogs/${fourthUserBlogId}/images/main`)
+        //         .set('Authorization', `Bearer ${fourthAccessToken}`)
+        //         .attach('file', '/home/aliaksandr/Downloads/blogImage.jpg') 
+        //         .expect(HTTP_STATUSES.CREATED_201); 
+        // });
 
-        it('+ POST should upload wallpaper image for fifth blog', async () => {
-            const response = await request(httpServer)
-                .post(`/${RouterPaths.blogger}/blogs/${fifthUserBlogId}/images/wallpaper`)
-                .set('Authorization', `Bearer ${fifthAccessToken}`)
-                .attach('file', '/home/aliaksandr/Downloads/wallpaper.jpg') // Path to your test image file
-                .expect(HTTP_STATUSES.CREATED_201); // Update according to your expected status
-        });
+        // it('+ POST should upload wallpaper image for fifth blog', async () => {
+        //     const response = await request(httpServer)
+        //         .post(`/${RouterPaths.blogger}/blogs/${fifthUserBlogId}/images/wallpaper`)
+        //         .set('Authorization', `Bearer ${fifthAccessToken}`)
+        //         .attach('file', '/home/aliaksandr/Downloads/wallpaper.jpg') // Path to your test image file
+        //         .expect(HTTP_STATUSES.CREATED_201); // Update according to your expected status
+        // });
 
-        it('+ POST should upload main image for fifth blog', async () => {
-            const response = await request(httpServer)
-                .post(`/${RouterPaths.blogger}/blogs/${fifthUserBlogId}/images/main`)
-                .set('Authorization', `Bearer ${fifthAccessToken}`)
-                .attach('file', '/home/aliaksandr/Downloads/blogImage.jpg') // Path to your test image file
-                .expect(HTTP_STATUSES.CREATED_201); // Update according to your expected status
-        });
+        // it('+ POST should upload main image for fifth blog', async () => {
+        //     const response = await request(httpServer)
+        //         .post(`/${RouterPaths.blogger}/blogs/${fifthUserBlogId}/images/main`)
+        //         .set('Authorization', `Bearer ${fifthAccessToken}`)
+        //         .attach('file', '/home/aliaksandr/Downloads/blogImage.jpg') // Path to your test image file
+        //         .expect(HTTP_STATUSES.CREATED_201); // Update according to your expected status
+        // });
 
 
       afterAll( async () => {

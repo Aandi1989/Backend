@@ -1,4 +1,6 @@
-export function blogsOutputModel(arr){
+import { BlogSubscribersDict } from "../../features/blogs/types/types";
+
+export function blogsOutputModel(arr: any, subscribers: BlogSubscribersDict){
     let result : any = [];
     let addedBlogs = {};
 
@@ -15,7 +17,9 @@ export function blogsOutputModel(arr){
                 images: {
                     wallpaper: null,
                     main: []
-                }
+                },
+                currentUserSubscriptionStatus: 'None',
+                subscribersCount: 0
             }
             result.push(blogWithImages);
             addedBlogs[blog.id] = blogWithImages; // we do that to avoid cycle inside cycle
@@ -35,6 +39,10 @@ export function blogsOutputModel(arr){
                 height: blog.height,
                 fileSize: blog.fileSize
             })
+        }
+        if(subscribers[blog.id]){
+            blogWithImages.currentUserSubscriptionStatus = subscribers[blog.id].currentUserSubscriptionStatus;
+            blogWithImages.subscribersCount = subscribers[blog.id].subscribersCount
         }
     }
     return result;

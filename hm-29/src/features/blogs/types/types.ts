@@ -30,6 +30,11 @@ export class BlogWithImagesType {
     }
 }
 
+export class BlogImagesSubscribers extends BlogWithImagesType {
+    subscribersCount: number
+    currentUserSubscriptionStatus: string
+}
+
 export type BlogSaType = {
     id: string
     name: string
@@ -81,4 +86,12 @@ export type ImageType = {
     height: number,
     fileSize: number,
     imageType: string
+}
+
+export type BlogSubscribersDict = Record<string, BlogSubscriberType>
+
+export type BlogSubscriberType = {
+    blogId?: string
+    subscribersCount: number,
+    currentUserSubscriptionStatus: string
 }

@@ -16,7 +16,6 @@ export class PostNotificationUseCase implements ICommandHandler<PostNotification
 
     async execute(command: PostNotificationCommand){
         const subscribers = await this.blogsQueryRepo.getBlogSubscribers(command.blogId);
-
         for(const user of subscribers){
             if(user.telegram_id){
                 await this.telegramService.sendMessage(`New post published for blog ${command.blogName}.`, user.telegram_id)

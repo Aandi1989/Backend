@@ -1,4 +1,4 @@
-import { BlogType, BlogWithImagesType } from "../../features/blogs/types/types";
+import { BlogImagesSubscribers, BlogSubscribersDict, BlogSubscriberType, BlogType, BlogWithImagesType } from "../../features/blogs/types/types";
 import { BlogImageDict } from "../../features/posts/types/types";
 
 export function blogCreatedWithImages(blog: BlogType): BlogWithImagesType {
@@ -17,10 +17,11 @@ export function blogCreatedWithImages(blog: BlogType): BlogWithImagesType {
     }
 }
 
-export function blogsMapper(blogs: BlogType[], images: BlogImageDict):BlogWithImagesType[]{
-    const outputBlogs: BlogWithImagesType[] = [];
+export function blogsMapper(blogs: BlogType[], images: BlogImageDict, 
+    subscribers: BlogSubscribersDict):BlogImagesSubscribers[]{
+    const outputBlogs: BlogImagesSubscribers[] = [];
     blogs.forEach(blog => {
-        let outputBlog:BlogWithImagesType  = {
+        let outputBlog:BlogImagesSubscribers = {
             id: blog.id,
             name: blog.name,
             description: blog.description,
@@ -28,9 +29,11 @@ export function blogsMapper(blogs: BlogType[], images: BlogImageDict):BlogWithIm
             createdAt: blog.createdAt,
             isMembership: blog.isMembership,
             images:{
-                main: images[blog.id].main ? images[blog.id].main : [],
-                wallpaper: images[blog.id].wallpaper ? images[blog.id].wallpaper : null
-            }
+                main: images[blog.id]?.main ? images[blog.id].main : [],
+                wallpaper: images[blog.id]?.wallpaper ? images[blog.id].wallpaper : null
+            },
+            currentUserSubscriptionStatus: subscribers[blog.id].currentUserSubscriptionStatus,
+            subscribersCount: subscribers[blog.id].subscribersCount
         }
         outputBlogs.push(outputBlog);
     })

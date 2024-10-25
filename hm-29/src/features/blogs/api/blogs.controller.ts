@@ -21,13 +21,16 @@ export class BlogsController {
     constructor(protected blogsQueryRepo: BlogsQueryRepo,
                 protected postsQueryRepo: PostsQueryRepo,
                 private commandBus: CommandBus){}
+    
+    @UseGuards(AccessUserId)
     @Get()
-    async getBlogs(@Query() query: Partial<BlogQueryType>): Promise<BlogsWithQueryOutputModel>{
-        return await this.blogsQueryRepo.getBlogs(blogQueryParams(query));
+    async getBlogs(@Req() req: Request, @Query() query: Partial<BlogQueryType>): Promise<BlogsWithQueryOutputModel>{
+        return await this.blogsQueryRepo.getBlogs(blogQueryParams(query), req.userId);
     }
+    @UseGuards(AccessUserId)
     @Get(':id')
-    async getBlog(@Param('id') blogId: string): Promise<BlogType>{
-        const foundBlog = await this.blogsQueryRepo.findBlogWithoutOwnerIdById(blogId);
+    async getBlog(@Req() req: Request, @Param('id') blogId: string): Promise<BlogType>{
+        const foundBlog = await this.blogsQueryRepo.findBlogWithoutOwnerIdById(blogId, req.userId);
         if(!foundBlog) throw new NotFoundException('Blog not found');
         return foundBlog;
     }

@@ -6,11 +6,12 @@ import { DataSource } from 'typeorm';
 import { blogsOutputModel } from '../../../common/helpers/blogsWithImagesOutputModel';
 import { blogImagesMapper } from '../../../common/helpers/imageMapper';
 import { blogsMapper } from '../../../common/helpers/blogMappers';
+import { SubscribersMapper } from '../../../common/helpers/subscribersMapper';
 
 @Injectable()
 export class BlogsQueryRepo {
     constructor(@InjectDataSource() protected dataSourse: DataSource) { }
-    async getBlogs(query: BlogQueryOutputType): Promise<BlogsWithQueryOutputModel> {
+    async getBlogs(query: BlogQueryOutputType, userId: string | null = null): Promise<BlogsWithQueryOutputModel> {
         const { pageNumber, pageSize, searchNameTerm, sortBy, sortDirection } = query;
         const sortDir = sortDirection === "asc" ? "ASC" : "DESC";
         const offset = (pageNumber - 1) * pageSize;
@@ -34,14 +35,30 @@ export class BlogsQueryRepo {
             OFFSET $3
         `;
         const blogs = await this.dataSourse.query(mainQuery, [searchTermParam, pageSize, offset]);
+        const blogIds = blogs.map(blog => blog.id);
         
         const imagesQuery = `
             SELECT "blogId" ,url, width, height, "fileSize", "imageType"
             FROM public."BlogImages"
         `;
+
+        const subscribersSql = `
+                SELECT 
+                    b."id" AS "blogId",
+                    (SELECT COUNT(*) FROM public."BlogSubscribers" WHERE "blogId" = b."id" AND status = 'Subscribed') AS "subscribersCount",
+                    COALESCE(
+                        (SELECT status FROM public."BlogSubscribers" WHERE "blogId" = b."id" AND "userId" = $2),
+                        'None'
+                    ) AS "currentUserSubscriptionStatus"
+                FROM public."Blogs" b
+                WHERE b."id" = ANY($1)
+            `;
+
+        const subscribers = await this.dataSourse.query(subscribersSql, [blogIds, userId]);
+        const subscribersOutput = SubscribersMapper(subscribers);
         const images = await this.dataSourse.query(imagesQuery);
         const imagesOutput = blogImagesMapper(images);
-        const blogsOutput = blogsMapper(blogs, imagesOutput);
+        const blogsOutput = blogsMapper(blogs, imagesOutput, subscribersOutput);
         const pagesCount = Math.ceil(totalCount / pageSize);
         return {
             pagesCount: pagesCount,
@@ -120,7 +137,24 @@ export class BlogsQueryRepo {
         `;
 
         const blogs = await this.dataSourse.query(mainQuery, [searchTermParam, userId, pageSize, offset]);
-        const blogsOutput = blogsOutputModel(blogs);
+        const blogIds = blogs.map(blog => blog.id);
+
+        const subscribersSql = `
+                SELECT 
+                    b."id" AS "blogId",
+                    (SELECT COUNT(*) FROM public."BlogSubscribers" WHERE "blogId" = b."id" AND status = 'Subscribed') AS "subscribersCount",
+                    COALESCE(
+                        (SELECT status FROM public."BlogSubscribers" WHERE "blogId" = b."id" AND "userId" = $2),
+                        'None'
+                    ) AS "currentUserSubscriptionStatus"
+                FROM public."Blogs" b
+                WHERE b."id" = ANY($1)
+            `;
+
+        const subscribers = await this.dataSourse.query(subscribersSql, [blogIds, userId]);
+        const subscribersOutput = SubscribersMapper(subscribers);
+
+        const blogsOutput = blogsOutputModel(blogs, subscribersOutput);
         const pagesCount = Math.ceil(totalCount / pageSize);
         return {
             pagesCount: pagesCount,
@@ -152,7 +186,7 @@ export class BlogsQueryRepo {
         return result[0];
     }
 
-    async findBlogWithoutOwnerIdById(id: string): Promise<BlogType> {
+    async findBlogWithoutOwnerIdById(id: string, userId: string | null = null): Promise<BlogType> {
         const query =
             `SELECT b."id", b."name", b."description", b."websiteUrl", b."createdAt", 
                 b."isMembership", bi.url, bi.width, bi.height, bi."fileSize", bi."imageType"
@@ -162,7 +196,18 @@ export class BlogsQueryRepo {
             WHERE b."id" = $1 AND b."isBanned" = false`
         ;
         const result = await this.dataSourse.query(query, [id]);
-        const blogsOutput = blogsOutputModel(result);
+        const subscribersSql = `
+            SELECT 
+            $1 AS "blogId",
+            (SELECT COUNT(*) FROM public."BlogSubscribers" WHERE "blogId" = $2 AND status = 'Subscribed') AS "subscribersCount",
+                COALESCE(
+                (SELECT status FROM public."BlogSubscribers" WHERE "blogId" = $3 AND "userId" = $4 ),
+                'None'
+            ) AS "currentUserSubscriptionStatus"
+        `;
+        const subscribers = await this.dataSourse.query(subscribersSql, [id, id, id, userId]);
+        const subscribersOutput = SubscribersMapper(subscribers);
+        const blogsOutput = blogsOutputModel(result, subscribersOutput);
         return blogsOutput[0];
     }
 
@@ -203,7 +248,7 @@ export class BlogsQueryRepo {
             FROM public."BlogSubscribers" as bs
             LEFT JOIN public."Users" as u
                 ON  bs."userId" = u."id"
-            WHERE bs."blogId" = '${blogId}'
+            WHERE bs."blogId" = '${blogId}' AND bs."status" = 'Subscribed'
         `;
         const result = await this.dataSourse.query(sql);
         return result;
