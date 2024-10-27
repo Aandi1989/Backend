@@ -10,7 +10,7 @@ export class TelegramService {
 
     constructor() {
         this.token = config().telegramApi.TELEGRAM_API;
-        this.serveoUrl = 'https://a66b1959c1e5cc96ba92eb98f945b365.serveo.net'; /*url of serveo*/
+        this.serveoUrl = 'https://f797fdc268b8ed18670655710aaebf54.serveo.net'; /*url of serveo*/
         this.axiosInstance = axios.create({
             baseURL:`https://api.telegram.org/bot${this.token}/`,
         });
