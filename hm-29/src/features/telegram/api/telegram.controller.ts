@@ -35,7 +35,7 @@ export class TelegramController {
         await this.commandBus.execute(new SaveTelegramCodeCommand(userId, activationCode));
 
         const botLink = `https://t.me/OctoberMorningBot?start=${activationCode}`;
-        return { botLink };
+        return { link: botLink };
     }   
 }
 

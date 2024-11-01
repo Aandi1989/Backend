@@ -1,7 +1,7 @@
 import { BlogImagesSubscribers, BlogSubscribersDict, BlogSubscriberType, BlogType, BlogWithImagesType } from "../../features/blogs/types/types";
 import { BlogImageDict } from "../../features/posts/types/types";
 
-export function blogCreatedWithImages(blog: BlogType): BlogWithImagesType {
+export function blogCreatedWithImages(blog: BlogType): BlogImagesSubscribers {
     const { id, name, description, websiteUrl, createdAt, isMembership } = blog;
     return{
         id,
@@ -13,7 +13,9 @@ export function blogCreatedWithImages(blog: BlogType): BlogWithImagesType {
         images:{
             wallpaper: null,
             main: []
-        }
+        },
+        currentUserSubscriptionStatus:'None',
+        subscribersCount:0
     }
 }
 
